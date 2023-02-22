@@ -28,7 +28,7 @@ void GameWidget::paintEvent(QPaintEvent *event)
     chessboardImg.load(":/pic/chessboard.png");
     painter.drawPixmap(0, 0, PIC_WIDTH, PIC_HEIGHT, chessboardImg);
 
-    // drawDemo(painter);
+    drawDemo(painter);
     // 绘制棋子
     for(int i = 0; i < CHESS_BOARD_SIZE; i++)
         for(int j = 0; j < CHESS_BOARD_SIZE; j++)
@@ -71,6 +71,11 @@ void GameWidget::drawBlack(QPainter &painter, double i, double j)
 
 void GameWidget::drawDemo(QPainter &painter)
 {
+    for(int i = 0; i < CHESS_BOARD_SIZE; i++)
+        for(int j = 0; j < CHESS_BOARD_SIZE; j++)
+        {
+            if(judge->board[i][j]) return;
+        }
     srand(time(0));
     for(int i = 0; i < CHESS_BOARD_SIZE; i++)
         for(int j = 0; j < CHESS_BOARD_SIZE; j++)
