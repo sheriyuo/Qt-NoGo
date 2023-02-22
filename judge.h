@@ -11,8 +11,8 @@
 #define BG_COLOR 0xecf9ff
 #define STRESS_COLOR "color: rgb(96, 150, 180)" //0x6096b4
 
-#define CUS_WHITE 0xFEDEFF
-#define CUS_BLACK 0xFFFFFF
+#define CUS_BLACK 0xFEDEFF
+#define CUS_WHITE 0xFFFFFF
 
 class Judge : public QObject
 {
