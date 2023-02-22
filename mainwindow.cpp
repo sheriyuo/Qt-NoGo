@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     // 信号槽
     connect(startWidget, &StartWidget::startAsBlackSingal, stackLayout, &QStackedLayout::setCurrentIndex);
     connect(startWidget, &StartWidget::startAsWhiteSingal, stackLayout, &QStackedLayout::setCurrentIndex);
-    connect(startWidget, &StartWidget::startAs, gameWidget->judge, &Judge::setAI_role);
+    connect(startWidget, &StartWidget::startAs, gameWidget->judge, &Judge::setPlayerRole);
     connect(gameWidget, &GameWidget::restartSingal, stackLayout, &QStackedLayout::setCurrentIndex);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;

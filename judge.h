@@ -23,12 +23,12 @@ public:
     ~Judge();
     void init();
 
-    int AI_role; // -1->white 1->black
+    int playerRole; // -1->white 1->black
     int board[CHESS_BOARD_SIZE + 2][CHESS_BOARD_SIZE + 2];
     int clickedRow, clickedColumn;
 
 public slots:
-    void setAI_role(int player);
+    void setPlayerRole(int player);
 };
 
 #endif // JUDGE_H

@@ -11,10 +11,10 @@ Judge::~Judge()
     /*none*/
 }
 
-void Judge::setAI_role(int player)
+void Judge::setPlayerRole(int player)
 {
-    AI_role = -player;
-    qDebug() << "AI_role : " << AI_role << '\n';
+    playerRole = player;
+    qDebug() << "Player Role : " << playerRole << '\n';
 }
 
 void Judge::init()

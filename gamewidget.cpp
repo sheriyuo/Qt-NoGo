@@ -33,11 +33,11 @@ void GameWidget::paintEvent(QPaintEvent *event)
     for(int i = 0; i < CHESS_BOARD_SIZE; i++)
         for(int j = 0; j < CHESS_BOARD_SIZE; j++)
         {
-            if(this->judge->board[i][j] == 1)
+            if(this->judge->board[i][j] == -1)
             {
                 drawWhite(painter, i, j);
             }
-            if(this->judge->board[i][j] == -1)
+            if(this->judge->board[i][j] == 1)
             {
                 drawBlack(painter, i, j);
             }
@@ -110,7 +110,7 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
             if(x > x1 && x < x2 && y > y1 && y < y2){
                 judge->clickedRow = i;
                 judge->clickedColumn = j;
-                judge->board[i][j] = judge->AI_role;
+                judge->board[i][j] = judge->playerRole;
             }
         }
 
