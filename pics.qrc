@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/pic">
+    <qresource prefix="/">
         <file>pic/chessboard.png</file>
     </qresource>
 </RCC>

@@ -2,4 +2,5 @@
     <qresource prefix="/map">
         <file>chessboard.png</file>
     </qresource>
+    <qresource prefix="/img"/>
 </RCC>
