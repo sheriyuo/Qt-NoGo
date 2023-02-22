@@ -1,0 +1,10 @@
+debug/gamewidget.o
+debug/judge.o
+debug/main.o
+debug/mainwindow.o
+debug/startwidget.o
+debug/qrc_Resources.o
+debug/moc_gamewidget.o
+debug/moc_judge.o
+debug/moc_mainwindow.o
+debug/moc_startwidget.o

@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/img">
+        <file>img/chessboard.png</file>
+        <file>img/downEdge.gif</file>
+        <file>img/leftDown.gif</file>
+        <file>img/leftEdge.gif</file>
+        <file>img/leftUp.gif</file>
+        <file>img/rightDown.gif</file>
+        <file>img/rightEdge.gif</file>
+        <file>img/rightUp.gif</file>
+        <file>img/sb.png</file>
+        <file>img/Sizige.gif</file>
+        <file>img/template.psd</file>
+        <file>img/upEdge.gif</file>
+    </qresource>
+</RCC>
