@@ -1,27 +1,52 @@
 %sheriyuo 魔改版 noithesis
-\NeedsTeXFormat{LaTeX2e}[1999/12/01]
+
 \ProvidesClass{noithesis}
-[2020/12/31 2.0 Template for NOI Thesis]
+[2023/2/3 1.0 Template for sheriyuo thesis]
 \LoadClass[12pt, a4paper]{article}
-\RequirePackage{enumerate}
-\RequirePackage{graphicx,subfigure}
-\RequirePackage{amsmath,amsthm,amsfonts,amssymb,bm}
-\RequirePackage{fontspec}
-\RequirePackage{xeCJK}
-\RequirePackage{longtable,multirow}
-\RequirePackage{color,xcolor}
-\RequirePackage{courier}
-\RequirePackage{ifthen}
-\RequirePackage{calc}
-\RequirePackage{ifpdf}
-\RequirePackage{titling}
-\RequirePackage{listings}
-\RequirePackage{fancyhdr}
-\RequirePackage{algorithm,algorithmic}
-\RequirePackage{booktabs}
-\RequirePackage{ulem}
-\RequirePackage{clrscode3e}
-\RequirePackage{chngcntr}
+\usepackage{enumerate}
+\usepackage{graphicx,subfigure}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,bm}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{longtable,multirow}
+\usepackage{color,xcolor}
+\usepackage{courier}
+\usepackage{ifthen}
+\usepackage{calc}
+\usepackage{ifpdf}
+\usepackage{titling}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{algorithm,algorithmic}
+\usepackage{booktabs}
+\usepackage{ulem}
+\usepackage{clrscode3e}
+\usepackage{chngcntr}
+
+\lstset{                      
+	language=[ANSI]{C},
+	backgroundcolor=\color{white},
+	basicstyle=\footnotesize\fontspec{Consolas},
+	breakatwhitespace=false,
+	breaklines,
+	captionpos=b,
+	commentstyle=\color{olive}\fontspec{Consolas Italic},
+	directivestyle=\color{blue},
+	extendedchars=false,
+	% frame=single,%shadowbox
+	framerule=0pt,
+	keywordstyle=\color{blue}\fontspec{Consolas Bold},
+	morekeywords={*,define,*,include...},
+	numbersep=5pt,
+	rulesepcolor=\color{red!20!green!20!blue!20},
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	stepnumber=2,
+	stringstyle=\color{purple},
+	tabsize=4,
+	title=\lstname
+}
 
 % 若本机编译时缺少字体，可直接在此处修改，本机编译通过即可。
 \RequirePackage[fontset=none]{ctex}
