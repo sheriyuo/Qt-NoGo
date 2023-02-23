@@ -9,8 +9,16 @@ StartWidget::StartWidget(QWidget *parent) :
     ui->setupUi(this);
     setFixedSize(PIC_WIDTH, PIC_HEIGHT);
 
-    ui->startAsBlack->setStyleSheet(STRESS_COLOR);
-    ui->startAsWhite->setStyleSheet(STRESS_COLOR);
+    // 设置按钮样式
+    ui->startAsBlack->setStyleSheet(ACCENT_COLOR);
+    ui->startAsWhite->setStyleSheet(ACCENT_COLOR);
+    int H = (double)PIC_HEIGHT / 31 * 2,
+        W = (double)PIC_HEIGHT / 31 * 8;
+    int X = (double)PIC_WIDTH / 2 - (double)PIC_HEIGHT / 31 * 4,
+        Y = (double)PIC_HEIGHT / 20 * 12.5 - (double)PIC_HEIGHT / 31;
+    ui->startAsBlack->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
+        Y = (double)PIC_HEIGHT / 20 * 15 - (double)PIC_HEIGHT / 31;
+    ui->startAsWhite->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
 
     curGameLayer = 1;
 }

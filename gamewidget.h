@@ -28,9 +28,10 @@ public slots:
 private:
     Ui::GameWidget *ui;
     void paintEvent(QPaintEvent *event) override;
-    void drawDemo(QPainter &painter);
+    void drawChessboard(QPainter &painter);
     void drawBlack(QPainter &painter, double px, double py);
     void drawWhite(QPainter &painer, double px, double py);
+    void drawDemo(QPainter &painter);
 
     // 监听鼠标坐标
     void mousePressEvent(QMouseEvent *event) override;

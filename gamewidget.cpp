@@ -1,3 +1,9 @@
+/*
+* 默认大小 ： 1024 * 768
+* 棋盘大小 ： 702 * 702
+*
+*
+*/
 #include "gamewidget.h"
 #include "ui_gamewidget.h"
 #include "judge.h"
@@ -10,7 +16,7 @@ GameWidget::GameWidget(QWidget *parent) :
     setFixedSize(PIC_WIDTH, PIC_HEIGHT);
     // setMouseTracking(true);
 
-    ui->restartButton->setStyleSheet(STRESS_COLOR);
+    ui->restartButton->setStyleSheet(ACCENT_COLOR);
 }
 
 GameWidget::~GameWidget()
@@ -24,14 +30,12 @@ void GameWidget::paintEvent(QPaintEvent *event)
     painter.setRenderHint(QPainter::Antialiasing, true); // 抗锯齿
 
     // 绘制棋盘
-    QPixmap chessboardImg;
-    chessboardImg.load(":/pic/chessboard.png");
-    painter.drawPixmap(0, 0, PIC_WIDTH, PIC_HEIGHT, chessboardImg);
+    drawChessboard(painter);
 
     drawDemo(painter);
     // 绘制棋子
-    for(int i = 0; i < CHESS_BOARD_SIZE; i++)
-        for(int j = 0; j < CHESS_BOARD_SIZE; j++)
+    for(int i = 0; i < CHESSBOARD_SIZE; i++)
+        for(int j = 0; j < CHESSBOARD_SIZE; j++)
         {
             if(this->judge->board[i][j] == -1)
             {
@@ -43,6 +47,15 @@ void GameWidget::paintEvent(QPaintEvent *event)
             }
 
         }
+}
+
+void GameWidget :: drawChessboard(QPainter &painter)
+{
+    painter.setBrush(QColor(BG_COLOR));
+    painter.drawRect(0, 0, PIC_WIDTH, PIC_HEIGHT);
+
+    painter.setPen(QPen(QColor(GRID_COLOR), GRID_THICKNESS, Qt::Solidline));
+    painter.drawRect(0, 0, CHESSBOARD_SIZE, CHESSBOARD_SIZE);
 }
 
 void GameWidget::drawWhite(QPainter &painter, double i, double j)
@@ -71,14 +84,14 @@ void GameWidget::drawBlack(QPainter &painter, double i, double j)
 
 void GameWidget::drawDemo(QPainter &painter)
 {
-    for(int i = 0; i < CHESS_BOARD_SIZE; i++)
-        for(int j = 0; j < CHESS_BOARD_SIZE; j++)
+    for(int i = 0; i < CHESSBOARD_SIZE; i++)
+        for(int j = 0; j < CHESSBOARD_SIZE; j++)
         {
             if(judge->board[i][j]) return;
         }
     srand(time(0));
-    for(int i = 0; i < CHESS_BOARD_SIZE; i++)
-        for(int j = 0; j < CHESS_BOARD_SIZE; j++)
+    for(int i = 0; i < CHESSBOARD_SIZE; i++)
+        for(int j = 0; j < CHESSBOARD_SIZE; j++)
         {
             if(rand() % 3) continue;
             if((i + j) & 1)
@@ -102,8 +115,8 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
     double Sx = (double)PIC_WIDTH / 1282 * 112, Sy = Sx;
     double Dx = (double)PIC_WIDTH / 1282 * 79.7, Dy = Dx;
 
-    for(int i = 0; i < CHESS_BOARD_SIZE; i++)
-        for(int j = 0; j < CHESS_BOARD_SIZE; j++){
+    for(int i = 0; i < CHESSBOARD_SIZE; i++)
+        for(int j = 0; j < CHESSBOARD_SIZE; j++){
             double x1 = Sx + i * Dx, y1 = Sy + j * Dy;
             double x2 = x1 + 0.8 * Dx, y2 = y1 + 0.8 * Dy;
             //qDebug() << x1 << ' ' << y1 << ' ' << x2 << ' ' << y2 << '\n';
