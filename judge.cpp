@@ -10,6 +10,7 @@ Judge::~Judge()
 {
     for(int i = 1; i <= blockCnt; i++)
         chessBlock[i].clear();
+    blockCnt = 0;
 }
 
 void Judge::init()
@@ -25,9 +26,9 @@ bool Judge::IsEmpty(int x, int y)
     return (bool)board[x][y];
 }
 
-int Judge::CurColor()
+int Judge::CurColor() // 当前落棋颜色
 {
-    return curPlayer == 1 ? playerRole : -  playerRole;
+    return curPlayer == 1 ? playerRole : -playerRole;
 }
 
 bool Judge::CheckVaild(int x, int y)

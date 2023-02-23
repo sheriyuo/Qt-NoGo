@@ -26,7 +26,7 @@ public:
     ~Judge();
     void init();
     bool IsEmpty(int x, int y);
-    int CurColor();
+    int CurColor(); // 当前落棋颜色
     bool CheckVaild(int x, int y); // 判断(x,y)是否可以下棋
     void UpdateCurStep(int x, int y); // 更新当前操作
 
