@@ -12,21 +12,48 @@ Judge::~Judge()
         chessBlock[i].clear();
 }
 
-void Judge::setPlayerRole(int player)
-{
-    playerRole = player;
-    qDebug() << "Player Role : " << playerRole << '\n';
-}
-
 void Judge::init()
 {
     memset(board, 0, sizeof(board));
+    memset(blockLiberty, 0, sizeof(blockLiberty));
+    memset(chessBelong, 0, sizeof(chessBelong));
     blockCnt = 0;
+}
+
+bool Judge::IsEmpty(int x, int y)
+{
+    return (bool)board[x][y];
+}
+
+int Judge::CurColor()
+{
+    return curPlayer == 1 ? playerRole : -  playerRole;
+}
+
+bool Judge::CheckVaild(int x, int y)
+{
+    if(!IsEmpty(x, y)) return false;
+    int spaceCnt = 0;
+    int libertySum = 0;
+
+    for(int i = 0; i < 4; i++)
+    {
+        int xx = x + dx[i], yy = y + dy[i]; // 枚举相邻点
+        if(board[xx][yy] == 0) spaceCnt ++;
+        if(board[xx][yy] == board[x][y]) // 统计合并之后的气数
+            libertySum += blockLiberty[chessBelong[xx][yy]] - 1; // 去掉合并用去的气数
+        else if(blockLiberty[chessBelong[xx][yy]] == 1) // 直接吃掉的情况
+            return false;
+    }
+
+    if(spaceCnt + libertySum == 0) // 没有气
+        return false;
+    return true;
 }
 
 void Judge::UpdateCurStep(int x, int y)
 {
-    board[x][y] = curPlayer ? playerRole : -playerRole;
+    board[x][y] = CurColor();
     blockCnt ++;
     chessBelong[x][y] = blockCnt;
     blockLiberty[blockCnt] = 4;
@@ -45,6 +72,12 @@ void Judge::UpdateCurStep(int x, int y)
             blockLiberty[chessBelong[xx][yy]] --;
         }
     }
+}
+
+void Judge::setPlayerRole(int player)
+{
+    playerRole = player;
+    qDebug() << "Player Role : " << playerRole << '\n';
 }
 
 void Judge::MergeBlock(int x, int y) // 启发式合并

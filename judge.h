@@ -26,11 +26,12 @@ public:
     ~Judge();
     void init();
     bool IsEmpty(int x, int y);
+    int CurColor();
     bool CheckVaild(int x, int y); // 判断(x,y)是否可以下棋
     void UpdateCurStep(int x, int y); // 更新当前操作
 
     int playerRole; // -1->white 1->black
-    int curPlayer; // 1->player 0->bot
+    int curPlayer; // 0->bot 1->player
 
 public slots:
     void setPlayerRole(int player);
