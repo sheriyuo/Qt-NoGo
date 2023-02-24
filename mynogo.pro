@@ -14,6 +14,7 @@ SOURCES += \
     judge.cpp \
     main.cpp \
     mainwindow.cpp \
+    messagebox.cpp \
     startwidget.cpp
 
 HEADERS += \
@@ -21,6 +22,7 @@ HEADERS += \
     gamewidget.h \
     judge.h \
     mainwindow.h \
+    messagebox.h \
     startwidget.h
 
 FORMS += \

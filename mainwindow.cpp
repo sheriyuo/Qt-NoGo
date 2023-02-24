@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(startWidget, &StartWidget::startAsWhiteSingal, stackLayout, &QStackedLayout::setCurrentIndex);
     connect(startWidget, &StartWidget::startAs, gameWidget->judge, &Judge::setPlayerRole);
     connect(startWidget, &StartWidget::startAs, gameWidget->bot, &Bot::makeFirstMove);
+    connect(startWidget, &StartWidget::startAs, gameWidget, &GameWidget::startTimer);
     connect(gameWidget, &GameWidget::restartSingal, stackLayout, &QStackedLayout::setCurrentIndex);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;

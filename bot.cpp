@@ -9,7 +9,7 @@ Bot::Bot(QObject *parent) :
 
 Bot::~Bot()
 {
-    /*empty*/
+    delete this;
 }
 
 void Bot::makeFirstMove(int player){
@@ -27,5 +27,6 @@ void Bot::makeRandomMove()
         x = rand() % CHESSBOARD_SIZE;
         y = rand() % CHESSBOARD_SIZE;
     } while(!judge->CheckVaild(x, y));
+    qDebug() << judge->CheckVaild(x, y) << '\n';
     judge->PlaceAPiece(x, y);
 }

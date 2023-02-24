@@ -4,14 +4,11 @@ Judge::Judge(QObject *parent) :
     QObject(parent)
 {
     memset(board, 0, sizeof(board));
-
 }
 
 Judge::~Judge()
 {
-    for(int i = 1; i <= blockCnt; i++)
-        chessBlock[i].clear();
-    blockCnt = 0;
+    delete this;
 }
 
 void Judge::init()
@@ -48,7 +45,9 @@ int Judge::CurColor() // 当前落棋颜色
 
 bool Judge::CheckVaild(int x, int y)
 {
+    // qDebug() << "awa\n";
     if(!IsEmpty(x, y)) return false;
+    // qDebug() << "qaq\n";
     int spaceCnt = 0;
     int libertySum = 0;
 
@@ -63,17 +62,24 @@ bool Judge::CheckVaild(int x, int y)
             if(board[xx][yy] == CurColor()) // 统计合并之后的气数
                 libertySum += blockLiberty[chessBelong[xx][yy]] - 1; // 去掉合并用去的气数
             else if(blockLiberty[chessBelong[xx][yy]] == 1) // 直接吃掉的情况
+            {
                 return false;
+            }
+           // qDebug() << xx << ' ' << yy << ' ' << blockLiberty[chessBelong[xx][yy]] << '\n';
         }
     }
 
+    qDebug() << spaceCnt << ' ' << libertySum << '\n';
     if(spaceCnt + libertySum == 0) // 没有气
         return false;
     return true;
 }
 
+static bool vis[(CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2)];
 void Judge::UpdateCurStep(int x, int y)
 {
+    memset(vis, 0, sizeof(vis));
+
     board[x][y] = CurColor();
     blockCnt ++;
     chessBelong[x][y] = blockCnt;
@@ -92,11 +98,20 @@ void Judge::UpdateCurStep(int x, int y)
         if(board[xx][yy] == 0) continue;
 
         if(board[xx][yy] == board[x][y])
-            MergeBlock(chessBelong[x][y], chessBelong[xx][yy]);
+        {
+            if(!vis[chessBelong[xx][yy]]){
+                vis[chessBelong[xx][yy]] = 1;
+                MergeBlock(chessBelong[x][y], chessBelong[xx][yy]);
+            }
+        }
         else
         {
             blockLiberty[chessBelong[x][y]] --;
-            blockLiberty[chessBelong[xx][yy]] --;
+            if(!vis[chessBelong[xx][yy]])
+            {
+                vis[chessBelong[xx][yy]] = 1;
+                blockLiberty[chessBelong[xx][yy]] --;
+            }
         }
     }
 }
@@ -124,5 +139,5 @@ void Judge::setPlayerRole(int player)
     playerRole = player;
     if(player == -1) curPlayer = 0;
     else curPlayer = 1;
-    qDebug() << "Player Role : " << playerRole << '\n';
+    // qDebug() << "Player Role : " << playerRole << '\n';
 }

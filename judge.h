@@ -3,6 +3,10 @@
 
 #include <QObject>
 #include <QDebug>
+#include <QTimer>
+
+#define PLAYER_TIMEOUT 10 // s
+#define BOT_TIMEOUT 3      // s
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
@@ -42,7 +46,7 @@ public:
     void PlaceAPiece(int x, int y); // 编辑 board 数组，在 (x, y) 下 CurColor() 颜色的棋
 
     int playerRole; // -1->white 1->black
-    int curPlayer; // 0->bot 1->player
+    int curPlayer; // 0->bot 1->player -1->game over
 
 public slots:
     void setPlayerRole(int player);
