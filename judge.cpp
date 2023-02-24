@@ -30,6 +30,11 @@ bool Judge::IsEmpty(int x, int y)
     return (bool)board[x][y];
 }
 
+bool Judge::IsInBoard(int x, int y)
+{
+    return x >= 0 && x < CHESSBOARD_SIZE && y >= 0 && y < CHESSBOARD_SIZE;
+}
+
 int Judge::CurColor() // 当前落棋颜色
 {
     return curPlayer == 1 ? playerRole : -playerRole;
@@ -44,7 +49,9 @@ bool Judge::CheckVaild(int x, int y)
     for(int i = 0; i < 4; i++)
     {
         int xx = x + dx[i], yy = y + dy[i]; // 枚举相邻点
+        if(!IsInBoard(xx, yy)) continue; // 判断边界条件
         if(board[xx][yy] == 0) spaceCnt ++;
+
         if(board[xx][yy] == board[x][y]) // 统计合并之后的气数
             libertySum += blockLiberty[chessBelong[xx][yy]] - 1; // 去掉合并用去的气数
         else if(blockLiberty[chessBelong[xx][yy]] == 1) // 直接吃掉的情况
@@ -68,7 +75,13 @@ void Judge::UpdateCurStep(int x, int y)
     for(int i = 0; i < 4; i++)
     {
         int xx = x + dx[i], yy = y + dy[i]; // 枚举相邻点
+        if(!IsInBoard(xx, yy)) // 判断边界条件
+        {
+            blockLiberty[blockCnt] --;
+            continue;
+        }
         if(board[xx][yy] == 0) continue;
+
         if(board[xx][yy] == board[x][y])
             MergeBlock(chessBelong[x][y], chessBelong[xx][yy]);
         else

@@ -35,6 +35,7 @@ public:
     void init();
     void UpdateCurStep(int x, int y); // 更新当前操作
     bool IsEmpty(int x, int y);
+    bool IsInBoard(int x, int y);
     bool CheckVaild(int x, int y); // 判断(x,y)是否可以下棋
     int CurColor(); // 当前落棋颜色
     int GridPoint(int x, int y); // 访问 board 数组
