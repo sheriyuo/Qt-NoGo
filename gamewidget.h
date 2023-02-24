@@ -2,6 +2,7 @@
 #define GAMEWIDGET_H
 
 #include "judge.h"
+#include "bot.h"
 #include <QPushButton>
 #include <QPainter>
 #include <QWidget>
@@ -18,6 +19,7 @@ public:
     ~GameWidget();
 
     Judge *judge;
+    Bot *bot;
 
 signals:
     void restartSingal(int index);

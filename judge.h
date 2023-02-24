@@ -7,7 +7,7 @@
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
 #define CHESSBOARD_LEN 648
-#define CHESSBOARD_SIZE 11
+#define CHESSBOARD_SIZE 9
 
 #define BG_COLOR 0xecf9ff
 #define GRID_COLOR 0xbad7e9
@@ -38,15 +38,14 @@ public:
     bool IsInBoard(int x, int y);
     bool CheckVaild(int x, int y); // 判断(x,y)是否可以下棋
     int CurColor(); // 当前落棋颜色
-    int GridPoint(int x, int y); // 访问 board 数组
-    void PlaceAPiece(int x, int y, int color); // 编辑 board 数组
+    int GridPoint(int x, int y); // 访问 board 数组， 返回 (x, y) 的状态 ：0/-1/1
+    void PlaceAPiece(int x, int y); // 编辑 board 数组，在 (x, y) 下 CurColor() 颜色的棋
 
     int playerRole; // -1->white 1->black
     int curPlayer; // 0->bot 1->player
 
 public slots:
     void setPlayerRole(int player);
-
 
 private:
     void WriteCurStep(int x, int y); // 记录当前操作

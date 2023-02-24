@@ -4,6 +4,7 @@ Judge::Judge(QObject *parent) :
     QObject(parent)
 {
     memset(board, 0, sizeof(board));
+
 }
 
 Judge::~Judge()
@@ -23,11 +24,16 @@ void Judge::init()
 
 int Judge::GridPoint(int x, int y) {return board[x][y];}
 
-void Judge::PlaceAPiece(int x, int y, int color) {board[x][y] = color;}
+void Judge::PlaceAPiece(int x, int y)
+{
+    board[x][y] = CurColor();
+    curPlayer ^= 1;
+    UpdateCurStep(x, y);
+}
 
 bool Judge::IsEmpty(int x, int y)
 {
-    return (bool)board[x][y];
+    return !(bool)board[x][y];
 }
 
 bool Judge::IsInBoard(int x, int y)
@@ -42,7 +48,9 @@ int Judge::CurColor() // 当前落棋颜色
 
 bool Judge::CheckVaild(int x, int y)
 {
+    // qDebug() << board[x][y] << "qwq\n";
     if(!IsEmpty(x, y)) return false;
+    // qDebug() << "qaq\n";
     int spaceCnt = 0;
     int libertySum = 0;
 
@@ -51,13 +59,16 @@ bool Judge::CheckVaild(int x, int y)
         int xx = x + dx[i], yy = y + dy[i]; // 枚举相邻点
         if(!IsInBoard(xx, yy)) continue; // 判断边界条件
         if(board[xx][yy] == 0) spaceCnt ++;
-
-        if(board[xx][yy] == board[x][y]) // 统计合并之后的气数
-            libertySum += blockLiberty[chessBelong[xx][yy]] - 1; // 去掉合并用去的气数
-        else if(blockLiberty[chessBelong[xx][yy]] == 1) // 直接吃掉的情况
-            return false;
+        else
+        {
+            if(board[xx][yy] == board[x][y]) // 统计合并之后的气数
+                libertySum += blockLiberty[chessBelong[xx][yy]] - 1; // 去掉合并用去的气数
+            else if(blockLiberty[chessBelong[xx][yy]] == 1) // 直接吃掉的情况
+                return false;
+        }
     }
 
+    // qDebug() << spaceCnt << ' ' << libertySum << '\n';
     if(spaceCnt + libertySum == 0) // 没有气
         return false;
     return true;
@@ -113,5 +124,7 @@ void Judge::MergeBlock(int x, int y) // 启发式合并
 void Judge::setPlayerRole(int player)
 {
     playerRole = player;
+    if(player == -1) curPlayer = 0;
+    else curPlayer = 1;
     qDebug() << "Player Role : " << playerRole << '\n';
 }
