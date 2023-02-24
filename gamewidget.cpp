@@ -32,11 +32,11 @@ void GameWidget::paintEvent(QPaintEvent *event)
     for(int i = 0; i < CHESSBOARD_SIZE; i++)
         for(int j = 0; j < CHESSBOARD_SIZE; j++)
         {
-            if(this->judge->board[i][j] == -1)
+            if(this->judge->GridPoint(i, j) == -1)
             {
                 drawWhite(painter, i, j);
             }
-            if(this->judge->board[i][j] == 1)
+            if(this->judge->GridPoint(i, j) == 1)
             {
                 drawBlack(painter, i, j);
             }
@@ -106,7 +106,7 @@ void GameWidget::drawDemo(QPainter &painter)
     for(int i = 0; i < CHESSBOARD_SIZE; i++)
         for(int j = 0; j < CHESSBOARD_SIZE; j++)
         {
-            if(judge->board[i][j]) return;
+            if(judge->GridPoint(i, j)) return;
         }
     srand(time(0));
     for(int i = 0; i < CHESSBOARD_SIZE; i++)
@@ -141,7 +141,7 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
         int xi = LEFT_UP + (i-1) * SQUARE_LEN;
         if(abs ( x - xi ) < checklen)
         {
-            judge->clickedRow = i-1;
+            // judge->clickedRow = i-1;
             row = i;
             break;
         }
@@ -152,13 +152,13 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
         int yi = LEFT_UP + ( i - 1 ) * SQUARE_LEN;
         if(abs( y - yi ) < checklen)
         {
-            judge->clickedColumn = i-1;
+            // judge->clickedColumn = i-1;
             column = i;
             break;
         }
     }
 
-    judge->board[row-1][column-1] = judge->playerRole;
+    judge->PlaceAPiece(row-1, column-1, judge->playerRole);
     update();
 
 }
