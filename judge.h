@@ -37,8 +37,8 @@ public:
     bool IsEmpty(int x, int y);
     bool CheckVaild(int x, int y); // 判断(x,y)是否可以下棋
     int CurColor(); // 当前落棋颜色
-    int GridPoint(int x, int y); // 访问 board 数组
-    void PlaceAPiece(int x, int y); // 编辑 board 数组
+    int GridPoint(int x, int y); // 访问 board 数组， 返回 (x, y) 的状态 ：0/-1/1
+    void PlaceAPiece(int x, int y); // 编辑 board 数组，在 (x, y) 下 CurColor() 颜色的棋
 
     int playerRole; // -1->white 1->black
     int curPlayer; // 0->bot 1->player
