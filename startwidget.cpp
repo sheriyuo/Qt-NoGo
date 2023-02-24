@@ -7,10 +7,18 @@ StartWidget::StartWidget(QWidget *parent) :
     ui(new Ui::StartWidget)
 {
     ui->setupUi(this);
-    setFixedSize(PIC_WIDTH, PIC_HEIGHT);
+    setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    ui->startAsBlack->setStyleSheet(STRESS_COLOR);
-    ui->startAsWhite->setStyleSheet(STRESS_COLOR);
+    // 设置按钮样式
+    ui->startAsBlack->setStyleSheet(ACCENT_COLOR);
+    ui->startAsWhite->setStyleSheet(ACCENT_COLOR);
+    int H = (double)WINDOW_HEIGHT / 31 * 2,
+        W = (double)WINDOW_HEIGHT / 31 * 8;
+    int X = (double)WINDOW_WIDTH / 2 - (double)WINDOW_HEIGHT / 31 * 4,
+        Y = (double)WINDOW_HEIGHT / 20 * 12.5 - (double)WINDOW_HEIGHT / 31;
+    ui->startAsBlack->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
+        Y = (double)WINDOW_HEIGHT / 20 * 15 - (double)WINDOW_HEIGHT / 31;
+    ui->startAsWhite->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
 
     curGameLayer = 1;
 }
@@ -27,7 +35,7 @@ void StartWidget::paintEvent(QPaintEvent *event)
 
     // painter.setPen(QPen(QColor(0xf9f8ef), Strength, Qt::SolidLine));
     painter.setBrush(QColor(BG_COLOR));
-    painter.drawRect(0, 0, PIC_WIDTH, PIC_HEIGHT);
+    painter.drawRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 }
 
 void StartWidget::on_startAsWhite_clicked()

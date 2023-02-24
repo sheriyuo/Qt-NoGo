@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    setFixedSize(PIC_WIDTH, PIC_HEIGHT);
+    setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 
     startWidget = new StartWidget;

@@ -1,16 +1,17 @@
 #include "gamewidget.h"
 #include "ui_gamewidget.h"
 #include "judge.h"
+#include <math.h>
 
 GameWidget::GameWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::GameWidget)
 {
     ui->setupUi(this);
-    setFixedSize(PIC_WIDTH, PIC_HEIGHT);
+    setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT);
     // setMouseTracking(true);
 
-    ui->restartButton->setStyleSheet(STRESS_COLOR);
+    ui->restartButton->setStyleSheet(ACCENT_COLOR);
 }
 
 GameWidget::~GameWidget()
@@ -24,14 +25,12 @@ void GameWidget::paintEvent(QPaintEvent *event)
     painter.setRenderHint(QPainter::Antialiasing, true); // 抗锯齿
 
     // 绘制棋盘
-    QPixmap chessboardImg;
-    chessboardImg.load(":/pic/chessboard.png");
-    painter.drawPixmap(0, 0, PIC_WIDTH, PIC_HEIGHT, chessboardImg);
+    drawChessboard(painter);
 
     drawDemo(painter);
     // 绘制棋子
-    for(int i = 0; i < CHESS_BOARD_SIZE; i++)
-        for(int j = 0; j < CHESS_BOARD_SIZE; j++)
+    for(int i = 0; i < CHESSBOARD_SIZE; i++)
+        for(int j = 0; j < CHESSBOARD_SIZE; j++)
         {
             if(this->judge->board[i][j] == -1)
             {
@@ -45,40 +44,73 @@ void GameWidget::paintEvent(QPaintEvent *event)
         }
 }
 
+void GameWidget :: drawChessboard(QPainter &painter)
+{
+
+    int number=CHESSBOARD_SIZE;
+    double left_up,L;
+    left_up=(WINDOW_HEIGHT-CHESSBOARD_LEN)/2;
+    L=SQUARE_LEN;
+
+    //背景
+    painter.setBrush(QColor(BG_COLOR));
+    painter.drawRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    painter.setPen(QPen(QColor(GRID_COLOR), GRID_THICKNESS, Qt::SolidLine));
+    painter.drawRect(left_up, left_up, CHESSBOARD_LEN ,CHESSBOARD_LEN);
+
+    // 水平线
+    for(int i = 0 ; i < number ; i++)
+    {
+
+        painter.drawLine( LEFT_UP , LEFT_UP + i * L , LEFT_UP + ( number - 1 ) * L , LEFT_UP + i * L );
+    }
+
+    //垂直线
+    for(int i = 0 ; i < number ; i++)
+    {
+
+        painter.drawLine( LEFT_UP + i * L , LEFT_UP ,  LEFT_UP + i * L ,  LEFT_UP + ( number - 1 ) * L );
+    }
+}
+
 void GameWidget::drawWhite(QPainter &painter, double i, double j)
 {
-    double Sx = (double)PIC_WIDTH / 1282 * 112, Sy = Sx;
-    double Dx = (double)PIC_WIDTH / 1282 * 79.7, Dy = Dx;
-    double px = Sx + i * Dx, py = Sy + j * Dy;
-    double Size = PIC_WIDTH / 22, Strength = Size / 4;
+
+    double Size = SQUARE_LEN * 0.7, Strength = Size / 4;
+
+    double xi = LEFT_UP + ( i - 0.35 ) * SQUARE_LEN;
+    double yi = LEFT_UP + ( j - 0.35 ) * SQUARE_LEN;
 
     painter.setPen(QPen(QColor(CUS_WHITE), Strength, Qt::SolidLine));
     painter.setBrush(QColor(BG_COLOR));
-    painter.drawEllipse(px, py, Size, Size);
+
+    painter.drawEllipse(xi, yi, Size, Size);
 }
 
 void GameWidget::drawBlack(QPainter &painter, double i, double j)
 {
-    double Sx = (double)PIC_WIDTH / 1282 * 112, Sy = Sx;
-    double Dx = (double)PIC_WIDTH / 1282 * 79.7, Dy = Dx;
-    double px = Sx + i * Dx, py = Sy + j * Dy;
-    double Size = PIC_WIDTH / 22, Strength = Size / 4;
+
+    double Size = SQUARE_LEN * 0.7, Strength = Size / 4;
+    double xi = LEFT_UP + ( i - 0.35 ) * SQUARE_LEN;
+    double yi = LEFT_UP + ( j - 0.35 ) * SQUARE_LEN;
 
     painter.setPen(QPen(QColor(CUS_BLACK), Strength, Qt::SolidLine));
     painter.setBrush(QColor(BG_COLOR));
-    painter.drawEllipse(px, py, Size, Size);
+
+    painter.drawEllipse(xi, yi, Size, Size);
 }
 
 void GameWidget::drawDemo(QPainter &painter)
 {
-    for(int i = 0; i < CHESS_BOARD_SIZE; i++)
-        for(int j = 0; j < CHESS_BOARD_SIZE; j++)
+    for(int i = 0; i < CHESSBOARD_SIZE; i++)
+        for(int j = 0; j < CHESSBOARD_SIZE; j++)
         {
             if(judge->board[i][j]) return;
         }
     srand(time(0));
-    for(int i = 0; i < CHESS_BOARD_SIZE; i++)
-        for(int j = 0; j < CHESS_BOARD_SIZE; j++)
+    for(int i = 0; i < CHESSBOARD_SIZE; i++)
+        for(int j = 0; j < CHESSBOARD_SIZE; j++)
         {
             if(rand() % 3) continue;
             if((i + j) & 1)
@@ -97,24 +129,38 @@ void GameWidget::drawDemo(QPainter &painter)
 void GameWidget::mousePressEvent(QMouseEvent *event)
 {
     double x = event->position().x(), y = event->position().y();
+
     qDebug() << "clicked pos : " << x << ' ' << y << '\n';
+    qDebug() <<LEFT_UP;
 
-    double Sx = (double)PIC_WIDTH / 1282 * 112, Sy = Sx;
-    double Dx = (double)PIC_WIDTH / 1282 * 79.7, Dy = Dx;
+    int row = 0,column = 0;
+    double checklen = SQUARE_LEN / 2;
 
-    for(int i = 0; i < CHESS_BOARD_SIZE; i++)
-        for(int j = 0; j < CHESS_BOARD_SIZE; j++){
-            double x1 = Sx + i * Dx, y1 = Sy + j * Dy;
-            double x2 = x1 + 0.8 * Dx, y2 = y1 + 0.8 * Dy;
-            //qDebug() << x1 << ' ' << y1 << ' ' << x2 << ' ' << y2 << '\n';
-            if(x > x1 && x < x2 && y > y1 && y < y2){
-                judge->clickedRow = i;
-                judge->clickedColumn = j;
-                judge->board[i][j] = judge->playerRole;
-            }
+    for(int i = 1 ; i <=  CHESSBOARD_SIZE ; i++)
+    {
+        int xi = LEFT_UP + (i-1) * SQUARE_LEN;
+        if(abs ( x - xi ) < checklen)
+        {
+            judge->clickedRow = i-1;
+            row = i;
+            break;
         }
+    }
 
+    for(int i = 1 ; i <= CHESSBOARD_SIZE ; i++)
+    {
+        int yi = LEFT_UP + ( i - 1 ) * SQUARE_LEN;
+        if(abs( y - yi ) < checklen)
+        {
+            judge->clickedColumn = i-1;
+            column = i;
+            break;
+        }
+    }
+
+    judge->board[row-1][column-1] = judge->playerRole;
     update();
+
 }
 
 void GameWidget::on_restartButton_clicked()

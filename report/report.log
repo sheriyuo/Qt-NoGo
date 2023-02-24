@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2023.2.22)  23 FEB 2023 15:24
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2023.2.22)  23 FEB 2023 14:01
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -6,7 +6,7 @@ entering extended mode
 (./report.tex
 LaTeX2e <2021-11-15> patch level 1
 L3 programming layer <2022-02-24> (./noithesis.cls
-Document Class: noithesis 2023/2/3 1.0 Template for sheriyuo thesis
+Document Class: noithesis 2020/12/31 2.0 Template for NOI Thesis
 (c:/texlive/2022/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2021/10/04 v1.4n Standard LaTeX document class
 (c:/texlive/2022/texmf-dist/tex/latex/base/size12.clo
@@ -482,12 +482,6 @@ Package: chngcntr 2018/04/09 v1.1a change counter resetting
 Package chngcntr Info: \counterwithout already defined.
 (chngcntr)             Quitting chngcntr on input line 21.
 )
-(c:/texlive/2022/texmf-dist/tex/latex/listings/lstlang1.sty
-File: lstlang1.sty 2020/03/24 1.8d listings language file
-)
-(c:/texlive/2022/texmf-dist/tex/latex/listings/lstmisc.sty
-File: lstmisc.sty 2020/03/24 1.8d (Carsten Heinz)
-)
 (c:/texlive/2022/texmf-dist/tex/latex/ctex/ctex.sty
 Package: ctex 2021/12/12 v2.5.8 Chinese adapter in LaTeX (CTEX)
 
@@ -723,12 +717,12 @@ Package xeCJK Warning: Unknown CJK family `\CJKsfdefault' is being ignored.
 
 [1] [2] (./report.aux) ) 
 Here is how much of TeX's memory you used:
- 11174 strings out of 476179
- 256977 string characters out of 5813072
- 761451 words of memory out of 5000000
- 31693 multiletter control sequences out of 15000+600000
+ 11135 strings out of 476179
+ 256181 string characters out of 5813072
+ 583903 words of memory out of 5000000
+ 31660 multiletter control sequences out of 15000+600000
  476867 words of font info for 85 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 88i,14n,91p,249b,415s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 88i,14n,91p,251b,415s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 Output written on report.pdf (3 pages).
