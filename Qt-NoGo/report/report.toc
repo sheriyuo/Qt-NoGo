@@ -1,0 +1,7 @@
+\contentsline {section}{\numberline {1}团队构成}{1}{}%
+\contentsline {subsection}{\numberline {1.1}闲话}{1}{}%
+\contentsline {subsection}{\numberline {1.2}小组分工}{1}{}%
+\contentsline {section}{\numberline {2}Qt 图形界面应用设计}{1}{}%
+\contentsline {subsection}{\numberline {2.1}UI 设计}{1}{}%
+\contentsline {subsection}{\numberline {2.2}简单逻辑}{2}{}%
+\contentsline {section}{\numberline {3}AI 算法设计}{2}{}%
