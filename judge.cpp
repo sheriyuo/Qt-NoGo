@@ -48,37 +48,25 @@ int Judge::CurColor() // 当前落棋颜色
 
 bool Judge::CheckVaild(int x, int y)
 {
-//    qDebug() << board[x][y] << "qwq\n";
     if(!IsEmpty(x, y)) return false;
-//    qDebug() << "qaq\n";
     int spaceCnt = 0;
     int libertySum = 0;
 
     for(int i = 0; i < 4; i++)
     {
-        qDebug() << i << ' ' << spaceCnt << ' ' << libertySum << '\n';
         int xx = x + dx[i], yy = y + dy[i]; // 枚举相邻点
         if(!IsInBoard(xx, yy)) continue; // 判断边界条件
 
-            qDebug() << "qaq\n" << board[xx][yy] << " " << CurColor() << "\n";
         if(board[xx][yy] == 0) spaceCnt ++;
         else
         {
-
             if(board[xx][yy] == CurColor()) // 统计合并之后的气数
-            {
-                qDebug() << xx << " " << yy << " " << chessBelong[xx][yy] << " " << blockLiberty[chessBelong[xx][yy]] - 1 << "\n";
                 libertySum += blockLiberty[chessBelong[xx][yy]] - 1; // 去掉合并用去的气数
-            }
             else if(blockLiberty[chessBelong[xx][yy]] == 1) // 直接吃掉的情况
-            {
-                qDebug() << xx << " " << yy << " " << board[xx][yy] << " " << CurColor() << "\n";
                 return false;
-            }
         }
     }
 
-     qDebug() << spaceCnt << ' ' << libertySum << '\n';
     if(spaceCnt + libertySum == 0) // 没有气
         return false;
     return true;
