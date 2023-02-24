@@ -16,7 +16,6 @@ MainWindow::MainWindow(QWidget *parent)
     startWidget = new StartWidget;
     gameWidget = new GameWidget;
     stackLayout = new QStackedLayout;
-    gameWidget->judge = new Judge;
     //startWidget = (StartWidget*)malloc(sizeof(StartWidget));
     //gameWidget = (GameWidget*)malloc(sizeof(GameWidget));
     //stackLayout = (QStackedLayout*)malloc(sizeof(QStackedLayout));
@@ -31,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(startWidget, &StartWidget::startAsBlackSingal, stackLayout, &QStackedLayout::setCurrentIndex);
     connect(startWidget, &StartWidget::startAsWhiteSingal, stackLayout, &QStackedLayout::setCurrentIndex);
     connect(startWidget, &StartWidget::startAs, gameWidget->judge, &Judge::setPlayerRole);
+    connect(startWidget, &StartWidget::startAs, gameWidget->bot, &Bot::makeFirstMove);
     connect(gameWidget, &GameWidget::restartSingal, stackLayout, &QStackedLayout::setCurrentIndex);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;

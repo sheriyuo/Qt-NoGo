@@ -11,12 +11,59 @@ GameWidget::GameWidget(QWidget *parent) :
     setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT);
     // setMouseTracking(true);
 
+    judge = new Judge;
+    bot = new Bot;
+    bot->judge = judge;
+
     ui->restartButton->setStyleSheet(ACCENT_COLOR);
 }
 
 GameWidget::~GameWidget()
 {
     delete ui;
+}
+
+// 监听鼠标点击实现落子
+void GameWidget::mousePressEvent(QMouseEvent *event)
+{
+    double x = event->position().x(), y = event->position().y();
+
+    // qDebug() << "clicked pos : " << x << ' ' << y << '\n';
+    // qDebug() <<LEFT_UP;
+
+    int row = 0,column = 0;
+    double checklen = SQUARE_LEN / 2;
+
+    for(int i = 1 ; i <=  CHESSBOARD_SIZE ; i++)
+    {
+        int xi = LEFT_UP + (i-1) * SQUARE_LEN;
+        if(abs ( x - xi ) < checklen)
+        {
+            // judge->clickedRow = i-1;
+            row = i;
+            break;
+        }
+    }
+
+    for(int i = 1 ; i <= CHESSBOARD_SIZE ; i++)
+    {
+        int yi = LEFT_UP + ( i - 1 ) * SQUARE_LEN;
+        if(abs( y - yi ) < checklen)
+        {
+            // judge->clickedColumn = i-1;
+            column = i;
+            break;
+        }
+    }
+
+    qDebug() << row - 1 << ' ' << column - 1 << ' ' << judge->CheckVaild(row-1, column-1) << '\n';
+    if(judge->CheckVaild(row-1, column-1)){
+        judge->PlaceAPiece(row-1, column-1);
+        update();
+
+        bot->makeRandomMove();
+        update();
+    }
 }
 
 void GameWidget::paintEvent(QPaintEvent *event)
@@ -27,7 +74,7 @@ void GameWidget::paintEvent(QPaintEvent *event)
     // 绘制棋盘
     drawChessboard(painter);
 
-    drawDemo(painter);
+    // drawDemo(painter);
     // 绘制棋子
     for(int i = 0; i < CHESSBOARD_SIZE; i++)
         for(int j = 0; j < CHESSBOARD_SIZE; j++)
@@ -123,44 +170,6 @@ void GameWidget::drawDemo(QPainter &painter)
             }
 
         }
-}
-
-// 监听鼠标点击实现落子
-void GameWidget::mousePressEvent(QMouseEvent *event)
-{
-    double x = event->position().x(), y = event->position().y();
-
-    qDebug() << "clicked pos : " << x << ' ' << y << '\n';
-    qDebug() <<LEFT_UP;
-
-    int row = 0,column = 0;
-    double checklen = SQUARE_LEN / 2;
-
-    for(int i = 1 ; i <=  CHESSBOARD_SIZE ; i++)
-    {
-        int xi = LEFT_UP + (i-1) * SQUARE_LEN;
-        if(abs ( x - xi ) < checklen)
-        {
-            // judge->clickedRow = i-1;
-            row = i;
-            break;
-        }
-    }
-
-    for(int i = 1 ; i <= CHESSBOARD_SIZE ; i++)
-    {
-        int yi = LEFT_UP + ( i - 1 ) * SQUARE_LEN;
-        if(abs( y - yi ) < checklen)
-        {
-            // judge->clickedColumn = i-1;
-            column = i;
-            break;
-        }
-    }
-
-    judge->PlaceAPiece(row-1, column-1, judge->playerRole);
-    update();
-
 }
 
 void GameWidget::on_restartButton_clicked()
