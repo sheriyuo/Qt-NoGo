@@ -15,6 +15,8 @@ public:
     void makeRandomMove();
 
     Judge *judge;
+signals:
+    void timeout();
 
 public slots:
     void makeFirstMove(int player);

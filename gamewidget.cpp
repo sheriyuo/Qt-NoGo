@@ -4,22 +4,25 @@
 #include "judge.h"
 #include <math.h>
 
-static QTimer *timerForPlayer, *timerForBot; // 计时器
+// 玩家的计时器
+static QTimer *timerForPlayer;
+// 将 bot 的计时器内置于 class Bot 中
+// static QTimer *timerForBot;
 
 GameWidget::GameWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::GameWidget)
 {
     ui->setupUi(this);
-    // setGeometry(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    ui->restartButton->setStyleSheet(ACCENT_COLOR);
+    // 设置 restart button 的样式，无边框在 ui 文件中设置
+    ui->restartButton->setStyleSheet(ACCENT_COLOR); // 文字颜色
     int H = (double)WINDOW_HEIGHT / 31 * 2,
         W = (double)WINDOW_HEIGHT / 31 * 6;
     int X = LEFT_UP + CHESSBOARD_LEN + (double)(WINDOW_WIDTH - WINDOW_HEIGHT) / 2 - (double)WINDOW_HEIGHT / 31 * 3.5,
         Y = (double)WINDOW_HEIGHT / 20 * 8 - (double)WINDOW_HEIGHT / 31;
-    ui->restartButton->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
+    ui->restartButton->setGeometry(QRect(QPoint(X, Y), QSize(W, H))); // 位置
 
     judge = new Judge;
     bot = new Bot;
@@ -27,11 +30,8 @@ GameWidget::GameWidget(QWidget *parent) :
 
     // 链接计时器
     timerForPlayer = new QTimer;
-    timerForBot = new QTimer;
     connect(timerForPlayer,&QTimer::timeout, this, &GameWidget::playerTimeout);
-    connect(timerForBot, &QTimer::timeout, this, &GameWidget::botTimeout);
-
-    // sendMessage(3);
+    connect(bot, &Bot::timeout, this, &GameWidget::botTimeout);
 }
 
 GameWidget::~GameWidget()
@@ -68,7 +68,7 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
     // 此处实现轮流下棋
     if(row - 1 < 0 || column - 1 < 0 || row - 1 >= CHESSBOARD_SIZE || column - 1 >= CHESSBOARD_SIZE)
         return;
-    if(judge->IsEmpty(row-1, column-1)){
+    /*if(judge->IsEmpty(row-1, column-1)){
         timerForPlayer->stop();
 
         bool judgement = judge->CheckVaild(row-1, column-1);
@@ -76,21 +76,26 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
         update();
         if(!judgement) // suicide
         {
-            // qDebug() << judgement << '\n';
             gameLose();
             return;
         }
 
-        timerForBot->start(BOT_TIMEOUT * 1000);
-
         bot->makeRandomMove();
-
-        timerForBot->stop();
         timerForPlayer->start(PLAYER_TIMEOUT * 1000);
 
         update();
+    }*/
+    if(judge->CheckVaild(row-1, column-1)){
+        timerForPlayer->stop();
+        judge->PlaceAPiece(row-1, column-1);
+        update();
+
+        bot->makeRandomMove();
+        update();
+        timerForPlayer->start(PLAYER_TIMEOUT * 1000);
     }
-    else{
+    else
+    {
         sendMessage(2);
     }
 }
@@ -218,6 +223,7 @@ void GameWidget::gameWin(int type)
 }
 
 /*
+ * 弹出消息窗口
  * type=0 : player win
  * type=1 : player lose
  * type=2 : invalid position
@@ -236,10 +242,10 @@ void GameWidget::sendMessage(int type)
             mess = new MessageBox(QString("Sorry!\n\nYou LOSE"), 3000, this);
             break;
         case 2:
-            mess = new MessageBox(QString("This grid has been\n occupied!"), 2000, this);
+            mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, this);
             break;
         case 3:
-            mess = new MessageBox(QString("TIMES UP!\n\nYou LOSE"), 3000, this);
+            mess = new MessageBox(QString("TIME'S UP!\n\nYou LOSE"), 3000, this);
             break;
         case 4:
             mess = new MessageBox(QString("Bot failed to make\na move.\nYou WIN"), 3000, this);
@@ -257,6 +263,5 @@ void GameWidget::on_restartButton_clicked()
 
 void GameWidget::startTimer()
 {
-    // qDebug() << "qwq\n";
     timerForPlayer->start(PLAYER_TIMEOUT * 1000);
 }

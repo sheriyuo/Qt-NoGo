@@ -63,9 +63,7 @@ void Judge::MergeSet(std::set<std::pair<int, int> > &x, std::set<std::pair<int, 
 bool Judge::CheckVaild(int x, int y)
 {
     Q_ASSERT(blockCnt <= CHESSBOARD_SIZE * CHESSBOARD_SIZE); // 检测 blockCnt
-//     qDebug() << "awa\n";
     if(!IsEmpty(x, y)) return false;
-//     qDebug() << "qaq\n";
 
     int spaceCnt = 0;
     int libertySum = 0;
@@ -92,15 +90,13 @@ bool Judge::CheckVaild(int x, int y)
             }
             else if(blockLiberty[num].size() == 1) // 直接吃掉的情况
                 return false;
-           // qDebug() << xx << ' ' << yy << ' ' << blockLiberty[chessBelong[xx][yy]] << '\n';
         }
-        qDebug() << xx << " " << yy << ":" << spaceCnt << ' ' << libertySum << '\n';
+        // qDebug() << xx << " " << yy << ":" << spaceCnt << ' ' << libertySum << '\n';
     }
 
     if(mergedBlock.size())
         CleanVis();
-    qDebug() << x << " " << y << " " << spaceCnt << ' ' << libertySum << '\n';
-//    qDebug() << blockCnt << " " << blockLiberty[blockCnt] << "\n";
+    // qDebug() << x << " " << y << " " << spaceCnt << ' ' << libertySum << '\n';
     if(blockLiberty[testNum].find(std::make_pair(x, y)) != blockLiberty[testNum].end())
         blockLiberty[testNum].erase(std::make_pair(x, y));
 
@@ -115,7 +111,7 @@ void Judge::UpdateCurStep(int x, int y)
     board[x][y] = CurColor();
     blockCnt ++;
     chessBelong[x][y] = blockCnt;
-    qDebug() << x << "," << y << "->" << blockCnt;
+    // qDebug() << x << "," << y << "->" << blockCnt;
 
     blockLiberty[blockCnt].clear();
     chessBlock[blockCnt].push_back(std::make_pair(x, y));
@@ -128,7 +124,6 @@ void Judge::UpdateCurStep(int x, int y)
             continue;
 
         int num = chessBelong[xx][yy];
-//        qDebug() << xx << " " << yy << " " << num << "\n";
         if(board[xx][yy] == 0)
         {
             blockLiberty[chessBelong[x][y]].insert(std::make_pair(xx, yy));
@@ -155,7 +150,7 @@ void Judge::UpdateCurStep(int x, int y)
     if(blockLiberty[chessBelong[x][y]].find(std::make_pair(x, y)) != blockLiberty[chessBelong[x][y]].end())
         blockLiberty[chessBelong[x][y]].erase(std::make_pair(x, y));
 
-    for(int i = 0; i < CHESSBOARD_SIZE; i++)
+    /*for(int i = 0; i < CHESSBOARD_SIZE; i++)
     {
 #define a(y,x) (chessBelong[x][y]==-1?0:blockLiberty[chessBelong[x][y]].size())
         qDebug() << a(i,0) << " " << a(i,1) << " " << a(i,2) << " " << a(i,3) << " " << a(i,4) << " " << a(i,5) << " " << a(i,6) << " "<< a(i,7) << " " << a(i,8);
@@ -169,17 +164,17 @@ void Judge::UpdateCurStep(int x, int y)
     {
 #define c(y,x) (GridPoint(x,y))
         qDebug() << c(i,0) << " " << c(i,1) << " " << c(i,2) << " " << c(i,3) << " " << c(i,4) << " " << c(i,5) << " " << c(i,6) << " "<< c(i,7) << " " << c(i,8);
-    }
+    }*/
     for(int i = 0; i < CHESSBOARD_SIZE; i++)
         for(int j = 0; j < CHESSBOARD_SIZE; j++)
             if(IsEmpty(i, j)&&chessBelong[i][j] != -1)
             {
-                qDebug() << i << "," << j;
-                    Q_ASSERT(chessBelong[i][j] == -1);
+                // qDebug() << i << "," << j;
+                Q_ASSERT(chessBelong[i][j] == -1);
             }
 
-    for(Item u : blockLiberty[chessBelong[x][y]])
-        qDebug() << u.first <<"," << u.second <<"!";
+    /*for(Item u : blockLiberty[chessBelong[x][y]])
+        qDebug() << u.first <<"," << u.second <<"!";*/
 }
 
 void Judge::MergeBlock(int x, int y) // 启发式合并
@@ -192,9 +187,9 @@ void Judge::MergeBlock(int x, int y) // 启发式合并
     for(Item u : chessBlock[y])
     {
         chessBlock[x].push_back(u);
-        qDebug() << u.first << "," << u.second << ":" << chessBelong[u.first][u.second] << "->" << x;
+        // qDebug() << u.first << "," << u.second << ":" << chessBelong[u.first][u.second] << "->" << x;
         chessBelong[u.first][u.second] = x;
-        qDebug() << u.first << "," << u.second << "->" << x;
+        // qDebug() << u.first << "," << u.second << "->" << x;
     }
     // 合并
 
@@ -207,5 +202,4 @@ void Judge::setPlayerRole(int player)
     playerRole = player;
     if(player == -1) curPlayer = 0;
     else curPlayer = 1;
-    // qDebug() << "Player Role : " << playerRole << '\n';
 }
