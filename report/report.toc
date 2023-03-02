@@ -3,5 +3,9 @@
 \contentsline {subsection}{\numberline {1.2}小组分工}{1}{}%
 \contentsline {section}{\numberline {2}Qt 图形界面应用设计}{1}{}%
 \contentsline {subsection}{\numberline {2.1}UI 设计}{1}{}%
-\contentsline {subsection}{\numberline {2.2}简单逻辑}{2}{}%
-\contentsline {section}{\numberline {3}AI 算法设计}{2}{}%
+\contentsline {subsection}{\numberline {2.2}基本逻辑}{2}{}%
+\contentsline {subsection}{\numberline {2.3}棋盘逻辑和结局判断}{3}{}%
+\contentsline {subsection}{\numberline {2.4}更多功能}{4}{}%
+\contentsline {section}{\numberline {3}AI 算法设计}{4}{}%
+\contentsline {subsection}{\numberline {3.1}min-max 搜索和 $\alpha -\beta $ 剪枝}{4}{}%
+\contentsline {section}{\numberline {4}感谢}{4}{}%

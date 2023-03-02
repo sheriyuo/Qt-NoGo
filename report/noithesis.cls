@@ -10,7 +10,7 @@
 \RequirePackage{xeCJK}
 \RequirePackage{longtable,multirow}
 \RequirePackage{color,xcolor}
-\RequirePackage{courier}
+%\RequirePackage{courier}
 \RequirePackage{ifthen}
 \RequirePackage{calc}
 \RequirePackage{ifpdf}
@@ -22,6 +22,31 @@
 \RequirePackage{ulem}
 \RequirePackage{clrscode3e}
 \RequirePackage{chngcntr}
+
+\lstset{                        %Settings for listings package.
+	language=[ANSI]{C},
+	backgroundcolor=\color{white},
+	basicstyle=\footnotesize\fontspec{Consolas},
+	breakatwhitespace=false,
+	breaklines,
+	captionpos=b,
+	commentstyle=\color{olive}\fontspec{Consolas Italic},
+	directivestyle=\color{blue},
+	extendedchars=false,
+	% frame=single,%shadowbox
+	framerule=0pt,
+	keywordstyle=\color{blue}\fontspec{Consolas Bold},
+	morekeywords={*,define,*,include...},
+	numbersep=5pt,
+	rulesepcolor=\color{red!20!green!20!blue!20},
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	stepnumber=2,
+	stringstyle=\color{purple},
+	tabsize=4,
+	title=\lstname
+}
 
 % 若本机编译时缺少字体，可直接在此处修改，本机编译通过即可。
 \RequirePackage[fontset=none]{ctex}
