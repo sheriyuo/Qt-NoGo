@@ -33,6 +33,8 @@ void StartWidget::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true); // 抗锯齿
 
+
+
     // painter.setPen(QPen(QColor(0xf9f8ef), Strength, Qt::SolidLine));
     painter.setBrush(QColor(BG_COLOR));
     painter.drawRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
