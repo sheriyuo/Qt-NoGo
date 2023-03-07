@@ -267,6 +267,7 @@ void GameWidget::sendMessage(int type)
 void GameWidget::on_resignButton_clicked()
 {
     sendMessage(5);
+    judge->curPlayer = -1;
 }
 
 void GameWidget::on_restartButton_clicked()
