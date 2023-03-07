@@ -24,6 +24,12 @@ GameWidget::GameWidget(QWidget *parent) :
         Y = (double)WINDOW_HEIGHT / 20 * 8 - (double)WINDOW_HEIGHT / 31;
     ui->restartButton->setGeometry(QRect(QPoint(X, Y), QSize(W, H))); // 位置
 
+    //设置 resign button 的样式，无边框在 ui 文件中设置
+        ui->resignButton->setStyleSheet(ACCENT_COLOR); // 文字颜色
+        int X2 = LEFT_UP + CHESSBOARD_LEN + (double)(WINDOW_WIDTH - WINDOW_HEIGHT) / 2 - (double)WINDOW_HEIGHT / 31 * 3.5,
+            Y2 = (double)WINDOW_HEIGHT / 20 * 8 - (double)WINDOW_HEIGHT / 31 + 100;
+        ui->resignButton->setGeometry(QRect(QPoint(X2, Y2), QSize(W, H))); // 位置
+
     judge = new Judge;
     bot = new Bot;
     bot->judge = judge;
@@ -229,6 +235,7 @@ void GameWidget::gameWin(int type)
  * type=2 : invalid position
  * type=3 : player timeout
  * type=4 : bot timeout
+ * type=6 : player resign
 */
 void GameWidget::sendMessage(int type)
 {
@@ -250,8 +257,16 @@ void GameWidget::sendMessage(int type)
         case 4:
             mess = new MessageBox(QString("Bot failed to make\na move.\nYou WIN"), 3000, this);
             break;
+        case 5:
+            mess = new MessageBox(QString("Sorry!You Resign!\n\nPlease restart!"), 3000, this);
+            break;
     }
     mess->show();
+}
+
+void GameWidget::on_resignButton_clicked()
+{
+    sendMessage(5);
 }
 
 void GameWidget::on_restartButton_clicked()

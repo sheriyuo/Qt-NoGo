@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(startWidget, &StartWidget::startAs, gameWidget->bot, &Bot::makeFirstMove);
     connect(startWidget, &StartWidget::startAs, gameWidget, &GameWidget::startTimer);
     connect(gameWidget, &GameWidget::restartSingal, stackLayout, &QStackedLayout::setCurrentIndex);
+    connect(gameWidget, &GameWidget::resignSingal, stackLayout, &QStackedLayout::setCurrentIndex);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addLayout(stackLayout);
