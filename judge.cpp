@@ -54,7 +54,7 @@ void Judge::CleanVis() // 当前落棋颜色
     mergedBlock.clear();
 }
 
-void Judge::MergeSet(std::set<std::pair<int, int> > &x, std::set<std::pair<int, int> > y)
+void Judge::MergeSet(LibertySet &x, LibertySet y)
 {
     if(x.size() < y.size()) std::swap(x, y);
     for(Item u : y) x.insert(u);
@@ -65,8 +65,6 @@ bool Judge::CheckVaild(int x, int y)
     Q_ASSERT(blockCnt <= CHESSBOARD_SIZE * CHESSBOARD_SIZE); // 检测 blockCnt
     if(!IsEmpty(x, y)) return false;
 
-    int spaceCnt = 0;
-    int libertySum = 0;
     int testNum = blockCnt + 1;
     blockLiberty[testNum].clear();
 
@@ -91,12 +89,10 @@ bool Judge::CheckVaild(int x, int y)
             else if(blockLiberty[num].size() == 1) // 直接吃掉的情况
                 return false;
         }
-        // qDebug() << xx << " " << yy << ":" << spaceCnt << ' ' << libertySum << '\n';
     }
 
     if(mergedBlock.size())
         CleanVis();
-    // qDebug() << x << " " << y << " " << spaceCnt << ' ' << libertySum << '\n';
     if(blockLiberty[testNum].find(std::make_pair(x, y)) != blockLiberty[testNum].end())
         blockLiberty[testNum].erase(std::make_pair(x, y));
 
@@ -114,7 +110,7 @@ void Judge::UpdateCurStep(int x, int y)
     // qDebug() << x << "," << y << "->" << blockCnt;
 
     blockLiberty[blockCnt].clear();
-    chessBlock[blockCnt].push_back(std::make_pair(x, y));
+    chessBlock[blockCnt].push_back(Point(x, y));
     // 新建棋子块
 
     for(int i = 0; i < 4; i++)
@@ -126,7 +122,7 @@ void Judge::UpdateCurStep(int x, int y)
         int num = chessBelong[xx][yy];
         if(board[xx][yy] == 0)
         {
-            blockLiberty[chessBelong[x][y]].insert(std::make_pair(xx, yy));
+            blockLiberty[chessBelong[x][y]].insert(Point(xx, yy));
             continue;
         }
         if(board[xx][yy] == board[x][y]) // 相同颜色
@@ -140,31 +136,16 @@ void Judge::UpdateCurStep(int x, int y)
             {
                 blockVis[num] = 1;
                 mergedBlock.push_back(num);
-                blockLiberty[num].erase(std::make_pair(x, y));
+                blockLiberty[num].erase(Point(x, y));
             }
         }
     }
 
     if(mergedBlock.size())
         CleanVis();
-    if(blockLiberty[chessBelong[x][y]].find(std::make_pair(x, y)) != blockLiberty[chessBelong[x][y]].end())
-        blockLiberty[chessBelong[x][y]].erase(std::make_pair(x, y));
+    if(blockLiberty[chessBelong[x][y]].find(Point(x, y)) != blockLiberty[chessBelong[x][y]].end())
+        blockLiberty[chessBelong[x][y]].erase(Point(x, y));
 
-    /*for(int i = 0; i < CHESSBOARD_SIZE; i++)
-    {
-#define a(y,x) (chessBelong[x][y]==-1?0:blockLiberty[chessBelong[x][y]].size())
-        qDebug() << a(i,0) << " " << a(i,1) << " " << a(i,2) << " " << a(i,3) << " " << a(i,4) << " " << a(i,5) << " " << a(i,6) << " "<< a(i,7) << " " << a(i,8);
-    }
-    for(int i = 0; i < CHESSBOARD_SIZE; i++)
-    {
-#define b(y,x) (chessBelong[x][y])
-        qDebug() << b(i,0) << " " << b(i,1) << " " << b(i,2) << " " << b(i,3) << " " << b(i,4) << " " << b(i,5) << " " << b(i,6) << " "<< b(i,7) << " " << b(i,8);
-    }
-    for(int i = 0; i < CHESSBOARD_SIZE; i++)
-    {
-#define c(y,x) (GridPoint(x,y))
-        qDebug() << c(i,0) << " " << c(i,1) << " " << c(i,2) << " " << c(i,3) << " " << c(i,4) << " " << c(i,5) << " " << c(i,6) << " "<< c(i,7) << " " << c(i,8);
-    }*/
     for(int i = 0; i < CHESSBOARD_SIZE; i++)
         for(int j = 0; j < CHESSBOARD_SIZE; j++)
             if(IsEmpty(i, j)&&chessBelong[i][j] != -1)
@@ -173,8 +154,6 @@ void Judge::UpdateCurStep(int x, int y)
                 Q_ASSERT(chessBelong[i][j] == -1);
             }
 
-    /*for(Item u : blockLiberty[chessBelong[x][y]])
-        qDebug() << u.first <<"," << u.second <<"!";*/
 }
 
 void Judge::MergeBlock(int x, int y) // 启发式合并
@@ -187,9 +166,7 @@ void Judge::MergeBlock(int x, int y) // 启发式合并
     for(Item u : chessBlock[y])
     {
         chessBlock[x].push_back(u);
-        // qDebug() << u.first << "," << u.second << ":" << chessBelong[u.first][u.second] << "->" << x;
         chessBelong[u.first][u.second] = x;
-        // qDebug() << u.first << "," << u.second << "->" << x;
     }
     // 合并
 

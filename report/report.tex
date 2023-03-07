@@ -59,30 +59,31 @@
 	
 	\begin{verbatim}
 	|-- Qt-NoGo
-	    |-- README.md
-	    |-- Resources.qrc
-	    |-- bot.cpp              // 随机下棋 bot
-	    |-- bot.h
-	    |-- gamewidget.cpp
-	    |-- gamewidget.h         // 控制程序运行的类
-	    |-- gamewidget.ui
-	    |-- image.qrc
-	    |-- img.qrc
-	    |-- judge.cpp
-	    |-- judge.h               // 控制棋盘操作和逻辑的类
-	    |-- main.cpp              // 程序入口
-	    |-- mainwindow.cpp
-	    |-- mainwindow.h
-	    |-- mainwindow.ui
-	    |-- messagebox.cpp
-	    |-- messagebox.h
 	    |-- mynogo.pro            // QMake 项目管理文件
 	    |-- mynogo.pro.user
-	    |-- pics.qrc
-	    |-- report
-	    |-- startwidget.cpp
-	    |-- startwidget.h
-	    |-- startwidget.ui
+	    |-- Headers
+	    |   |-- bot.h
+	    |   |-- gamewidget.h      // 控制程序运行的类
+	    |   |-- judge.h           // 控制棋盘操作和逻辑的类
+	    |   |-- mainwindow.h
+	    |   |-- messagebox.h
+	    |   |-- startwidget.h
+	    |-- Sources
+	    |   |-- bot.cpp               // 随机下棋 bot
+	    |   |-- gamewidget.cpp
+	    |   |-- judge.cpp
+	    |   |-- main.cpp              // 程序入口
+	    |   |-- mainwindow.cpp
+	    |   |-- messagebox.cpp
+	    |   |-- startwidget.cpp
+	    |-- Forms
+	    |   |-- gamewidget.ui
+	    |   |-- mainwindow.ui
+	    |   |-- startwidget.ui
+	    |-- Resources
+	    |   |-- img.qrc
+	    |-- report                // 项目报告
+	    |-- README.md
 	\end{verbatim}
 
 	基本逻辑为 main 打开 mainwindow，mainwindow 切换到 startwidget 和 gamewidget，由 gamewidget 初始化 judge 开始游戏。
@@ -94,13 +95,17 @@
 	相较于传统的 dfs 判断棋子，笔者创新性地采用了启发式合并的方法来判断棋子的连通性与气数，在 judge.h 中的定义如下：
 	
 	\begin{lstlisting}
+	typedef std::pair<int, int> Item;
+	typedef std::vector<Item> ItemVector;
+	typedef std::set<Item> LibertySet;
+	
 	int board[CHESSBOARD_SIZE + 2][CHESSBOARD_SIZE + 2]; // 当前棋盘状态
 	int chessBelong[CHESSBOARD_SIZE + 2][CHESSBOARD_SIZE + 2]; // 棋子属于的棋子块
 	int blockVis[(CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2)]; // 棋子块至多只能累加一次气数
 	int blockCnt; // 棋子块个数
 	
-	std::set<std::pair<int, int> >blockLiberty[(CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2)]; // checkValid() 计算好的气数
-	std::vector<std::pair<int, int> >chessBlock[(CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2)]; // 棋子块的编号
+	LibertySet blockLiberty[(CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2)]; // 气的 Set
+	ItemVector chessBlock[(CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2)]; // 棋子块的编号
 	std::vector<int>mergedBlock;
 	\end{lstlisting}
 
@@ -108,7 +113,7 @@
 	
 	\begin{lstlisting}
 		
-	void Judge::MergeSet(std::set<std::pair<int, int> > &x, std::set<std::pair<int, int> > y)
+	void Judge::MergeSet(LibertySet &x, LibertySet y)
 	{
 		if(x.size() < y.size()) std::swap(x, y);
 		for(Item u : y) x.insert(u);
@@ -163,7 +168,7 @@
 	
 	感谢冯友和、赵培宇同学组成的团队。
 	
-	感谢彭文博同学提供的什么也没提供。
+	感谢彭文博同学于 2023/3/2 军理课后请本队吃的 KFC 疯狂星期四。
 	
 	感谢北京大学 ghastlcon 同学提供的帮助。
 	

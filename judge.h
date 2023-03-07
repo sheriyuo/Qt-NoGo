@@ -27,10 +27,13 @@
 #define SQUARE_LEN ((double)(CHESSBOARD_LEN) / (CHESSBOARD_SIZE - 1 + 2 * BTOL ))
 #define LEFT_UP ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + BTOL * SQUARE_LEN) //+SQUARE_LEN)
 
-typedef std::pair<int, int> Item;
-
 const int dx[4] = {1, 0, -1, 0};
 const int dy[4] = {0, 1, 0, -1};
+
+typedef std::pair<int, int> Item;
+typedef std::vector<Item> ItemVector;
+typedef std::set<Item> LibertySet;
+#define Point std::make_pair
 
 class Judge : public QObject
 {
@@ -58,15 +61,16 @@ private:
     void CleanVis(); // 清空 mergedBlock
     void WriteCurStep(int x, int y); // 记录当前操作
     void MergeBlock(int x, int y); // 启发式合并
-    void MergeSet(std::set<std::pair<int, int> > &x, std::set<std::pair<int, int> > y); // 启发式合并
+    void MergeSet(LibertySet &x, LibertySet y); // 启发式合并
 
     int board[CHESSBOARD_SIZE + 2][CHESSBOARD_SIZE + 2]; // 当前棋盘状态
     int chessBelong[CHESSBOARD_SIZE + 2][CHESSBOARD_SIZE + 2]; // 棋子属于的棋子块
     int blockVis[(CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2)]; // 棋子块至多只能累加一次气数
     int blockCnt; // 棋子块个数
 
-    std::set<std::pair<int, int> >blockLiberty[(CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2)]; // checkValid() 计算好的气数
-    std::vector<std::pair<int, int> >chessBlock[(CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2)]; // 棋子块的编号
+
+    LibertySet blockLiberty[(CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2)]; // 气的 Set
+    ItemVector chessBlock[(CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2)]; // 棋子块的编号
     std::vector<int>mergedBlock;
 };
 
