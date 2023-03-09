@@ -55,6 +55,15 @@ private:
     */
     void sendMessage(int type);
 
+    int columnX = RIGHT_UP + (WINDOW_WIDTH - RIGHT_UP) / 2;
+    int columnY = (double)WINDOW_HEIGHT / 20 * 8 - (double)WINDOW_HEIGHT / 31;
+    // 右边侧栏位置中线
+
+    int buttonH = (double)WINDOW_HEIGHT / 31 * 2;
+    int buttonW = (double)WINDOW_HEIGHT / 31 * 6;
+    // 右边按钮大小
+
+
     MessageBox *mess;
 };
 

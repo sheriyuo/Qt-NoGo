@@ -12,7 +12,7 @@
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
 #define CHESSBOARD_LEN 648
-#define CHESSBOARD_SIZE 9
+#define CHESSBOARD_SIZE 28
 
 #define BG_COLOR 0xecf9ff
 #define GRID_COLOR 0xbad7e9
@@ -26,6 +26,7 @@
     //(外边框与小正方形变长的比例 )
 #define SQUARE_LEN ((double)(CHESSBOARD_LEN) / (CHESSBOARD_SIZE - 1 + 2 * BTOL ))
 #define LEFT_UP ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + BTOL * SQUARE_LEN) //+SQUARE_LEN)
+#define RIGHT_UP ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + CHESSBOARD_LEN) //+SQUARE_LEN)
 
 const int dx[4] = {1, 0, -1, 0};
 const int dy[4] = {0, 1, 0, -1};

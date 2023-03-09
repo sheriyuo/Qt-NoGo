@@ -18,17 +18,16 @@ GameWidget::GameWidget(QWidget *parent) :
 
     // 设置 restart button 的样式，无边框在 ui 文件中设置
     ui->restartButton->setStyleSheet(ACCENT_COLOR); // 文字颜色
-    int H = (double)WINDOW_HEIGHT / 31 * 2,
-        W = (double)WINDOW_HEIGHT / 31 * 6;
-    int X = LEFT_UP + CHESSBOARD_LEN + (double)(WINDOW_WIDTH - WINDOW_HEIGHT) / 2 - (double)WINDOW_HEIGHT / 31 * 3.5,
-        Y = (double)WINDOW_HEIGHT / 20 * 8 - (double)WINDOW_HEIGHT / 31;
-    ui->restartButton->setGeometry(QRect(QPoint(X, Y), QSize(W, H))); // 位置
+
+    int X1 = columnX - buttonW / 2,
+        Y1 = columnY - buttonH / 2 + WINDOW_HEIGHT * 0.16;
+    ui->restartButton->setGeometry(QRect(QPoint(X1, Y1), QSize(buttonW, buttonH))); // 位置
 
     //设置 resign button 的样式，无边框在 ui 文件中设置
         ui->resignButton->setStyleSheet(ACCENT_COLOR); // 文字颜色
-        int X2 = LEFT_UP + CHESSBOARD_LEN + (double)(WINDOW_WIDTH - WINDOW_HEIGHT) / 2 - (double)WINDOW_HEIGHT / 31 * 3.5,
-            Y2 = (double)WINDOW_HEIGHT / 20 * 8 - (double)WINDOW_HEIGHT / 31 + 100;
-        ui->resignButton->setGeometry(QRect(QPoint(X2, Y2), QSize(W, H))); // 位置
+        int X2 = X1,
+            Y2 = Y1 + WINDOW_HEIGHT * 0.15;
+        ui->resignButton->setGeometry(QRect(QPoint(X2, Y2), QSize(buttonW, buttonH))); // 位置
 
     judge = new Judge;
     bot = new Bot;
@@ -74,23 +73,7 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
     // 此处实现轮流下棋
     if(row - 1 < 0 || column - 1 < 0 || row - 1 >= CHESSBOARD_SIZE || column - 1 >= CHESSBOARD_SIZE)
         return;
-    /*if(judge->IsEmpty(row-1, column-1)){
-        timerForPlayer->stop();
 
-        bool judgement = judge->CheckVaild(row-1, column-1);
-        judge->PlaceAPiece(row-1, column-1);
-        update();
-        if(!judgement) // suicide
-        {
-            gameLose();
-            return;
-        }
-
-        bot->makeRandomMove();
-        timerForPlayer->start(PLAYER_TIMEOUT * 1000);
-
-        update();
-    }*/
     if(judge->CheckVaild(row-1, column-1)){
         timerForPlayer->stop();
         judge->PlaceAPiece(row-1, column-1);
@@ -112,9 +95,23 @@ void GameWidget::paintEvent(QPaintEvent *event)
     painter.setRenderHint(QPainter::Antialiasing, true); // 抗锯齿
 
     // 绘制棋盘
-    drawChessboard(painter);
+    if(CHESSBOARD_SIZE == 28)
+        drawChessboard(painter);
 
-    // drawDemo(painter);
+    QPixmap logoImg;
+    logoImg.load(":/img/logo.png");
+
+    int logoBoardW = (WINDOW_WIDTH - RIGHT_UP) * 0.8; // 等比缩放
+    int logoBoardH = (double)logoImg.height() * logoBoardW / logoImg.width();
+    // 右边 LOGO 大小
+
+    qDebug() << logoBoardW << " " << logoBoardH << "\n";
+
+    int LOGO_X = columnX - logoBoardW / 2;
+    int LOGO_Y = columnY - logoBoardH / 2;
+    painter.drawPixmap(LOGO_X, LOGO_Y, logoBoardW, logoBoardH, logoImg);
+
+     drawDemo(painter);
     // 绘制棋子
     for(int i = 0; i < CHESSBOARD_SIZE; i++)
         for(int j = 0; j < CHESSBOARD_SIZE; j++)
@@ -156,7 +153,6 @@ void GameWidget :: drawChessboard(QPainter &painter)
     //垂直线
     for(int i = 0 ; i < number ; i++)
     {
-
         painter.drawLine( LEFT_UP + i * L , LEFT_UP ,  LEFT_UP + i * L ,  LEFT_UP + ( number - 1 ) * L );
     }
 }
@@ -188,7 +184,7 @@ void GameWidget::drawBlack(QPainter &painter, double i, double j)
     painter.drawEllipse(xi, yi, Size, Size);
 }
 
-void GameWidget::drawDemo(QPainter &painter)
+void GameWidget::drawDemo(QPainter &painter) // 绘画 FYH
 {
     for(int i = 0; i < CHESSBOARD_SIZE; i++)
         for(int j = 0; j < CHESSBOARD_SIZE; j++)
@@ -196,19 +192,46 @@ void GameWidget::drawDemo(QPainter &painter)
             if(judge->GridPoint(i, j)) return;
         }
     srand(time(0));
+
+    int fyhBoard[50][50] = {};
+    int Len = (CHESSBOARD_SIZE - 1) / 2;
+
+    int op = 1 + (CHESSBOARD_SIZE % (Len + 1) == 0);
+
+    for(int i = 0; i < Len; i++)
+        fyhBoard[0][i] = fyhBoard[i][0] = 1, fyhBoard[i + Len + op][0] = fyhBoard[i + Len + op][Len - 1] = -1;
+    for(int i = 0; i < Len; i++)
+        fyhBoard[Len / 2][i] = 1, fyhBoard[Len / 2 + Len + op][i] = -1;
+
+    for(int i = 0; i < Len / 2 ; i++)
+        fyhBoard[i][CHESSBOARD_SIZE - Len + i] = fyhBoard[i][CHESSBOARD_SIZE - i - 1] = -1;
+
+    for(int i = Len / 2; i < Len; i++)
+        fyhBoard[i][CHESSBOARD_SIZE - Len / 2 - 1] = -1;
+
+//    qDebug() << Len <<"\n";
+    if(Len % 2 == 0)
+        for(int i = Len / 2; i < Len; i++)
+            fyhBoard[i][CHESSBOARD_SIZE - Len / 2] = -1;
+
     for(int i = 0; i < CHESSBOARD_SIZE; i++)
         for(int j = 0; j < CHESSBOARD_SIZE; j++)
         {
-            if(rand() % 3) continue;
-            if((i + j) & 1)
-            {
+            if(!fyhBoard[j][i]) continue;
+            if(fyhBoard[j][i] > 0)
                 drawWhite(painter, i, j);
-            }
             else
-            {
                 drawBlack(painter, i, j);
-            }
-
+        }
+    for(int i = 0; i < Len; i++)
+        for(int j = 0; j < Len; j++) // 心形线
+        {
+            double x = (i - Len / 2.0) / Len * 2, y = (j + 1 - Len / 2.0) / Len * 2;
+//            qDebug() << i << " " << j <<"->"<<x<<" "<<y<<" "<<fabs(pow((x * x + y * y - 1), 3) - x * x * y * y * y)<<"\n";
+            if(fabs(pow((x * x + y * y - 0.4), 1) - 4 * x * x * y * y * y) <= 0.143 * 28 / CHESSBOARD_SIZE)
+                drawBlack(painter, i + Len + op, (Len - j - 1) + Len + op);
+            else
+                drawWhite(painter, i + Len + op, (Len - j - 1) + Len + op);
         }
 }
 
