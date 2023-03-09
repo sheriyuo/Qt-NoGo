@@ -94,7 +94,7 @@ void GameWidget::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true); // 抗锯齿
 
-    // 绘制棋盘
+    // 绘制 demo
     if(CHESSBOARD_SIZE == 28)
         drawChessboard(painter);
 
