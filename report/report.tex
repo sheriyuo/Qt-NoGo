@@ -44,8 +44,8 @@
 	\begin{figure}[!htb]{
 		\centering
 		\includegraphics[width=0.8\textwidth]{img/UI.png}
-			\counterwithin{figure}{section}
-			\caption{随机 demo 示例}
+		\counterwithin{figure}{section}
+		\caption{demo 示例}
 	}
 	\end{figure}
 
@@ -53,7 +53,15 @@
 	
 	由于棋盘大小可以自定义，棋盘采用程序绘图而非图片覆盖的形式，可以根据棋盘的大小自适应调整棋盘线条粗细和棋子大小，保持程序页面分辨率相对不变。
 	
-	Logo 还没做，咕咕咕。
+	\begin{figure}[!htb]{
+			\centering
+			\includegraphics[width=0.8\textwidth]{img/fyh.png}
+			\counterwithin{figure}{section}
+			\caption{自定义棋盘大小~(29)}
+		}
+	\end{figure}
+	
+	Logo 以棋子底色为设计基础，增加了颜色块的分割，具有棋类游戏的风格，也维持了项目的主要设计基调。
 
 	\subsection{基本逻辑}
 	
@@ -69,10 +77,10 @@
 	    |   |-- messagebox.h
 	    |   |-- startwidget.h
 	    |-- Sources
-	    |   |-- bot.cpp               // 随机下棋 bot
+	    |   |-- bot.cpp           // 随机下棋 bot
 	    |   |-- gamewidget.cpp
 	    |   |-- judge.cpp
-	    |   |-- main.cpp              // 程序入口
+	    |   |-- main.cpp          // 程序入口
 	    |   |-- mainwindow.cpp
 	    |   |-- messagebox.cpp
 	    |   |-- startwidget.cpp
@@ -81,7 +89,9 @@
 	    |   |-- mainwindow.ui
 	    |   |-- startwidget.ui
 	    |-- Resources
-	    |   |-- img.qrc
+	    |   |-- img.qrc           // 图片配置文件
+	    |-- img
+	    |   |-- logo.png          // Logo 图片
 	    |-- report                // 项目报告
 	    |-- README.md
 	\end{verbatim}
@@ -154,7 +164,7 @@
 	
 	由于现在还是第一阶段，所以我们采用了非常粗犷的 bot 写法：随机下棋。
 	
-	对于没有围棋基础的人来说，随机下棋的 bot 分布较好，有获胜的可能。但是对于有基本围棋知识的人来说，只要斜着下棋、构造活眼就可以几乎 $100\%$ 战胜这个随机下棋 bot。
+	对于没有围棋基础的人来说，随机下棋的 bot 分布较好，bot 有获胜的可能。但是对于有基本围棋知识的人来说，只要斜着下棋、构造活眼就可以几乎 $100\%$ 战胜这个随机下棋 bot。
 	
 	\subsection{min-max 搜索和 $\alpha-\beta$ 剪枝}
 	

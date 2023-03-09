@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2023.2.22)  7 MAR 2023 18:33
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2023.2.22)  9 MAR 2023 19:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -719,6 +719,9 @@ Package xeCJK Warning: Unknown CJK family `\CJKsfdefault' is being ignored.
 (xeCJK)                Try to use `\setCJKsansfont[...]{...}' to define it.
 
 [1]
+File: img/fyh.png Graphic file (type bmp)
+<img/fyh.png>
+
 
 Package xeCJK Warning: Unknown CJK family `\CJKttdefault' is being ignored.
 (xeCJK)                
@@ -791,14 +794,15 @@ File: img/tip.png Graphic file (type bmp)
 <img/tip.png>
 File: img/win.png Graphic file (type bmp)
 <img/win.png>
-LaTeX Font Info:    Calculating math sizes for size <13.04874> on input line 15
+ [4]
+LaTeX Font Info:    Calculating math sizes for size <13.04874> on input line 16
 9.
- [4] [5] (./report.aux) ) 
+ [5] (./report.aux) ) 
 Here is how much of TeX's memory you used:
- 11499 strings out of 476179
- 264800 string characters out of 5813072
- 939396 words of memory out of 5000000
- 31967 multiletter control sequences out of 15000+600000
+ 11507 strings out of 476179
+ 264919 string characters out of 5813072
+ 863396 words of memory out of 5000000
+ 31974 multiletter control sequences out of 15000+600000
  486931 words of font info for 143 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,15n,91p,266b,1101s stack positions out of 10000i,1000n,20000p,200000b,200000s
