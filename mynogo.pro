@@ -14,6 +14,7 @@ HEADERS += \
     judge.h \
     mainwindow.h \
     messagebox.h \
+    settingdialog.h \
     startwidget.h
 
 SOURCES += \
@@ -23,11 +24,13 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     messagebox.cpp \
+    settingdialog.cpp \
     startwidget.cpp
 
 FORMS += \
     gamewidget.ui \
     mainwindow.ui \
+    settingdialog.ui \
     startwidget.ui
 
 # Default rules for deployment.

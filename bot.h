@@ -5,6 +5,12 @@
 #include <QDebug>
 #include "judge.h"
 
+#define CHESSBOARD_SIZE judge->CHESSBOARD_SIZE
+#define GRID_THICKNESS judge->GRID_THICKNESS
+#define SQUARE_LEN judge->SQUARE_LEN
+#define LEFT_UP judge->LEFT_UP
+#define RIGHT_UP judge->RIGHT_UP
+
 class Bot : public QObject
 {
     Q_OBJECT

@@ -59,6 +59,29 @@
     <bool>true</bool>
    </property>
   </widget>
+  <widget class="QPushButton" name="settingsBtn">
+   <property name="geometry">
+    <rect>
+     <x>470</x>
+     <y>670</y>
+     <width>80</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial Rounded MT Bold</family>
+     <pointsize>20</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Settings</string>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

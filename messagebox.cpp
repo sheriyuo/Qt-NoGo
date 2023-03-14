@@ -7,11 +7,12 @@ MessageBox::MessageBox(QString text, int tim, QWidget *parent):
     timer->start(tim); // ms
     timer->setSingleShot(true);
     connect(timer, &QTimer::timeout, this, &MessageBox::timeUpClose);
+    connect(this, &MessageBox::mousePress, this, &MessageBox::timeUpClose);
 
     this->setAlignment(Qt::AlignCenter);
     this->setWindowFlag(Qt::FramelessWindowHint);
-    this->setGeometry(WINDOW_WIDTH / 2 - WINDOW_HEIGHT / 6, WINDOW_HEIGHT / 2 - WINDOW_HEIGHT / 12,
-                      WINDOW_HEIGHT / 3, WINDOW_HEIGHT / 6);
+    this->setGeometry(WINDOW_WIDTH / 2 - WINDOW_HEIGHT / 5, WINDOW_HEIGHT / 2 - WINDOW_HEIGHT / 10,
+                      WINDOW_HEIGHT / 2.5, WINDOW_HEIGHT / 5);
     this->setWindowTitle(QString("NoGo Message"));
     this->setText(text);
     this->setStyleSheet("font: 24px 'Arial Rounded MT Bold';"
@@ -22,11 +23,16 @@ MessageBox::MessageBox(QString text, int tim, QWidget *parent):
 
 MessageBox::~MessageBox()
 {
-    /*empty*/
+    delete this;
 }
 
 void MessageBox::timeUpClose()
 {
     this->close();
-    delete this;
+}
+
+void MessageBox::mousePressEvent(QMouseEvent *event)
+{
+    // qDebug() << "qwq\n";
+    emit mousePress();
 }

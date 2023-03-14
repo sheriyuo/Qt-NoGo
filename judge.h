@@ -12,11 +12,11 @@
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
 #define CHESSBOARD_LEN 648
-#define CHESSBOARD_SIZE 9
+// #define CHESSBOARD_SIZE 9
 
 #define BG_COLOR 0xecf9ff
 #define GRID_COLOR 0xbad7e9
-#define GRID_THICKNESS (CHESSBOARD_LEN / CHESSBOARD_SIZE / 6)
+// #define GRID_THICKNESS (CHESSBOARD_LEN / CHESSBOARD_SIZE / 6)
 #define ACCENT_COLOR "color: rgb(96, 150, 180)" //0x6096b4
 
 #define CUS_BLACK 0xEAACB8
@@ -24,9 +24,9 @@
 
 #define BTOL (double)0.8
     //(外边框与小正方形变长的比例 )
-#define SQUARE_LEN ((double)(CHESSBOARD_LEN) / (CHESSBOARD_SIZE - 1 + 2 * BTOL ))
-#define LEFT_UP ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + BTOL * SQUARE_LEN) //+SQUARE_LEN)
-#define RIGHT_UP ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + CHESSBOARD_LEN) //+SQUARE_LEN)
+// #define SQUARE_LEN ((double)(CHESSBOARD_LEN) / (CHESSBOARD_SIZE - 1 + 2 * BTOL ))
+// #define LEFT_UP ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + BTOL * SQUARE_LEN) //+SQUARE_LEN)
+// #define RIGHT_UP ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + CHESSBOARD_LEN) //+SQUARE_LEN)
 
 const int dx[4] = {1, 0, -1, 0};
 const int dy[4] = {0, 1, 0, -1};
@@ -52,11 +52,18 @@ public:
     int GridPoint(int x, int y); // 访问 board 数组， 返回 (x, y) 的状态 ：0/-1/1
     void PlaceAPiece(int x, int y); // 编辑 board 数组，在 (x, y) 下 CurColor() 颜色的棋
 
+    int runMode;
     int playerRole; // -1->white 1->black
-    int curPlayer; // 0->bot 1->player -1->game over
+    int curPlayer, curPlayerBak; // 0->bot 1->player -1->game over
+    int CHESSBOARD_SIZE;
+
+    int GRID_THICKNESS() {return (CHESSBOARD_LEN / CHESSBOARD_SIZE / 6);}
+    double SQUARE_LEN() {return ((double)(CHESSBOARD_LEN) / (CHESSBOARD_SIZE - 1 + 2 * BTOL));}
+    double LEFT_UP() {return ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + BTOL * SQUARE_LEN());}
+    double RIGHT_UP() {return ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + CHESSBOARD_LEN);}
 
 public slots:
-    void setPlayerRole(int player);
+    void setPlayerRole(int player, int mode, int size);
 
 private:
     void CleanVis(); // 清空 mergedBlock
@@ -64,14 +71,14 @@ private:
     void MergeBlock(int x, int y); // 启发式合并
     void MergeSet(LibertySet &x, LibertySet y); // 启发式合并
 
-    int board[CHESSBOARD_SIZE + 2][CHESSBOARD_SIZE + 2]; // 当前棋盘状态
-    int chessBelong[CHESSBOARD_SIZE + 2][CHESSBOARD_SIZE + 2]; // 棋子属于的棋子块
-    int blockVis[(CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2)]; // 棋子块至多只能累加一次气数
+    int board[52][52]; // 当前棋盘状态
+    int chessBelong[52][52]; // 棋子属于的棋子块
+    int blockVis[(52) * (52)]; // 棋子块至多只能累加一次气数
     int blockCnt; // 棋子块个数
 
 
-    LibertySet blockLiberty[(CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2)]; // 气的 Set
-    ItemVector chessBlock[(CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2)]; // 棋子块的编号
+    LibertySet blockLiberty[(52) * (52)]; // 气的 Set
+    ItemVector chessBlock[(52) * (52)]; // 棋子块的编号
     std::vector<int>mergedBlock;
 };
 

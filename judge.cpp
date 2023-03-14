@@ -174,9 +174,12 @@ void Judge::MergeBlock(int x, int y) // 启发式合并
     // 清空
 }
 
-void Judge::setPlayerRole(int player)
+void Judge::setPlayerRole(int player, int mode, int size)
 {
     playerRole = player;
     if(player == -1) curPlayer = 0;
     else curPlayer = 1;
+    qDebug() << curPlayer;
+    runMode = mode;
+    CHESSBOARD_SIZE = size;
 }

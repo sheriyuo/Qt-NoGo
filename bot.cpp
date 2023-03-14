@@ -12,9 +12,14 @@ Bot::~Bot()
     delete this;
 }
 
-void Bot::makeFirstMove(int player){
+void Bot::makeFirstMove(int player)
+{
     if(player == -1) // bot 先手
     {
+        if(judge->runMode){
+            judge->curPlayer ^= 1;
+            return;
+        }
         makeRandomMove();
     }
 }
