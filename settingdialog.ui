@@ -18,7 +18,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>NoGo Settings</string>
   </property>
   <widget class="QPushButton" name="closeBtn">
    <property name="geometry">
