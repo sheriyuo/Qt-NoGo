@@ -95,7 +95,6 @@ void GameWidget::paintEvent(QPaintEvent *event)
     painter.setRenderHint(QPainter::Antialiasing, true); // 抗锯齿
 
     // 绘制 demo
-    if(CHESSBOARD_SIZE == 28)
         drawChessboard(painter);
 
     QPixmap logoImg;
@@ -111,7 +110,8 @@ void GameWidget::paintEvent(QPaintEvent *event)
     int LOGO_Y = columnY - logoBoardH / 2;
     painter.drawPixmap(LOGO_X, LOGO_Y, logoBoardW, logoBoardH, logoImg);
 
-     drawDemo(painter);
+    if(CHESSBOARD_SIZE == 28)
+        drawDemo(painter);
     // 绘制棋子
     for(int i = 0; i < CHESSBOARD_SIZE; i++)
         for(int j = 0; j < CHESSBOARD_SIZE; j++)

@@ -34,7 +34,7 @@
 	
 	冯友和同学负责了项目框架的建构、初始 bot 的设计。
 	
-	赵培宇同学负责了棋盘的生成。
+	赵培宇同学负责了棋盘的生成、按钮的部分实现。
 	
 	\section{Qt 图形界面应用设计}
 	
@@ -44,7 +44,7 @@
 	\begin{figure}[!htb]{
 		\centering
 		\includegraphics[width=0.8\textwidth]{img/UI.png}
-		\counterwithin{figure}{section}
+		\counterwithin{figure}{subsection}
 		\caption{demo 示例}
 	}
 	\end{figure}
@@ -56,7 +56,7 @@
 	\begin{figure}[!htb]{
 			\centering
 			\includegraphics[width=0.8\textwidth]{img/fyh.png}
-			\counterwithin{figure}{section}
+			\counterwithin{figure}{subsection}
 			\caption{自定义棋盘大小~(29)}
 		}
 	\end{figure}
@@ -108,10 +108,10 @@
 	typedef std::pair<int, int> Item;
 	typedef std::vector<Item> ItemVector;
 	typedef std::set<Item> LibertySet;
-	
+
 	int board[CHESSBOARD_SIZE + 2][CHESSBOARD_SIZE + 2]; // 当前棋盘状态
 	int chessBelong[CHESSBOARD_SIZE + 2][CHESSBOARD_SIZE + 2]; // 棋子属于的棋子块
-	int blockVis[(CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2)]; // 棋子块至多只能累加一次气数
+	int blockVis[(CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2)]; // 棋子块至多只能累加一次
 	int blockCnt; // 棋子块个数
 	
 	LibertySet blockLiberty[(CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2)]; // 气的 Set
@@ -145,13 +145,14 @@
 	
 	对于一次落子操作，如果落子后判负，会弹出此处无法落子的弹窗。同时在一次操作超时后，会直接超时判负。对于现有版本来说，页面实现了认输按钮，玩家在无法落子后可以等到超时判负，也可以认输判负。
 	
-	\begin{figure}[!htb]{
-			\centering
-			\includegraphics[width=0.4\textwidth]{img/tip.png}
-			\includegraphics[width=0.4\textwidth]{img/win.png}
-			\counterwithin{figure}{section}
-			\caption{状态判断}
-		}
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=5.5cm]{img/tip.png}
+		\includegraphics[width=5.5cm]{img/win.png}
+		\includegraphics[width=5.5cm]{img/resign.png}
+		\includegraphics[width=5.5cm]{img/TLE.png}
+		\counterwithin{figure}{subsection}
+		\caption{状态判断}
 	\end{figure}
 	
 	\subsection{更多功能}
@@ -159,6 +160,8 @@
 	第一阶段还没结束，卷什么。
 	
 	在写了在写了。
+	
+	不如看一下隔壁队伍写的前后端分离。
 	
 	\section{AI 算法设计}
 	
@@ -178,7 +181,7 @@
 	
 	感谢冯友和、赵培宇同学组成的团队。
 	
-	感谢彭文博同学于 2023/3/2 军理课后请本队吃的 KFC 疯狂星期四。
+	感谢彭文博、李知非同学于 2023/3/2 军理课后请本队吃的 KFC 疯狂星期四。
 	
 	感谢北京大学 ghastlcon 同学提供的帮助。
 	

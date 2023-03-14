@@ -12,7 +12,7 @@
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
 #define CHESSBOARD_LEN 648
-#define CHESSBOARD_SIZE 28
+#define CHESSBOARD_SIZE 9
 
 #define BG_COLOR 0xecf9ff
 #define GRID_COLOR 0xbad7e9
