@@ -24,7 +24,7 @@ StartWidget::StartWidget(QWidget *parent) :
     ui->settingsBtn->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
 
     // 游戏选项
-    settingDialog = new SettingDialog;
+    settingDialog = new SettingDialog(this);
     curGameLayer = 1;
     runMode = 0;
     gridSize = 9;

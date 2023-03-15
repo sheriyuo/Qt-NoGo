@@ -12,7 +12,6 @@ HEADERS += \
     bot.h \
     gamewidget.h \
     judge.h \
-    mainwindow.h \
     messagebox.h \
     settingdialog.h \
     startwidget.h
@@ -22,7 +21,6 @@ SOURCES += \
     gamewidget.cpp \
     judge.cpp \
     main.cpp \
-    mainwindow.cpp \
     messagebox.cpp \
     settingdialog.cpp \
     startwidget.cpp
