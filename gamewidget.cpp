@@ -15,6 +15,7 @@ GameWidget::GameWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    setWindowIcon(QIcon(":/img/icon.png"));
 
     // 设置 restart button 的样式，无边框在 ui 文件中设置
     ui->restartButton->setStyleSheet(ACCENT_COLOR); // 文字颜色

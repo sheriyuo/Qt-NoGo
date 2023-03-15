@@ -7,6 +7,7 @@ StartWidget::StartWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    setWindowIcon(QIcon(":/img/icon.png"));
 
     // 设置按钮样式
     ui->startAsBlack->setStyleSheet(ACCENT_COLOR);
@@ -45,6 +46,14 @@ void StartWidget::paintEvent(QPaintEvent *event)
     // painter.setPen(QPen(QColor(0xf9f8ef), Strength, Qt::SolidLine));
     painter.setBrush(QColor(BG_COLOR));
     painter.drawRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    QPixmap logoImg;
+    logoImg.load(":/img/logo.png");
+    int H = (double)WINDOW_HEIGHT / 5,
+        W = (double)H * logoImg.width() / logoImg.height();
+    int X = (double)WINDOW_WIDTH / 2 - (double)W / 2,
+        Y = (double)WINDOW_HEIGHT / 20 * 6 - (double)H / 2;
+    painter.drawPixmap(X, Y, W, H, logoImg);
 }
 
 void StartWidget::on_startAsBlack_clicked()

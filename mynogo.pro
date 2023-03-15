@@ -29,7 +29,6 @@ SOURCES += \
 
 FORMS += \
     gamewidget.ui \
-    mainwindow.ui \
     settingdialog.ui \
     startwidget.ui
 

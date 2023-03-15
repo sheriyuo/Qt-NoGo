@@ -7,6 +7,7 @@ SettingDialog::SettingDialog() :
     ui->setupUi(this);
     WIDTH = WINDOW_WIDTH / 3, HEIGHT = WINDOW_HEIGHT / 2;
     setFixedSize(WIDTH, HEIGHT);
+    setWindowIcon(QIcon(":/img/icon.png"));
 
     ui->closeBtn->setStyleSheet(ACCENT_COLOR);
     int H = (double)HEIGHT / 10,

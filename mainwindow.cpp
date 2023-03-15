@@ -1,21 +1,11 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
-#include "gamewidget.h"
-#include "startwidget.h"
-#include "judge.h"
-#include "ui_startwidget.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
-    setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-
-
     startWidget = new StartWidget;
     gameWidget = new GameWidget;
-    stackLayout = new QStackedLayout;
+    stackLayout = new QStackedLayout(this);
     //startWidget = (StartWidget*)malloc(sizeof(StartWidget));
     //gameWidget = (GameWidget*)malloc(sizeof(GameWidget));
     //stackLayout = (QStackedLayout*)malloc(sizeof(QStackedLayout));
@@ -42,5 +32,5 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    // none
 }

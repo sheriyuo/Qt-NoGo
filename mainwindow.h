@@ -5,10 +5,7 @@
 #include <QStackedLayout>
 #include "gamewidget.h"
 #include "startwidget.h"
-
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
+#include "judge.h"
 
 class MainWindow : public QMainWindow
 {
@@ -19,7 +16,6 @@ public:
     ~MainWindow();
 
 private:
-    Ui::MainWindow *ui;
     void restart();
 
     StartWidget *startWidget;
