@@ -21,6 +21,7 @@ private:
     StartWidget *startWidget;
     GameWidget *gameWidget;
     QStackedLayout *stackLayout;
+    QVBoxLayout *mainLayout;
 };
 
 #endif // MAINWINDOW_H

@@ -20,6 +20,10 @@
   <property name="windowTitle">
    <string>NoGo Settings</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="Resource.qrc">
+    <normaloff>:/img/icon.ico</normaloff>:/img/icon.ico</iconset>
+  </property>
   <widget class="QPushButton" name="closeBtn">
    <property name="geometry">
     <rect>
@@ -147,8 +151,15 @@
      <string>13×13</string>
     </property>
    </item>
+   <item>
+    <property name="text">
+     <string>28×28</string>
+    </property>
+   </item>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="Resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

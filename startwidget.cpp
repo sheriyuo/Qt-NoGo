@@ -7,7 +7,7 @@ StartWidget::StartWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-    setWindowIcon(QIcon(":/img/icon.png"));
+    // setWindowIcon(QIcon(":/img/icon.png"));
 
     // 设置按钮样式
     ui->startAsBlack->setStyleSheet(ACCENT_COLOR);

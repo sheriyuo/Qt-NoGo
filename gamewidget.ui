@@ -18,6 +18,9 @@
   <property name="windowTitle">
    <string>Current Game - NoGo</string>
   </property>
+  <property name="windowIcon">
+   <iconset theme="applications-system"/>
+  </property>
   <widget class="QPushButton" name="restartButton">
    <property name="geometry">
     <rect>

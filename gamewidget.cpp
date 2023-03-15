@@ -15,7 +15,7 @@ GameWidget::GameWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-    setWindowIcon(QIcon(":/img/icon.png"));
+    // setWindowIcon(QIcon(":/img/icon.png"));
 
     // 设置 restart button 的样式，无边框在 ui 文件中设置
     ui->restartButton->setStyleSheet(ACCENT_COLOR); // 文字颜色
@@ -318,7 +318,7 @@ void GameWidget::sendMessage(int type)
 
 void GameWidget::on_resignButton_clicked()
 {
-    qDebug() << judge->runMode;
+    // qDebug() << judge->runMode;
     judge->curPlayerBak = judge->curPlayer;
     sendMessage(5);
     judge->curPlayer = -1;

@@ -7,7 +7,7 @@ SettingDialog::SettingDialog() :
     ui->setupUi(this);
     WIDTH = WINDOW_WIDTH / 3, HEIGHT = WINDOW_HEIGHT / 2;
     setFixedSize(WIDTH, HEIGHT);
-    setWindowIcon(QIcon(":/img/icon.png"));
+    // setWindowIcon(QIcon(":/img/icon.png"));
 
     ui->closeBtn->setStyleSheet(ACCENT_COLOR);
     int H = (double)HEIGHT / 10,
@@ -70,6 +70,7 @@ void SettingDialog::getChessBd(int size)
         case 0: realSz = 9; break;
         case 1: realSz = 11; break;
         case 2: realSz = 13; break;
+        case 3: realSz = 28; break;
         default: realSz = 9;
     }
     emit rtChessBd(realSz);

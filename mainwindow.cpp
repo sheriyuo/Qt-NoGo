@@ -5,11 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     startWidget = new StartWidget;
     gameWidget = new GameWidget;
-    stackLayout = new QStackedLayout(this);
-    //startWidget = (StartWidget*)malloc(sizeof(StartWidget));
-    //gameWidget = (GameWidget*)malloc(sizeof(GameWidget));
-    //stackLayout = (QStackedLayout*)malloc(sizeof(QStackedLayout));
-    //gameWidget->judge = (Judge*)malloc(sizeof(Judge));
+    stackLayout = new QStackedLayout;
 
     // 建立界面
     stackLayout->addWidget(startWidget);
@@ -25,12 +21,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(gameWidget, &GameWidget::restartSingal, stackLayout, &QStackedLayout::setCurrentIndex);
     connect(gameWidget, &GameWidget::resignSingal, stackLayout, &QStackedLayout::setCurrentIndex);
 
-    QVBoxLayout *mainLayout = new QVBoxLayout;
+    mainLayout = new QVBoxLayout;
     mainLayout->addLayout(stackLayout);
     setLayout(mainLayout);
 }
 
 MainWindow::~MainWindow()
 {
-    // none
+    // delete this;
 }

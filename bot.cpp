@@ -4,7 +4,7 @@
 Bot::Bot(QObject *parent) :
     QObject(parent)
 {
-    /*empty*/
+    judge = nullptr;
 }
 
 Bot::~Bot()

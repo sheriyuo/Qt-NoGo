@@ -8,7 +8,7 @@ Judge::Judge(QObject *parent) :
 
 Judge::~Judge()
 {
-    delete this;
+    // delete this;
 }
 
 void Judge::init()
@@ -179,7 +179,7 @@ void Judge::setPlayerRole(int player, int mode, int size)
     playerRole = player;
     if(player == -1) curPlayer = 0;
     else curPlayer = 1;
-    qDebug() << curPlayer;
+    // qDebug() << curPlayer;
     runMode = mode;
     CHESSBOARD_SIZE = size;
 }
