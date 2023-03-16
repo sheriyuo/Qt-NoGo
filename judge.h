@@ -62,6 +62,9 @@ public:
     double LEFT_UP() {return ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + BTOL * SQUARE_LEN());}
     double RIGHT_UP() {return ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + CHESSBOARD_LEN);}
 
+signals:
+    void modifiedCB(); // 棋盘更新信号
+
 public slots:
     void setPlayerRole(int player, int mode, int size);
 

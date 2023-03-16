@@ -20,10 +20,11 @@ void Bot::makeFirstMove(int player)
             judge->curPlayer ^= 1;
             return;
         }
-        makeRandomMove();
+        makeAMove();
     }
 }
 
+void Bot::makeAMove() {makeRandomMove();}
 void Bot::makeRandomMove()
 {
     srand(time(0));

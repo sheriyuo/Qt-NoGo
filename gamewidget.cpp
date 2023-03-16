@@ -13,6 +13,11 @@ GameWidget::GameWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::GameWidget)
 {
+    judge = new Judge;
+    bot = new Bot;
+    bot->judge = judge;
+    mess = nullptr;
+
     ui->setupUi(this);
     setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT);
     // setWindowIcon(QIcon(":/img/icon.png"));
@@ -30,18 +35,12 @@ GameWidget::GameWidget(QWidget *parent) :
         Y2 = Y1 + WINDOW_HEIGHT * 0.15;
     ui->resignButton->setGeometry(QRect(QPoint(X2, Y2), QSize(buttonW, buttonH))); // 位置
 
-    judge = new Judge;
-    bot = new Bot;
-    bot->judge = judge;
-    mess = nullptr;
-
     // 链接计时器
     timerForPlayer = new QTimer;
     connect(timerForPlayer,&QTimer::timeout, this, &GameWidget::playerTimeout);
     connect(bot, &Bot::timeout, this, &GameWidget::botTimeout);
     // connect(mess, &MessageBox::timeUpClose, this, &GameWidget::mousePress);
 }
-
 GameWidget::~GameWidget()
 {
     delete ui;
@@ -50,9 +49,9 @@ GameWidget::~GameWidget()
 // 监听鼠标点击实现落子
 void GameWidget::mousePressEvent(QMouseEvent *event)
 {
+    if(judge->curPlayer == -1) return; // 判断游戏结束
     emit mousePress();
 
-    if(judge->curPlayer == -1) return; // 判断游戏结束
     double x = event->position().x(), y = event->position().y();
     int row = 0,column = 0;
     double checklen = SQUARE_LEN() / 2;
@@ -78,13 +77,12 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
     // 此处实现轮流下棋
     if(row - 1 < 0 || column - 1 < 0 || row - 1 >= CHESSBOARD_SIZE || column - 1 >= CHESSBOARD_SIZE)
         return;
-
     if(judge->CheckVaild(row-1, column-1)){
         timerForPlayer->stop();
         judge->PlaceAPiece(row-1, column-1);
 
         if(!judge->runMode){
-            bot->makeRandomMove();
+            emit turnForBot();
         }
         timerForPlayer->start(PLAYER_TIMEOUT * 1000);
     }
@@ -92,9 +90,9 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
     {
         sendMessage(2);
     }
-
-    update();
 }
+void GameWidget::updateCB() {repaint();}
+void GameWidget::closeMB() {if(mess) mess->close();}
 
 void GameWidget::paintEvent(QPaintEvent *event)
 {
@@ -242,7 +240,7 @@ void GameWidget::drawDemo(QPainter &painter) // 绘画 FYH
         }
 }
 
-void GameWidget::playerTimeout() {if(judge->curPlayer >= 0) gameLose(1);}
+// 判胜负与计时器相关
 void GameWidget::gameLose(int type)
 {
     judge->curPlayerBak = judge->curPlayer;
@@ -250,7 +248,6 @@ void GameWidget::gameLose(int type)
     else sendMessage(3);
     judge->curPlayer = -1;
 }
-void GameWidget::botTimeout() {if(judge->curPlayer >= 0) gameWin(1);}
 void GameWidget::gameWin(int type)
 {
     judge->curPlayerBak = judge->curPlayer;
@@ -258,6 +255,10 @@ void GameWidget::gameWin(int type)
     else sendMessage(4);
     judge->curPlayer = -1;
 }
+void GameWidget::startTimer() {timerForPlayer->start(PLAYER_TIMEOUT * 1000);}
+void GameWidget::playerTimeout() {if(judge->curPlayer >= 0) gameLose(1);}
+void GameWidget::botTimeout() {if(judge->curPlayer >= 0) gameWin(1);}
+
 
 /*
  * 弹出消息窗口
@@ -276,22 +277,22 @@ void GameWidget::sendMessage(int type)
         switch(type)
         {
             case 0:
-                mess = new MessageBox(QString("Congratulations!\n\nYou WIN"), 3000, this);
+                mess = new MessageBox(QString("Congratulations!\n\nYou WIN"), 0, this);
                 break;
             case 1:
-                mess = new MessageBox(QString("Sorry!\n\nYou LOSE"), 3000, this);
+                mess = new MessageBox(QString("Sorry!\n\nYou LOSE"), 0, this);
                 break;
             case 2:
                 mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, this);
                 break;
             case 3:
-                mess = new MessageBox(QString("TIME'S UP!\n\nYou LOSE"), 3000, this);
+                mess = new MessageBox(QString("TIME'S UP!\n\nYou LOSE"), 0, this);
                 break;
             case 4:
-                mess = new MessageBox(QString("Bot failed to make\na move.\nYou WIN"), 3000, this);
+                mess = new MessageBox(QString("Bot failed to make\na move.\nYou WIN"), 0, this);
                 break;
             case 5:
-                mess = new MessageBox(QString("Sorry, You Resign!\n\nPlease restart."), 3000, this);
+                mess = new MessageBox(QString("Sorry, You Resign!\n\nPlease restart."), 0, this);
                 break;
         }
     }
@@ -302,28 +303,19 @@ void GameWidget::sendMessage(int type)
                 mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, this);
                 break;
             case 3:
-            // qDebug() << judge->curPlayerBak;
-                if(judge->curPlayerBak) mess = new MessageBox(QString("TIME'S UP!\n\nPlayer1 LOSE"), 3000, this);
-                else mess = new MessageBox(QString("TIME'S UP!\n\nPlayer2 LOSE"), 3000, this);
+                if(judge->curPlayerBak) mess = new MessageBox(QString("TIME'S UP!\n\nPlayer1 LOSE"), 0, this);
+                else mess = new MessageBox(QString("TIME'S UP!\n\nPlayer2 LOSE"), 0, this);
                 break;
             case 5:
-            qDebug() << judge->curPlayerBak;
-                if(judge->curPlayerBak) mess = new MessageBox(QString("Sorry, Player1 Resign!\n\nPlease restart."), 3000, this);
-                else mess = new MessageBox(QString("Sorry, Player2 Resign!\n\nPlease restart."), 3000, this);
+                if(judge->curPlayerBak) mess = new MessageBox(QString("Sorry, Player1 Resign!\n\nPlease restart."), 0, this);
+                else mess = new MessageBox(QString("Sorry, Player2 Resign!\n\nPlease restart."), 0, this);
                 break;
         }
     }
     mess->show();
 }
 
-void GameWidget::on_resignButton_clicked()
-{
-    // qDebug() << judge->runMode;
-    judge->curPlayerBak = judge->curPlayer;
-    sendMessage(5);
-    judge->curPlayer = -1;
-}
-
+// 定义按钮行为
 void GameWidget::on_restartButton_clicked()
 {
     emit restartSingal(0);
@@ -331,8 +323,9 @@ void GameWidget::on_restartButton_clicked()
     if(mess) mess->close();
     this->close();
 }
-
-void GameWidget::startTimer()
+void GameWidget::on_resignButton_clicked()
 {
-    timerForPlayer->start(PLAYER_TIMEOUT * 1000);
+    judge->curPlayerBak = judge->curPlayer;
+    sendMessage(5);
+    judge->curPlayer = -1;
 }

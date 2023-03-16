@@ -1,12 +1,19 @@
 #include "messagebox.h"
 
+/*
+ * 关闭方法有手动点击消息框和超时关闭
+ * tim : 超时设置
+ * 设置为 0 时， 必须要手动点击消息框才可关闭
+*/
 MessageBox::MessageBox(QString text, int tim, QWidget *parent):
     QLabel(text, parent)
 {
-    timer = new QTimer(this);
-    timer->start(tim); // ms
-    timer->setSingleShot(true);
-    connect(timer, &QTimer::timeout, this, &MessageBox::timeUpClose);
+    if(tim > 0){
+        timer = new QTimer(this);
+        timer->start(tim); // ms
+        timer->setSingleShot(true);
+        connect(timer, &QTimer::timeout, this, &MessageBox::timeUpClose);
+    }
     connect(this, &MessageBox::mousePress, this, &MessageBox::timeUpClose);
 
     this->setAlignment(Qt::AlignCenter);
@@ -26,13 +33,12 @@ MessageBox::~MessageBox()
     delete this;
 }
 
+void MessageBox::mousePressEvent(QMouseEvent *event)
+{
+    emit mousePress();
+}
+
 void MessageBox::timeUpClose()
 {
     this->close();
-}
-
-void MessageBox::mousePressEvent(QMouseEvent *event)
-{
-    // qDebug() << "qwq\n";
-    emit mousePress();
 }

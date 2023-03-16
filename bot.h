@@ -18,16 +18,18 @@ class Bot : public QObject
 public:
     Bot (QObject *parent = nullptr);
     ~Bot();
-    void makeRandomMove();
 
     Judge *judge;
+
 signals:
     void timeout();
 
 public slots:
     void makeFirstMove(int player);
+    void makeAMove();
 
 private:
+    void makeRandomMove();
 };
 
 #endif // BOT_H

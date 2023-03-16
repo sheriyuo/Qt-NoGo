@@ -30,6 +30,7 @@ void Judge::PlaceAPiece(int x, int y)
     board[x][y] = CurColor();
     UpdateCurStep(x, y);
     curPlayer ^= 1;
+    emit modifiedCB();
 }
 
 bool Judge::IsEmpty(int x, int y)

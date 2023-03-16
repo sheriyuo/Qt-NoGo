@@ -27,6 +27,9 @@ int main(int argc, char *argv[])
     QObject::connect(startWidget, &StartWidget::startAs, gameWidget, &GameWidget::startTimer);
     QObject::connect(gameWidget, &GameWidget::restartSingal, stackLayout, &QStackedLayout::setCurrentIndex);
     QObject::connect(gameWidget, &GameWidget::resignSingal, stackLayout, &QStackedLayout::setCurrentIndex);
+    QObject::connect(gameWidget, &GameWidget::mousePress, gameWidget, &GameWidget::closeMB);
+    QObject::connect(gameWidget, &GameWidget::turnForBot, gameWidget->bot, &Bot::makeAMove);
+    QObject::connect(gameWidget->judge, &Judge::modifiedCB, gameWidget, &GameWidget::updateCB);
 
     // 建立堆栈结构
     stackLayout->addWidget(startWidget);

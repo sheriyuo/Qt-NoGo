@@ -32,6 +32,7 @@ signals:
     void restartSingal(int index);   // 用于发送信号，使得 judge 得以重置
     void resignSingal(int index);   // 用于发送信号，使得 judge 得以重置
     void mousePress();              // 鼠标点击信号，用于刷新界面
+    void turnForBot();              // 有请 Bot 表演
 
 public slots:
     void on_restartButton_clicked(); // 链接 restart 按钮的行为
@@ -39,6 +40,8 @@ public slots:
     void startTimer();    // 当对局开始时，无论谁先手（机器下第一个棋子认为不需要时间），都打开玩家的计时器
     void playerTimeout(); // 玩家超时的槽函数，用于链接计时器
     void botTimeout();    // bot超时的槽函数，用于链接计时器
+    void closeMB();       // 再次点击棋盘时关闭消息弹窗
+    void updateCB();      // 更新棋盘
 
 private:
     Ui::GameWidget *ui;
