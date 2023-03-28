@@ -322,10 +322,12 @@ void GameWidget::on_restartButton_clicked()
     judge->init();
     if(mess) mess->close();
     this->close();
+    timerForPlayer->stop();
 }
 void GameWidget::on_resignButton_clicked()
 {
     judge->curPlayerBak = judge->curPlayer;
     sendMessage(5);
     judge->curPlayer = -1;
+    timerForPlayer->stop();
 }
