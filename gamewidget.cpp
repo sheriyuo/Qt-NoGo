@@ -49,8 +49,8 @@ GameWidget::~GameWidget()
 // 监听鼠标点击实现落子
 void GameWidget::mousePressEvent(QMouseEvent *event)
 {
-    if(judge->curPlayer == -1) return; // 判断游戏结束
     emit mousePress();
+    if(judge->curPlayer == -1) return; // 判断游戏结束
 
     double x = event->position().x(), y = event->position().y();
     int row = 0,column = 0;
@@ -255,7 +255,10 @@ void GameWidget::gameWin(int type)
     else sendMessage(4);
     judge->curPlayer = -1;
 }
-void GameWidget::startTimer() {timerForPlayer->start(PLAYER_TIMEOUT * 1000);}
+void GameWidget::startTimer() {
+    timerForPlayer->start(PLAYER_TIMEOUT * 1000);
+
+}
 void GameWidget::playerTimeout() {if(judge->curPlayer >= 0) gameLose(1);}
 void GameWidget::botTimeout() {if(judge->curPlayer >= 0) gameWin(1);}
 
@@ -320,14 +323,17 @@ void GameWidget::on_restartButton_clicked()
 {
     emit restartSingal(0);
     judge->init();
-    if(mess) mess->close();
+    if(mess){
+        mess->close();
+        mess = nullptr;
+    }
     this->close();
     timerForPlayer->stop();
 }
 void GameWidget::on_resignButton_clicked()
 {
     judge->curPlayerBak = judge->curPlayer;
-    sendMessage(5);
+    if(!mess) sendMessage(5);
     judge->curPlayer = -1;
     timerForPlayer->stop();
 }
