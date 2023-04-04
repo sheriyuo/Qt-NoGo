@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2023.2.22)  14 MAR 2023 11:59
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2023.2.22)  4 APR 2023 18:16
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -799,9 +799,9 @@ File: img/resign.png Graphic file (type bmp)
 File: img/TLE.png Graphic file (type bmp)
 <img/TLE.png>
  [4]
-LaTeX Font Info:    Calculating math sizes for size <13.04874> on input line 17
-2.
- [5] (./report.aux) ) 
+LaTeX Font Info:    Calculating math sizes for size <13.04874> on input line 18
+0.
+ [5] [6] (./report.aux) ) 
 Here is how much of TeX's memory you used:
  11523 strings out of 476179
  265181 string characters out of 5813072
@@ -809,6 +809,6 @@ Here is how much of TeX's memory you used:
  31988 multiletter control sequences out of 15000+600000
  486931 words of font info for 143 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 88i,14n,91p,266b,1101s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 88i,15n,91p,266b,1101s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on report.pdf (6 pages).
+Output written on report.pdf (7 pages).

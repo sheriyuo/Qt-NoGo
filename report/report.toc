@@ -5,7 +5,9 @@
 \contentsline {subsection}{\numberline {2.1}UI 设计}{1}{}%
 \contentsline {subsection}{\numberline {2.2}基本逻辑}{2}{}%
 \contentsline {subsection}{\numberline {2.3}棋盘逻辑和结局判断}{3}{}%
-\contentsline {subsection}{\numberline {2.4}更多功能}{4}{}%
-\contentsline {section}{\numberline {3}AI 算法设计}{4}{}%
+\contentsline {subsection}{\numberline {2.4}设置}{4}{}%
+\contentsline {subsection}{\numberline {2.5}计时器}{4}{}%
+\contentsline {subsection}{\numberline {2.6}更多功能}{4}{}%
+\contentsline {section}{\numberline {3}AI 算法设计}{5}{}%
 \contentsline {subsection}{\numberline {3.1}min-max 搜索和 $\alpha -\beta $ 剪枝}{5}{}%
 \contentsline {section}{\numberline {4}感谢}{5}{}%
