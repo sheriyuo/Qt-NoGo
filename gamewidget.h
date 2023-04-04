@@ -42,7 +42,7 @@ public slots:
     void botTimeout();    // bot超时的槽函数，用于链接计时器
     void closeMB();       // 再次点击棋盘时关闭消息弹窗
     void updateCB();      // 更新棋盘
-
+    void updateBar();
 private:
     Ui::GameWidget *ui;
     void paintEvent(QPaintEvent *event) override; // 界面绘制

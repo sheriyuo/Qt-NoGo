@@ -3,9 +3,14 @@
 #include "messagebox.h"
 #include "judge.h"
 #include <math.h>
+#include <ctime>
 
 // 玩家的计时器
 static QTimer *timerForPlayer;
+
+//
+static QTimer *timerForBar;
+static time_t basetime;
 // 将 bot 的计时器内置于 class Bot 中
 // static QTimer *timerForBot;
 
@@ -35,11 +40,17 @@ GameWidget::GameWidget(QWidget *parent) :
         Y2 = Y1 + WINDOW_HEIGHT * 0.15;
     ui->resignButton->setGeometry(QRect(QPoint(X2, Y2), QSize(buttonW, buttonH))); // 位置
 
+    //设置 timebar 的 位置
+    int X3 = columnX - 60,
+        Y3 = Y1 - WINDOW_HEIGHT * 0.1;
+    ui->TimeBar->setGeometry(QRect(QPoint(X3, Y3), QSize(120,20)));
     // 链接计时器
     timerForPlayer = new QTimer;
     connect(timerForPlayer,&QTimer::timeout, this, &GameWidget::playerTimeout);
     connect(bot, &Bot::timeout, this, &GameWidget::botTimeout);
     // connect(mess, &MessageBox::timeUpClose, this, &GameWidget::mousePress);
+    timerForBar = new QTimer;
+    connect(timerForBar,&QTimer::timeout,this,&GameWidget::updateBar);
 }
 GameWidget::~GameWidget()
 {
@@ -79,12 +90,15 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
         return;
     if(judge->CheckVaild(row-1, column-1)){
         timerForPlayer->stop();
+        timerForBar->stop();
         judge->PlaceAPiece(row-1, column-1);
 
         if(!judge->runMode){
             emit turnForBot();
         }
         timerForPlayer->start(PLAYER_TIMEOUT * 1000);
+        timerForBar->start(100);
+        basetime=clock();
     }
     else
     {
@@ -92,6 +106,15 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
     }
 }
 void GameWidget::updateCB() {repaint();}
+
+void GameWidget::updateBar()
+{
+    double value;
+    value=(clock()-basetime);
+    qDebug()<<value/(PLAYER_TIMEOUT*1000);
+    ui->TimeBar->setValue(  1000-value/PLAYER_TIMEOUT);
+    repaint();
+}
 void GameWidget::closeMB() {if(mess) mess->close();}
 
 void GameWidget::paintEvent(QPaintEvent *event)
@@ -112,7 +135,7 @@ void GameWidget::paintEvent(QPaintEvent *event)
     // qDebug() << logoBoardW << " " << logoBoardH << "\n";
 
     int LOGO_X = columnX - logoBoardW / 2;
-    int LOGO_Y = columnY - logoBoardH / 2;
+    int LOGO_Y = columnY - logoBoardH / 2 - 100;
     painter.drawPixmap(LOGO_X, LOGO_Y, logoBoardW, logoBoardH, logoImg);
 
     if(CHESSBOARD_SIZE == 28)
@@ -131,6 +154,11 @@ void GameWidget::paintEvent(QPaintEvent *event)
             }
 
         }
+
+
+
+
+
 }
 
 void GameWidget :: drawChessboard(QPainter &painter)
@@ -257,7 +285,8 @@ void GameWidget::gameWin(int type)
 }
 void GameWidget::startTimer() {
     timerForPlayer->start(PLAYER_TIMEOUT * 1000);
-
+    timerForBar->start(100);
+    basetime=clock();
 }
 void GameWidget::playerTimeout() {if(judge->curPlayer >= 0) gameLose(1);}
 void GameWidget::botTimeout() {if(judge->curPlayer >= 0) gameWin(1);}
@@ -329,6 +358,7 @@ void GameWidget::on_restartButton_clicked()
     }
     this->close();
     timerForPlayer->stop();
+    timerForBar->stop();
 }
 void GameWidget::on_resignButton_clicked()
 {
@@ -336,4 +366,5 @@ void GameWidget::on_resignButton_clicked()
     if(!mess) sendMessage(5);
     judge->curPlayer = -1;
     timerForPlayer->stop();
+    timerForBar->stop();
 }
