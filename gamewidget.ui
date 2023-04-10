@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1068</width>
-    <height>768</height>
+    <width>600</width>
+    <height>399</height>
    </rect>
   </property>
   <property name="font">
@@ -28,10 +28,10 @@
   <widget class="QPushButton" name="restartButton">
    <property name="geometry">
     <rect>
-     <x>770</x>
-     <y>260</y>
-     <width>200</width>
-     <height>50</height>
+     <x>450</x>
+     <y>90</y>
+     <width>81</width>
+     <height>30</height>
     </rect>
    </property>
    <property name="font">
@@ -51,10 +51,10 @@
   <widget class="QPushButton" name="resignButton">
    <property name="geometry">
     <rect>
-     <x>770</x>
-     <y>360</y>
-     <width>211</width>
-     <height>61</height>
+     <x>450</x>
+     <y>140</y>
+     <width>80</width>
+     <height>30</height>
     </rect>
    </property>
    <property name="font">
@@ -86,10 +86,10 @@
   <widget class="QProgressBar" name="TimeBar">
    <property name="geometry">
     <rect>
-     <x>810</x>
-     <y>560</y>
-     <width>118</width>
-     <height>23</height>
+     <x>440</x>
+     <y>200</y>
+     <width>83</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="font">
@@ -118,6 +118,76 @@ background-color:rgb(255,192,203);
    </property>
    <property name="textVisible">
     <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="loadButton">
+   <property name="geometry">
+    <rect>
+     <x>470</x>
+     <y>240</y>
+     <width>80</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial Rounded MT Bold</family>
+     <pointsize>20</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Load</string>
+   </property>
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+   <property name="default">
+    <bool>false</bool>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="saveButton">
+   <property name="geometry">
+    <rect>
+     <x>470</x>
+     <y>310</y>
+     <width>80</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial Rounded MT Bold</family>
+     <pointsize>20</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+   <property name="default">
+    <bool>false</bool>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
    </property>
   </widget>
  </widget>

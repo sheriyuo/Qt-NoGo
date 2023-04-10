@@ -12,12 +12,10 @@ class SettingDialog : public QDialog
 {
     Q_OBJECT
 public:
-    SettingDialog(QWidget *parent = nullptr);
+    SettingDialog(Judge *j, QWidget *parent = nullptr);
     ~SettingDialog();
 
 signals:
-    void rtChessBd(int size);
-    void rtRunMode(int mode);
 
 public slots:
     void on_closeBtn_clicked();
@@ -29,6 +27,7 @@ private:
 
     Ui::SettingDialog *ui;
     int WIDTH, HEIGHT;
+    Judge *judge;
 };
 
 #endif // SETTINGDIALOG_H

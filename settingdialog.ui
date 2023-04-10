@@ -157,6 +157,66 @@
     </property>
    </item>
   </widget>
+  <widget class="QLabel" name="IPtitle">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>50</y>
+     <width>121</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial Rounded MT Bold</family>
+     <pointsize>13</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Remote IP</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="PORTtitle">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>80</y>
+     <width>121</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial Rounded MT Bold</family>
+     <pointsize>13</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Remote Port</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="IPinput">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>100</y>
+     <width>113</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="PORTinput">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>140</y>
+     <width>113</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
  <resources>
   <include location="Resource.qrc"/>

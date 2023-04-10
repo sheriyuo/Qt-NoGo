@@ -1,56 +1,71 @@
 #include "gamewidget.h"
 #include "ui_gamewidget.h"
-#include "messagebox.h"
-#include "judge.h"
-#include <math.h>
-#include <ctime>
 
 // 玩家的计时器
 static QTimer *timerForPlayer;
-
-//
 static QTimer *timerForBar;
 static time_t basetime;
 // 将 bot 的计时器内置于 class Bot 中
 // static QTimer *timerForBot;
 
-GameWidget::GameWidget(QWidget *parent) :
+static int deltaY, LOGO_X, LOGO_Y, logoBoardW, logoBoardH;
+
+GameWidget::GameWidget(Judge *j, Bot *b, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::GameWidget)
+    ui(new Ui::GameWidget),
+    judge(j),
+    bot(b)
 {
-    judge = new Judge;
-    bot = new Bot;
-    bot->judge = judge;
-    mess = nullptr;
+    columnX = judge->RIGHT_UP() + (WINDOW_WIDTH - judge->RIGHT_UP()) / 2;
+    columnY = (double)WINDOW_HEIGHT / 20 * 10;
+    // 右边侧栏位置中线
+    buttonH = (double)WINDOW_HEIGHT / 31 * 2;
+    buttonW = (double)WINDOW_HEIGHT / 31 * 6;
+    // 右边按钮大小
 
     ui->setupUi(this);
     setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-    // setWindowIcon(QIcon(":/img/icon.png"));
 
-    // 设置 restart button 的样式，无边框在 ui 文件中设置
-    ui->restartButton->setStyleSheet(ACCENT_COLOR); // 文字颜色
-
-    int X1 = columnX - buttonW / 2,
-        Y1 = columnY - buttonH / 2 + WINDOW_HEIGHT * 0.16;
-    ui->restartButton->setGeometry(QRect(QPoint(X1, Y1), QSize(buttonW, buttonH))); // 位置
-
-    //设置 resign button 的样式，无边框在 ui 文件中设置
+    deltaY = (double)(judge->RIGHT_UP() - columnY) / 4;
+    // 设置按钮样式，无边框在 ui 文件中设置
     ui->resignButton->setStyleSheet(ACCENT_COLOR); // 文字颜色
-    int X2 = X1,
-        Y2 = Y1 + WINDOW_HEIGHT * 0.15;
-    ui->resignButton->setGeometry(QRect(QPoint(X2, Y2), QSize(buttonW, buttonH))); // 位置
+    int X1 = columnX - buttonW / 2,
+        Y1 = columnY - buttonH / 2;
+    ui->resignButton->setGeometry(QRect(QPoint(X1, Y1), QSize(buttonW, buttonH))); // 位置
 
-    //设置 timebar 的 位置
-    int X3 = columnX - 60,
-        Y3 = Y1 - WINDOW_HEIGHT * 0.1;
-    ui->TimeBar->setGeometry(QRect(QPoint(X3, Y3), QSize(120,20)));
+    ui->loadButton->setStyleSheet(ACCENT_COLOR);
+    int X2 = X1,
+        Y2 = Y1 + deltaY;
+    ui->loadButton->setGeometry(QRect(QPoint(X2, Y2), QSize(buttonW, buttonH)));
+
+    ui->saveButton->setStyleSheet(ACCENT_COLOR);
+    int X3 = X1,
+        Y3 = Y2 + deltaY;
+    ui->saveButton->setGeometry(QRect(QPoint(X3, Y3), QSize(buttonW, buttonH)));
+
+    ui->restartButton->setStyleSheet(ACCENT_COLOR);
+    int X4 = X1,
+        Y4 = Y3 + deltaY;
+    ui->restartButton->setGeometry(QRect(QPoint(X4, Y4), QSize(buttonW, buttonH)));
+
+    // 设置 logo 的位置
+    logoImg.load(":/img/logo.png");
+    logoBoardW = (WINDOW_WIDTH - judge->RIGHT_UP()) * 0.8; // 等比缩放
+    logoBoardH = (double)logoImg.height() * logoBoardW / logoImg.width();
+    LOGO_X = columnX - logoBoardW / 2;
+    LOGO_Y = columnY - 2.5 * deltaY - logoBoardH / 2;
+
+    //设置 timebar 的位置
+    int TIME_X = columnX - 60,
+        TIME_Y = (LOGO_Y + logoBoardH / 2 + columnY) / 2;
+    ui->TimeBar->setGeometry(QRect(QPoint(TIME_X, TIME_Y), QSize(120,20)));
+
     // 链接计时器
     timerForPlayer = new QTimer;
-    connect(timerForPlayer,&QTimer::timeout, this, &GameWidget::playerTimeout);
-    connect(bot, &Bot::timeout, this, &GameWidget::botTimeout);
-    // connect(mess, &MessageBox::timeUpClose, this, &GameWidget::mousePress);
     timerForBar = new QTimer;
+    connect(timerForPlayer,&QTimer::timeout, this, &GameWidget::playerTimeout);
     connect(timerForBar,&QTimer::timeout,this,&GameWidget::updateBar);
+    connect(bot, &Bot::timeout, this, &GameWidget::botTimeout);
 }
 GameWidget::~GameWidget()
 {
@@ -65,19 +80,19 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
 
     double x = event->position().x(), y = event->position().y();
     int row = 0,column = 0;
-    double checklen = SQUARE_LEN() / 2;
-    for(int i = 1 ; i <=  CHESSBOARD_SIZE ; i++)
+    double checklen = judge->SQUARE_LEN() / 2;
+    for(int i = 1 ; i <= judge->CHESSBOARD_SIZE ; i++)
     {
-        int xi = LEFT_UP() + (i-1) * SQUARE_LEN();
+        int xi = judge->LEFT_UP() + (i-1) * judge->SQUARE_LEN();
         if(abs ( x - xi ) < checklen)
         {
             row = i;
             break;
         }
     }
-    for(int i = 1 ; i <= CHESSBOARD_SIZE ; i++)
+    for(int i = 1 ; i <= judge->CHESSBOARD_SIZE ; i++)
     {
-        int yi = LEFT_UP() + ( i - 1 ) * SQUARE_LEN();
+        int yi = judge->LEFT_UP() + ( i - 1 ) * judge->SQUARE_LEN();
         if(abs( y - yi ) < checklen)
         {
             column = i;
@@ -86,7 +101,7 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
     }
 
     // 此处实现轮流下棋
-    if(row - 1 < 0 || column - 1 < 0 || row - 1 >= CHESSBOARD_SIZE || column - 1 >= CHESSBOARD_SIZE)
+    if(row - 1 < 0 || column - 1 < 0 || row - 1 >= judge->CHESSBOARD_SIZE || column - 1 >= judge->CHESSBOARD_SIZE)
         return;
     if(judge->CheckVaild(row-1, column-1)){
         timerForPlayer->stop();
@@ -111,8 +126,8 @@ void GameWidget::updateBar()
 {
     double value;
     value=(clock()-basetime);
-    qDebug()<<value/(PLAYER_TIMEOUT*1000);
-    ui->TimeBar->setValue(  1000-value/PLAYER_TIMEOUT);
+    // qDebug()<<value/(PLAYER_TIMEOUT*1000);
+    ui->TimeBar->setValue(1000-value/PLAYER_TIMEOUT);
     repaint();
 }
 void GameWidget::closeMB() {if(mess) mess->close();}
@@ -122,27 +137,15 @@ void GameWidget::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true); // 抗锯齿
 
-    // 绘制 demo
-        drawChessboard(painter);
-
-    QPixmap logoImg;
-    logoImg.load(":/img/logo.png");
-
-    int logoBoardW = (WINDOW_WIDTH - RIGHT_UP()) * 0.8; // 等比缩放
-    int logoBoardH = (double)logoImg.height() * logoBoardW / logoImg.width();
-    // 右边 LOGO 大小
-
-    // qDebug() << logoBoardW << " " << logoBoardH << "\n";
-
-    int LOGO_X = columnX - logoBoardW / 2;
-    int LOGO_Y = columnY - logoBoardH / 2 - 100;
+    drawChessboard(painter);
     painter.drawPixmap(LOGO_X, LOGO_Y, logoBoardW, logoBoardH, logoImg);
-
-    if(CHESSBOARD_SIZE == 28)
+    // 绘制 demo
+    if(judge->CHESSBOARD_SIZE == 28)
         drawDemo(painter);
+
     // 绘制棋子
-    for(int i = 0; i < CHESSBOARD_SIZE; i++)
-        for(int j = 0; j < CHESSBOARD_SIZE; j++)
+    for(int i = 0; i < judge->CHESSBOARD_SIZE; i++)
+        for(int j = 0; j < judge->CHESSBOARD_SIZE; j++)
         {
             if(this->judge->GridPoint(i, j) == -1)
             {
@@ -154,49 +157,44 @@ void GameWidget::paintEvent(QPaintEvent *event)
             }
 
         }
-
-
-
-
-
 }
 
 void GameWidget :: drawChessboard(QPainter &painter)
 {
 
-    int number=CHESSBOARD_SIZE;
+    int number=judge->CHESSBOARD_SIZE;
     double left_up,L;
     left_up=(WINDOW_HEIGHT-CHESSBOARD_LEN)/2;
-    L=SQUARE_LEN();
+    L=judge->SQUARE_LEN();
 
     //背景
     painter.setBrush(QColor(BG_COLOR));
     painter.drawRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    painter.setPen(QPen(QColor(GRID_COLOR), GRID_THICKNESS(), Qt::SolidLine));
+    painter.setPen(QPen(QColor(GRID_COLOR), judge->GRID_THICKNESS(), Qt::SolidLine));
     painter.drawRect(left_up, left_up, CHESSBOARD_LEN ,CHESSBOARD_LEN);
 
     // 水平线
     for(int i = 0 ; i < number ; i++)
     {
 
-        painter.drawLine( LEFT_UP() , LEFT_UP() + i * L , LEFT_UP() + ( number - 1 ) * L , LEFT_UP() + i * L );
+        painter.drawLine( judge->LEFT_UP() , judge->LEFT_UP() + i * L , judge->LEFT_UP() + ( number - 1 ) * L , judge->LEFT_UP() + i * L );
     }
 
     //垂直线
     for(int i = 0 ; i < number ; i++)
     {
-        painter.drawLine( LEFT_UP() + i * L , LEFT_UP() ,  LEFT_UP() + i * L ,  LEFT_UP() + ( number - 1 ) * L );
+        painter.drawLine( judge->LEFT_UP() + i * L , judge->LEFT_UP() ,  judge->LEFT_UP() + i * L ,  judge->LEFT_UP() + ( number - 1 ) * L );
     }
 }
 
 void GameWidget::drawWhite(QPainter &painter, double i, double j)
 {
 
-    double Size = SQUARE_LEN() * 0.7, Strength = Size / 4;
+    double Size = judge->SQUARE_LEN() * 0.7, Strength = Size / 4;
 
-    double xi = LEFT_UP() + ( i - 0.35 ) * SQUARE_LEN();
-    double yi = LEFT_UP() + ( j - 0.35 ) * SQUARE_LEN();
+    double xi = judge->LEFT_UP() + ( i - 0.35 ) * judge->SQUARE_LEN();
+    double yi = judge->LEFT_UP() + ( j - 0.35 ) * judge->SQUARE_LEN();
 
     painter.setPen(QPen(QColor(CUS_WHITE), Strength, Qt::SolidLine));
     painter.setBrush(QColor(BG_COLOR));
@@ -207,9 +205,9 @@ void GameWidget::drawWhite(QPainter &painter, double i, double j)
 void GameWidget::drawBlack(QPainter &painter, double i, double j)
 {
 
-    double Size = SQUARE_LEN() * 0.7, Strength = Size / 4;
-    double xi = LEFT_UP() + ( i - 0.35 ) * SQUARE_LEN();
-    double yi = LEFT_UP() + ( j - 0.35 ) * SQUARE_LEN();
+    double Size = judge->SQUARE_LEN() * 0.7, Strength = Size / 4;
+    double xi = judge->LEFT_UP() + ( i - 0.35 ) * judge->SQUARE_LEN();
+    double yi = judge->LEFT_UP() + ( j - 0.35 ) * judge->SQUARE_LEN();
 
     painter.setPen(QPen(QColor(CUS_BLACK), Strength, Qt::SolidLine));
     painter.setBrush(QColor(BG_COLOR));
@@ -219,17 +217,17 @@ void GameWidget::drawBlack(QPainter &painter, double i, double j)
 
 void GameWidget::drawDemo(QPainter &painter) // 绘画 FYH
 {
-    for(int i = 0; i < CHESSBOARD_SIZE; i++)
-        for(int j = 0; j < CHESSBOARD_SIZE; j++)
+    for(int i = 0; i < judge->CHESSBOARD_SIZE; i++)
+        for(int j = 0; j < judge->CHESSBOARD_SIZE; j++)
         {
             if(judge->GridPoint(i, j)) return;
         }
     srand(time(0));
 
     int fyhBoard[50][50] = {};
-    int Len = (CHESSBOARD_SIZE - 1) / 2;
+    int Len = (judge->CHESSBOARD_SIZE - 1) / 2;
 
-    int op = 1 + (CHESSBOARD_SIZE % (Len + 1) == 0);
+    int op = 1 + (judge->CHESSBOARD_SIZE % (Len + 1) == 0);
 
     for(int i = 0; i < Len; i++)
         fyhBoard[0][i] = fyhBoard[i][0] = 1, fyhBoard[i + Len + op][0] = fyhBoard[i + Len + op][Len - 1] = -1;
@@ -237,18 +235,18 @@ void GameWidget::drawDemo(QPainter &painter) // 绘画 FYH
         fyhBoard[Len / 2][i] = 1, fyhBoard[Len / 2 + Len + op][i] = -1;
 
     for(int i = 0; i < Len / 2 ; i++)
-        fyhBoard[i][CHESSBOARD_SIZE - Len + i] = fyhBoard[i][CHESSBOARD_SIZE - i - 1] = -1;
+        fyhBoard[i][judge->CHESSBOARD_SIZE - Len + i] = fyhBoard[i][judge->CHESSBOARD_SIZE - i - 1] = -1;
 
     for(int i = Len / 2; i < Len; i++)
-        fyhBoard[i][CHESSBOARD_SIZE - Len / 2 - 1] = -1;
+        fyhBoard[i][judge->CHESSBOARD_SIZE - Len / 2 - 1] = -1;
 
 //    qDebug() << Len <<"\n";
     if(Len % 2 == 0)
         for(int i = Len / 2; i < Len; i++)
-            fyhBoard[i][CHESSBOARD_SIZE - Len / 2] = -1;
+            fyhBoard[i][judge->CHESSBOARD_SIZE - Len / 2] = -1;
 
-    for(int i = 0; i < CHESSBOARD_SIZE; i++)
-        for(int j = 0; j < CHESSBOARD_SIZE; j++)
+    for(int i = 0; i < judge->CHESSBOARD_SIZE; i++)
+        for(int j = 0; j < judge->CHESSBOARD_SIZE; j++)
         {
             if(!fyhBoard[j][i]) continue;
             if(fyhBoard[j][i] > 0)
@@ -261,7 +259,7 @@ void GameWidget::drawDemo(QPainter &painter) // 绘画 FYH
         {
             double x = (i - Len / 2.0) / Len * 2, y = (j + 1 - Len / 2.0) / Len * 2;
 //            qDebug() << i << " " << j <<"->"<<x<<" "<<y<<" "<<fabs(pow((x * x + y * y - 1), 3) - x * x * y * y * y)<<"\n";
-            if(fabs(pow((x * x + y * y - 0.4), 1) - 4 * x * x * y * y * y) <= 0.143 * 28 / CHESSBOARD_SIZE)
+            if(fabs(pow((x * x + y * y - 0.4), 1) - 4 * x * x * y * y * y) <= 0.143 * 28 / judge->CHESSBOARD_SIZE)
                 drawBlack(painter, i + Len + op, (Len - j - 1) + Len + op);
             else
                 drawWhite(painter, i + Len + op, (Len - j - 1) + Len + op);
@@ -303,28 +301,31 @@ void GameWidget::botTimeout() {if(judge->curPlayer >= 0) gameWin(1);}
 */
 void GameWidget::sendMessage(int type)
 {
-    // mess = new MessageBox(QString("qwq"), this);
+    if(mess){
+        mess->close();
+        mess = nullptr;
+    }
     if(!judge->runMode)
     {
         switch(type)
         {
-            case 0:
+            /*case 0:
                 mess = new MessageBox(QString("Congratulations!\n\nYou WIN"), 0, this);
                 break;
             case 1:
                 mess = new MessageBox(QString("Sorry!\n\nYou LOSE"), 0, this);
-                break;
+                break;*/
             case 2:
                 mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, this);
                 break;
             case 3:
-                mess = new MessageBox(QString("TIME'S UP!\n\nYou LOSE"), 0, this);
+                mess = new MessageBox(QString("TIME'S UP! You LOSE!\n\n<detailed info>"), 0, this);
                 break;
             case 4:
                 mess = new MessageBox(QString("Bot failed to make\na move.\nYou WIN"), 0, this);
                 break;
             case 5:
-                mess = new MessageBox(QString("Sorry, You Resign!\n\nPlease restart."), 0, this);
+                mess = new MessageBox(QString("You Resign!\n\n<detailed info>"), 0, this);
                 break;
         }
     }
@@ -335,12 +336,12 @@ void GameWidget::sendMessage(int type)
                 mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, this);
                 break;
             case 3:
-                if(judge->curPlayerBak) mess = new MessageBox(QString("TIME'S UP!\n\nPlayer1 LOSE"), 0, this);
-                else mess = new MessageBox(QString("TIME'S UP!\n\nPlayer2 LOSE"), 0, this);
+                if(judge->curPlayerBak) mess = new MessageBox(QString("TIME'S UP! Player1 LOSE!\n\n<detailed info>"), 0, this);
+                else mess = new MessageBox(QString("TIME'S UP! Player2 LOSE!\n\n<detailed info>"), 0, this);
                 break;
             case 5:
-                if(judge->curPlayerBak) mess = new MessageBox(QString("Sorry, Player1 Resign!\n\nPlease restart."), 0, this);
-                else mess = new MessageBox(QString("Sorry, Player2 Resign!\n\nPlease restart."), 0, this);
+                if(judge->curPlayerBak) mess = new MessageBox(QString("Player1 Resign!\n\n<detailed info>"), 0, this);
+                else mess = new MessageBox(QString("Player2 Resign!\n\n<detailed info>"), 0, this);
                 break;
         }
     }
@@ -350,20 +351,21 @@ void GameWidget::sendMessage(int type)
 // 定义按钮行为
 void GameWidget::on_restartButton_clicked()
 {
-    emit restartSingal(0);
-    judge->init();
     if(mess){
         mess->close();
         mess = nullptr;
     }
     this->close();
+
     timerForPlayer->stop();
     timerForBar->stop();
+    emit restartSingal(0);
+    judge->init();
 }
 void GameWidget::on_resignButton_clicked()
 {
+    sendMessage(5);
     judge->curPlayerBak = judge->curPlayer;
-    if(!mess) sendMessage(5);
     judge->curPlayer = -1;
     timerForPlayer->stop();
     timerForBar->stop();

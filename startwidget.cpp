@@ -1,9 +1,10 @@
 #include "startwidget.h"
 #include "ui_startwidget.h"
 
-StartWidget::StartWidget(QWidget *parent) :
+StartWidget::StartWidget(Judge *j, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::StartWidget)
+    ui(new Ui::StartWidget),
+    judge(j)
 {
     ui->setupUi(this);
     setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -24,13 +25,8 @@ StartWidget::StartWidget(QWidget *parent) :
     ui->settingsBtn->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
 
     // 游戏选项
-    settingDialog = new SettingDialog(this);
+    settingDialog = new SettingDialog(judge, this);
     curGameLayer = 1;
-    runMode = 0;
-    gridSize = 9;
-
-    connect(settingDialog, &SettingDialog::rtChessBd, this, &StartWidget::setChessBd);
-    connect(settingDialog, &SettingDialog::rtRunMode, this, &StartWidget::setRunMode);
 }
 
 StartWidget::~StartWidget()
@@ -58,20 +54,17 @@ void StartWidget::paintEvent(QPaintEvent *event)
 
 void StartWidget::on_startAsBlack_clicked()
 {
-    emit startAsBlackSingal(curGameLayer);
-    emit startAs(1, runMode, gridSize);
+    emit switchLayer(curGameLayer);
+    emit startAs(1);
     this->close();
 }
 void StartWidget::on_startAsWhite_clicked()
 {
-    emit startAsWhiteSingal(curGameLayer);
-    emit startAs(-1, runMode, gridSize);
+    emit switchLayer(curGameLayer);
+    emit startAs(-1);
     this->close();
 }
 void StartWidget::on_settingsBtn_clicked()
 {
     settingDialog->show();
 }
-
-void StartWidget::setRunMode(int mode) {runMode = mode;}
-void StartWidget::setChessBd(int size) {gridSize = size;}

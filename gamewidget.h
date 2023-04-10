@@ -5,15 +5,11 @@
 #include <QPainter>
 #include <QWidget>
 #include <QMouseEvent>
+#include <math.h>
+#include <ctime>
 #include "judge.h"
 #include "bot.h"
 #include "messagebox.h"
-
-#define CHESSBOARD_SIZE judge->CHESSBOARD_SIZE
-#define GRID_THICKNESS judge->GRID_THICKNESS
-#define SQUARE_LEN judge->SQUARE_LEN
-#define LEFT_UP judge->LEFT_UP
-#define RIGHT_UP judge->RIGHT_UP
 
 namespace Ui { class GameWidget; }
 
@@ -22,11 +18,8 @@ class GameWidget : public QWidget
     Q_OBJECT
 
 public:
-    GameWidget(QWidget *parent = nullptr);
+    GameWidget(Judge *j, Bot *b, QWidget *parent = nullptr);
     ~GameWidget();
-
-    Judge *judge;
-    Bot *bot;
 
 signals:
     void restartSingal(int index);   // 用于发送信号，使得 judge 得以重置
@@ -65,16 +58,11 @@ private:
     */
     void sendMessage(int type);
 
-    int columnX = RIGHT_UP() + (WINDOW_WIDTH - RIGHT_UP()) / 2;
-    int columnY = (double)WINDOW_HEIGHT / 20 * 8 - (double)WINDOW_HEIGHT / 31;
-    // 右边侧栏位置中线
-
-    int buttonH = (double)WINDOW_HEIGHT / 31 * 2;
-    int buttonW = (double)WINDOW_HEIGHT / 31 * 6;
-    // 右边按钮大小
-
-
-    MessageBox *mess;
+    Judge *judge;
+    Bot *bot;
+    MessageBox *mess = nullptr;
+    int columnX, columnY, buttonW, buttonH;
+    QPixmap logoImg;
 };
 
 #endif // GAMEWIDGET_H

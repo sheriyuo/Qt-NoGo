@@ -1,10 +1,10 @@
 #include "bot.h"
-#include "judge.h"
 
-Bot::Bot(QObject *parent) :
-    QObject(parent)
+Bot::Bot(Judge *j, QObject *parent) :
+    QObject(parent),
+    judge(j)
 {
-    judge = nullptr;
+    // none
 }
 
 Bot::~Bot()
@@ -38,8 +38,8 @@ void Bot::makeRandomMove()
             emit timeout();
             return;
         }
-        x = rand() % CHESSBOARD_SIZE;
-        y = rand() % CHESSBOARD_SIZE;
+        x = rand() % judge->CHESSBOARD_SIZE;
+        y = rand() % judge->CHESSBOARD_SIZE;
     }
     while(!judge->CheckVaild(x, y));
     judge->PlaceAPiece(x, y);

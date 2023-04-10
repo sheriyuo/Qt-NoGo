@@ -1,4 +1,4 @@
-QT       += core gui
+QT += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -13,6 +13,9 @@ HEADERS += \
     gamewidget.h \
     judge.h \
     messagebox.h \
+    network/networkdata.h \
+    network/networkserver.h \
+    network/networksocket.h \
     settingdialog.h \
     startwidget.h
 
@@ -22,6 +25,9 @@ SOURCES += \
     judge.cpp \
     main.cpp \
     messagebox.cpp \
+    network/networkdata.cpp \
+    network/networkserver.cpp \
+    network/networksocket.cpp \
     settingdialog.cpp \
     startwidget.cpp
 

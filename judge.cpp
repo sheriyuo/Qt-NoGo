@@ -3,12 +3,16 @@
 Judge::Judge(QObject *parent) :
     QObject(parent)
 {
+    CHESSBOARD_SIZE = 9;
+    runMode = 0;
+    IP = "127.0.0.1";
+    PORT = 14514;
     init();
 }
 
 Judge::~Judge()
 {
-    // delete this;
+    delete this;
 }
 
 void Judge::init()
@@ -175,12 +179,10 @@ void Judge::MergeBlock(int x, int y) // 启发式合并
     // 清空
 }
 
-void Judge::setPlayerRole(int player, int mode, int size)
+void Judge::setPlayerRole(int player)
 {
     playerRole = player;
     if(player == -1) curPlayer = 0;
     else curPlayer = 1;
     // qDebug() << curPlayer;
-    runMode = mode;
-    CHESSBOARD_SIZE = size;
 }

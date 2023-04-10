@@ -23,13 +23,10 @@
 #define CUS_WHITE 0x7ACBF5
 
 #define BTOL (double)0.8
-    //(外边框与小正方形变长的比例 )
-// #define SQUARE_LEN ((double)(CHESSBOARD_LEN) / (CHESSBOARD_SIZE - 1 + 2 * BTOL ))
-// #define LEFT_UP ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + BTOL * SQUARE_LEN) //+SQUARE_LEN)
-// #define RIGHT_UP ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + CHESSBOARD_LEN) //+SQUARE_LEN)
+    //(外边框与小正方形变长的比例
 
-const int dx[4] = {1, 0, -1, 0};
-const int dy[4] = {0, 1, 0, -1};
+static const int dx[4] = {1, 0, -1, 0};
+static const int dy[4] = {0, 1, 0, -1};
 
 typedef std::pair<int, int> Item;
 typedef std::vector<Item> ItemVector;
@@ -52,10 +49,12 @@ public:
     int GridPoint(int x, int y); // 访问 board 数组， 返回 (x, y) 的状态 ：0/-1/1
     void PlaceAPiece(int x, int y); // 编辑 board 数组，在 (x, y) 下 CurColor() 颜色的棋
 
-    int runMode;
     int playerRole; // -1->white 1->black
     int curPlayer, curPlayerBak; // 0->bot 1->player -1->game over
     int CHESSBOARD_SIZE;
+    int runMode;
+    QString IP;
+    int PORT;
 
     int GRID_THICKNESS() {return (CHESSBOARD_LEN / CHESSBOARD_SIZE / 6);}
     double SQUARE_LEN() {return ((double)(CHESSBOARD_LEN) / (CHESSBOARD_SIZE - 1 + 2 * BTOL));}
@@ -66,7 +65,7 @@ signals:
     void modifiedCB(); // 棋盘更新信号
 
 public slots:
-    void setPlayerRole(int player, int mode, int size);
+    void setPlayerRole(int player);
 
 private:
     void CleanVis(); // 清空 mergedBlock
@@ -78,7 +77,6 @@ private:
     int chessBelong[52][52]; // 棋子属于的棋子块
     int blockVis[(52) * (52)]; // 棋子块至多只能累加一次气数
     int blockCnt; // 棋子块个数
-
 
     LibertySet blockLiberty[(52) * (52)]; // 气的 Set
     ItemVector chessBlock[(52) * (52)]; // 棋子块的编号
