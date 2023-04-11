@@ -28,20 +28,20 @@ GameWidget::GameWidget(Judge *j, Bot *b, QWidget *parent) :
 
     deltaY = (double)(judge->RIGHT_UP() - columnY) / 4;
     // 设置按钮样式，无边框在 ui 文件中设置
-    ui->resignButton->setStyleSheet(ACCENT_COLOR); // 文字颜色
+    ui->loadButton->setStyleSheet(ACCENT_COLOR); // 文字颜色
     int X1 = columnX - buttonW / 2,
         Y1 = columnY - buttonH / 2;
-    ui->resignButton->setGeometry(QRect(QPoint(X1, Y1), QSize(buttonW, buttonH))); // 位置
-
-    ui->loadButton->setStyleSheet(ACCENT_COLOR);
-    int X2 = X1,
-        Y2 = Y1 + deltaY;
-    ui->loadButton->setGeometry(QRect(QPoint(X2, Y2), QSize(buttonW, buttonH)));
+    ui->loadButton->setGeometry(QRect(QPoint(X1, Y1), QSize(buttonW, buttonH))); // 位置
 
     ui->saveButton->setStyleSheet(ACCENT_COLOR);
+    int X2 = X1,
+        Y2 = Y1 + deltaY;
+    ui->saveButton->setGeometry(QRect(QPoint(X2, Y2), QSize(buttonW, buttonH)));
+
+    ui->resignButton->setStyleSheet(ACCENT_COLOR);
     int X3 = X1,
         Y3 = Y2 + deltaY;
-    ui->saveButton->setGeometry(QRect(QPoint(X3, Y3), QSize(buttonW, buttonH)));
+    ui->resignButton->setGeometry(QRect(QPoint(X3, Y3), QSize(buttonW, buttonH)));
 
     ui->restartButton->setStyleSheet(ACCENT_COLOR);
     int X4 = X1,
@@ -56,9 +56,9 @@ GameWidget::GameWidget(Judge *j, Bot *b, QWidget *parent) :
     LOGO_Y = columnY - 2.5 * deltaY - logoBoardH / 2;
 
     //设置 timebar 的位置
-    int TIME_X = columnX - 60,
+    int TIME_X = columnX - 100,
         TIME_Y = (LOGO_Y + logoBoardH / 2 + columnY) / 2;
-    ui->TimeBar->setGeometry(QRect(QPoint(TIME_X, TIME_Y), QSize(120,20)));
+    ui->TimeBar->setGeometry(QRect(QPoint(TIME_X, TIME_Y), QSize(200,15)));
 
     // 链接计时器
     timerForPlayer = new QTimer;

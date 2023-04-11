@@ -86,9 +86,9 @@
   <widget class="QProgressBar" name="TimeBar">
    <property name="geometry">
     <rect>
-     <x>440</x>
+     <x>420</x>
      <y>200</y>
-     <width>83</width>
+     <width>120</width>
      <height>20</height>
     </rect>
    </property>
@@ -102,11 +102,11 @@
 {
 background:rgb(186,215,233);
 color:white;
-border-radius:8px;
+border-radius:5px;
 }
 QProgressBar::chunk
 {
-border-radius:8px;
+border-radius:5px;
 background-color:rgb(255,192,203);
 }</string>
    </property>
