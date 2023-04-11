@@ -6,7 +6,7 @@
 #include <QTimer>
 #include <set>
 
-#define PLAYER_TIMEOUT 10 // s
+#define PLAYER_TIMEOUT 10  // s
 #define BOT_TIMEOUT 1      // s
 
 #define WINDOW_WIDTH 1024
@@ -48,6 +48,7 @@ public:
     int CurColor(); // 当前落棋颜色
     int GridPoint(int x, int y); // 访问 board 数组， 返回 (x, y) 的状态 ：0/-1/1
     void PlaceAPiece(int x, int y); // 编辑 board 数组，在 (x, y) 下 CurColor() 颜色的棋
+    void SaveStep(int x,int y); // 记录当前在 (x, y) 下棋
 
     int playerRole; // -1->white 1->black
     int curPlayer, curPlayerBak; // 0->bot 1->player -1->game over
@@ -80,6 +81,7 @@ private:
 
     LibertySet blockLiberty[(52) * (52)]; // 气的 Set
     ItemVector chessBlock[(52) * (52)]; // 棋子块的编号
+    ItemVector savedStep; // 记录棋局的 vector<pair<int,int> >
     std::vector<int>mergedBlock;
 };
 

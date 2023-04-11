@@ -28,8 +28,11 @@ signals:
     void turnForBot();              // 有请 Bot 表演
 
 public slots:
-    void on_restartButton_clicked(); // 链接 restart 按钮的行为
+    void on_loadButton_clicked(); // 链接 load 按钮的行为
+    void on_saveButton_clicked(); // 链接 save 按钮的行为
     void on_resignButton_clicked(); // 链接 resign 按钮的行为
+    void on_restartButton_clicked(); // 链接 restart 按钮的行为
+
     void startTimer();    // 当对局开始时，无论谁先手（机器下第一个棋子认为不需要时间），都打开玩家的计时器
     void playerTimeout(); // 玩家超时的槽函数，用于链接计时器
     void botTimeout();    // bot超时的槽函数，用于链接计时器

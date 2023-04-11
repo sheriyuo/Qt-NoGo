@@ -29,10 +29,16 @@ void Judge::init()
 
 int Judge::GridPoint(int x, int y) {return board[x][y];}
 
+void Judge::SaveStep(int x,int y) // 存下当前步数
+{
+    savedStep.push_back(std::make_pair(x,y));
+}
+
 void Judge::PlaceAPiece(int x, int y)
 {
     board[x][y] = CurColor();
     UpdateCurStep(x, y);
+    SaveStep(x, y);
     curPlayer ^= 1;
     emit modifiedCB();
 }
