@@ -382,9 +382,11 @@ void GameWidget::dataToString()
             dataStr[len++] = 'G';
             break;
         }
-        char x = cur.first + 'A', y = cur.first + '1';
+        char x = cur.first + 'A', y = cur.second + '1';
         dataStr[len++] = x, dataStr[len++] = y, dataStr[len++] = ' ';
     }
+
+    qDebug() << dataStr << "\n";
 }
 
 void GameWidget::stringToData()
@@ -396,6 +398,7 @@ void GameWidget::stringToData()
         if(i == len - 1)
         {
             // 'G' 我还没写
+            break;
         }
         int x = dataStr[i] - 'A', y = dataStr[i+1] - '1';
         qDebug() << x << "," << y << "\n";

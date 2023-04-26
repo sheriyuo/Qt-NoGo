@@ -35,7 +35,8 @@ int Judge::GridPoint(int x, int y) {return board[x][y];}
 
 void Judge::SaveStep(int x,int y) // 存下当前步数
 {
-    savedStep.push_back(std::make_pair(x,y));
+    savedStep.push_back(Point(x,y));
+    qDebug() << "Save: " << x << "," << y << "\n";
 }
 
 void Judge::PlaceAPiece(int x, int y)
@@ -209,7 +210,6 @@ void Judge::updateStep(ItemVector newStep)
     Judge::init(); // 更新 savedStep
     for(Item cur : newStep)
     {
-        savedStep.push_back(cur);
         Judge::PlaceAPiece(cur.first, cur.second); // 重新绘制棋盘并处理状态
     }
     // timerForPlayer 在 gamewidget 里面，要在外面 init。
