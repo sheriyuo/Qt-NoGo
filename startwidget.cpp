@@ -83,11 +83,11 @@ void StartWidget::on_startAsWhite_clicked_OFFL()
 }
 void StartWidget::on_startAsBlack_clicked_OL()
 {
-    MessageBox* mess = new MessageBox("还没写，别你吗急", 0, this);
+    MessageBox* mess = new MessageBox("Fyh's Mother Not Found", 0, this);
     mess->show();
 }
 void StartWidget::on_startAsWhite_clicked_OL()
 {
-    MessageBox* mess = new MessageBox("还没写，别你吗急", 0, this);
+    MessageBox* mess = new MessageBox("Fyh's Father Not Found", 0, this);
     mess->show();
 }
