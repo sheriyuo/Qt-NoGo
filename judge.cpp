@@ -5,8 +5,12 @@ Judge::Judge(QObject *parent) :
 {
     CHESSBOARD_SIZE = 9;
     runMode = 0;
+
     IP = "127.0.0.1";
     PORT = 14514;
+    server = new NetworkServer(this);
+    socket = new NetworkSocket(new QTcpSocket(), this);
+
     init();
 }
 
@@ -191,4 +195,10 @@ void Judge::setPlayerRole(int player)
     if(player == -1) curPlayer = 0;
     else curPlayer = 1;
     // qDebug() << curPlayer;
+}
+
+// 网络库相关
+void Judge::recData(QTcpSocket* client, NetworkData data)
+{
+
 }

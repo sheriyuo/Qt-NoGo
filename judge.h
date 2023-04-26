@@ -5,6 +5,8 @@
 #include <QDebug>
 #include <QTimer>
 #include <set>
+#include "network/networkserver.h"
+#include "network/networksocket.h"
 
 #define PLAYER_TIMEOUT 10  // s
 #define BOT_TIMEOUT 1      // s
@@ -55,7 +57,9 @@ public:
     int CHESSBOARD_SIZE;
     int runMode;
     QString IP;
-    int PORT;
+    quint16 PORT;
+    NetworkServer *server;
+    NetworkSocket *socket;
 
     int GRID_THICKNESS() {return (CHESSBOARD_LEN / CHESSBOARD_SIZE / 6);}
     double SQUARE_LEN() {return ((double)(CHESSBOARD_LEN) / (CHESSBOARD_SIZE - 1 + 2 * BTOL));}
@@ -67,6 +71,7 @@ signals:
 
 public slots:
     void setPlayerRole(int player);
+    void recData(QTcpSocket* client, NetworkData data);
 
 private:
     void CleanVis(); // 清空 mergedBlock

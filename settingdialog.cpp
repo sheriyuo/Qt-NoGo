@@ -7,7 +7,7 @@ SettingDialog::SettingDialog(Judge *j, QWidget *parent) :
     judge(j)
 {
     ui->setupUi(this);
-    WIDTH = WINDOW_WIDTH / 2, HEIGHT = WINDOW_HEIGHT / 2;
+    WIDTH = WINDOW_WIDTH * 3 / 5, HEIGHT = WINDOW_HEIGHT / 2;
     setFixedSize(WIDTH, HEIGHT);
     // setWindowIcon(QIcon(":/img/icon.png"));
 
@@ -26,7 +26,7 @@ SettingDialog::SettingDialog(Judge *j, QWidget *parent) :
     ui->chessbdCB->setStyleSheet(ACCENT_COLOR);
         H = (double)HEIGHT / 10,
         W = (double)HEIGHT / 2.5;
-        X = (double)WIDTH / 4 - (double)HEIGHT / 5,
+        X = (double)WIDTH / 6 - (double)HEIGHT / 6,
         Y = (double)HEIGHT / 20 * 3 - (double)HEIGHT / 20;
     ui->gamemode->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
         Y = (double)HEIGHT / 20 * 5 - (double)HEIGHT / 20;
@@ -44,9 +44,7 @@ SettingDialog::SettingDialog(Judge *j, QWidget *parent) :
     ui->PORTinput->setStyleSheet(ACCENT_COLOR);
     ui->PORTinput->setText(QString::number(judge->PORT));
     ui->PORTinput->setAlignment(Qt::AlignVCenter);
-        H = (double)HEIGHT / 10,
-        W = (double)HEIGHT / 2;
-        X = (double)WIDTH * 3 / 4 - (double)HEIGHT / 3.5,
+        X = (double)WIDTH * 3 / 6 - (double)HEIGHT / 5,
         Y = (double)HEIGHT / 20 * 3 - (double)HEIGHT / 20;
     ui->IPtitle->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
         Y = (double)HEIGHT / 20 * 5 - (double)HEIGHT / 20;
@@ -56,8 +54,23 @@ SettingDialog::SettingDialog(Judge *j, QWidget *parent) :
         Y = (double)HEIGHT / 20 * 12 - (double)HEIGHT / 20;
     ui->PORTinput->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
 
+    ui->serverStatus->setStyleSheet(ACCENT_COLOR);
+    ui->clientStatus->setStyleSheet(ACCENT_COLOR);
+    ui->restartBtn->setStyleSheet(ACCENT_COLOR);
+    ui->reconnectBtn->setStyleSheet(ACCENT_COLOR);
+        X = (double)WIDTH * 5 / 6 - (double)HEIGHT / 5,
+        Y = (double)HEIGHT / 20 * 3 - (double)HEIGHT / 20;
+    ui->serverStatus->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
+        Y = (double)HEIGHT / 20 * 5 - (double)HEIGHT / 20;
+    ui->restartBtn->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
+        Y = (double)HEIGHT / 20 * 10 - (double)HEIGHT / 20;
+    ui->clientStatus->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
+        Y = (double)HEIGHT / 20 * 12 - (double)HEIGHT / 20;
+    ui->reconnectBtn->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
+
     connect(ui->gamemodeCB, &QComboBox::activated, this, &SettingDialog::getRunMode);
     connect(ui->chessbdCB, &QComboBox::activated, this, &SettingDialog::getChessBd);
+    connect(judge->socket->base(), &QTcpSocket::connected, this, [&](){this->ui->clientStatus->setText("Connected");});
 }
 
 SettingDialog::~SettingDialog()
@@ -73,14 +86,6 @@ void SettingDialog::paintEvent(QPaintEvent *event)
     // painter.setPen(QPen(QColor(0xf9f8ef), Strength, Qt::SolidLine));
     painter.setBrush(QColor(BG_COLOR));
     painter.drawRect(0, 0, WIDTH, HEIGHT);
-}
-
-void SettingDialog::on_closeBtn_clicked()
-{
-    judge->IP = ui->IPinput->text();
-    judge->PORT = ui->PORTinput->text().toInt();
-    // qDebug() << judge->IP << ' ' << judge->PORT << '\n';
-    this->close();
 }
 
 void SettingDialog::getRunMode(int mode)
@@ -99,4 +104,46 @@ void SettingDialog::getChessBd(int size)
         default: realSz = 9;
     }
     judge->CHESSBOARD_SIZE = realSz;
+}
+
+// 按钮行为
+void SettingDialog::on_closeBtn_clicked()
+{
+    judge->IP = ui->IPinput->text();
+    judge->PORT = ui->PORTinput->text().toInt();
+    // qDebug() << judge->IP << ' ' << judge->PORT << '\n';
+    this->close();
+}
+void SettingDialog::on_restartBtn_clicked()
+{
+    judge->IP = ui->IPinput->text();
+    judge->PORT = ui->PORTinput->text().toInt();
+
+    this->ui->serverStatus->setText("Server: Running");
+    this->ui->PORTtitle->setText("Server Port");
+    this->ui->reconnectBtn->setDisabled(true);
+    this->ui->IPinput->setDisabled(true);
+
+    disconnect(judge->server, &NetworkServer::receive, judge, &Judge::recData);
+    delete judge->server;
+    judge->server = new NetworkServer(judge);
+    judge->server->listen(QHostAddress::Any, judge->PORT);
+    connect(judge->server, &NetworkServer::receive, judge, &Judge::recData);
+}
+void SettingDialog::on_reconnectBtn_clicked()
+{
+    judge->IP = ui->IPinput->text();
+    judge->PORT = ui->PORTinput->text().toInt();
+
+    this->ui->clientStatus->setText("Connecting");
+    this->ui->restartBtn->setDisabled(true);
+
+    // 关闭连接
+    judge->socket->bye();
+    // 新建连接
+    judge->socket->hello(judge->IP, judge->PORT);
+    if(!judge->socket->base()->waitForConnected(3000))
+    {
+        this->ui->clientStatus->setText("Connect Failed");
+    }
 }

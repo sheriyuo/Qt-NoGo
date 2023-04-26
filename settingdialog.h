@@ -16,9 +16,12 @@ public:
     ~SettingDialog();
 
 signals:
+    void toConnect();
 
 public slots:
     void on_closeBtn_clicked();
+    void on_restartBtn_clicked();
+    void on_reconnectBtn_clicked();
     void getChessBd(int size);
     void getRunMode(int mode);
 
