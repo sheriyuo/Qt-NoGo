@@ -27,6 +27,10 @@ StartWidget::StartWidget(Judge *j, QWidget *parent) :
     // 游戏选项
     settingDialog = new SettingDialog(judge, this);
     curGameLayer = 1;
+
+    connect(settingDialog, &SettingDialog::goOnline, this, &StartWidget::switchToOL);
+    connect(ui->startAsBlack, &QPushButton::clicked, this, &StartWidget::on_startAsBlack_clicked_OFFL);
+    connect(ui->startAsWhite, &QPushButton::clicked, this, &StartWidget::on_startAsWhite_clicked_OFFL);
 }
 
 StartWidget::~StartWidget()
@@ -52,19 +56,38 @@ void StartWidget::paintEvent(QPaintEvent *event)
     painter.drawPixmap(X, Y, W, H, logoImg);
 }
 
-void StartWidget::on_startAsBlack_clicked()
+void StartWidget::switchToOL()
+{
+    disconnect(ui->startAsBlack, &QPushButton::clicked, this, &StartWidget::on_startAsBlack_clicked_OFFL);
+    disconnect(ui->startAsWhite, &QPushButton::clicked, this, &StartWidget::on_startAsWhite_clicked_OFFL);
+    connect(ui->startAsBlack, &QPushButton::clicked, this, &StartWidget::on_startAsBlack_clicked_OL);
+    connect(ui->startAsWhite, &QPushButton::clicked, this, &StartWidget::on_startAsWhite_clicked_OL);
+}
+
+// 按钮行为
+void StartWidget::on_settingsBtn_clicked()
+{
+    settingDialog->show();
+}
+void StartWidget::on_startAsBlack_clicked_OFFL()
 {
     emit switchLayer(curGameLayer);
     emit startAs(1);
     this->close();
 }
-void StartWidget::on_startAsWhite_clicked()
+void StartWidget::on_startAsWhite_clicked_OFFL()
 {
     emit switchLayer(curGameLayer);
     emit startAs(-1);
     this->close();
 }
-void StartWidget::on_settingsBtn_clicked()
+void StartWidget::on_startAsBlack_clicked_OL()
 {
-    settingDialog->show();
+    MessageBox* mess = new MessageBox("还没写，别你吗急", 0, this);
+    mess->show();
+}
+void StartWidget::on_startAsWhite_clicked_OL()
+{
+    MessageBox* mess = new MessageBox("还没写，别你吗急", 0, this);
+    mess->show();
 }

@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QPainter>
 #include "judge.h"
+#include "messagebox.h"
 
 namespace Ui { class SettingDialog; }
 
@@ -16,7 +17,7 @@ public:
     ~SettingDialog();
 
 signals:
-    void toConnect();
+    void goOnline();
 
 public slots:
     void on_closeBtn_clicked();

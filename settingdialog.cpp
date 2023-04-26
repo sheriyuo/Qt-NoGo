@@ -121,14 +121,20 @@ void SettingDialog::on_restartBtn_clicked()
 
     this->ui->serverStatus->setText("Server: Running");
     this->ui->PORTtitle->setText("Server Port");
+    this->ui->gamemodeCB->setCurrentIndex(1);
+    this->ui->chessbdCB->setCurrentIndex(0);
     this->ui->reconnectBtn->setDisabled(true);
     this->ui->IPinput->setDisabled(true);
+    this->ui->gamemodeCB->setDisabled(true);
+    this->ui->chessbdCB->setDisabled(true);
 
     disconnect(judge->server, &NetworkServer::receive, judge, &Judge::recData);
     delete judge->server;
     judge->server = new NetworkServer(judge);
     judge->server->listen(QHostAddress::Any, judge->PORT);
     connect(judge->server, &NetworkServer::receive, judge, &Judge::recData);
+
+    emit goOnline();
 }
 void SettingDialog::on_reconnectBtn_clicked()
 {
@@ -136,7 +142,11 @@ void SettingDialog::on_reconnectBtn_clicked()
     judge->PORT = ui->PORTinput->text().toInt();
 
     this->ui->clientStatus->setText("Connecting");
+    this->ui->gamemodeCB->setCurrentIndex(1);
+    this->ui->chessbdCB->setCurrentIndex(0);
     this->ui->restartBtn->setDisabled(true);
+    this->ui->gamemodeCB->setDisabled(true);
+    this->ui->chessbdCB->setDisabled(true);
 
     // 关闭连接
     judge->socket->bye();
@@ -146,4 +156,6 @@ void SettingDialog::on_reconnectBtn_clicked()
     {
         this->ui->clientStatus->setText("Connect Failed");
     }
+
+    emit goOnline();
 }
