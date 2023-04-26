@@ -370,3 +370,11 @@ void GameWidget::on_resignButton_clicked()
     timerForPlayer->stop();
     timerForBar->stop();
 }
+void GameWidget::on_loadButton_clicked()
+{
+
+}
+void GameWidget::on_saveButton_clicked()
+{
+
+}
