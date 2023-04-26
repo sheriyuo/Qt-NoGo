@@ -197,6 +197,23 @@ void Judge::setPlayerRole(int player)
     // qDebug() << curPlayer;
 }
 
+// 读档相关
+ItemVector Judge::getStep()
+{
+    return savedStep;
+}
+// 更新 savedStep 并更新 board 数组
+void Judge::updateStep(ItemVector newStep)
+{
+    savedStep.clear();
+    Judge::init(); // 更新 savedStep
+    for(Item cur : newStep)
+    {
+        savedStep.push_back(cur);
+        Judge::PlaceAPiece(cur.first, cur.second); // 重新绘制棋盘并处理状态
+    }
+    // timerForPlayer 在 gamewidget 里面，要在外面 init。
+}
 // 网络库相关
 void Judge::recData(QTcpSocket* client, NetworkData data)
 {

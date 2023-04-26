@@ -240,7 +240,6 @@ void GameWidget::drawDemo(QPainter &painter) // 绘画 FYH
     for(int i = Len / 2; i < Len; i++)
         fyhBoard[i][judge->CHESSBOARD_SIZE - Len / 2 - 1] = -1;
 
-//    qDebug() << Len <<"\n";
     if(Len % 2 == 0)
         for(int i = Len / 2; i < Len; i++)
             fyhBoard[i][judge->CHESSBOARD_SIZE - Len / 2] = -1;
@@ -258,7 +257,6 @@ void GameWidget::drawDemo(QPainter &painter) // 绘画 FYH
         for(int j = 0; j < Len; j++) // 心形线
         {
             double x = (i - Len / 2.0) / Len * 2, y = (j + 1 - Len / 2.0) / Len * 2;
-//            qDebug() << i << " " << j <<"->"<<x<<" "<<y<<" "<<fabs(pow((x * x + y * y - 1), 3) - x * x * y * y * y)<<"\n";
             if(fabs(pow((x * x + y * y - 0.4), 1) - 4 * x * x * y * y * y) <= 0.143 * 28 / judge->CHESSBOARD_SIZE)
                 drawBlack(painter, i + Len + op, (Len - j - 1) + Len + op);
             else
@@ -370,11 +368,53 @@ void GameWidget::on_resignButton_clicked()
     timerForPlayer->stop();
     timerForBar->stop();
 }
+
+// 存档读档相关编码
+void GameWidget::dataToString()
+{
+    std::memset(dataStr,0,sizeof(dataStr));
+    int len = 0;
+    ItemVector step = judge->getStep(); // 读取 savedStep
+    for(Item cur : step)
+    {
+        if(cur.first < 0)
+        {
+            dataStr[len++] = 'G';
+            break;
+        }
+        char x = cur.first + 'A', y = cur.first + '1';
+        dataStr[len++] = x, dataStr[len++] = y, dataStr[len++] = ' ';
+    }
+}
+
+void GameWidget::stringToData()
+{
+    dataVec.clear();
+    int len = strlen(dataStr);
+    for(int i = 0; i < len; i += 3)
+    {
+        if(i == len - 1)
+        {
+            // 'G' 我还没写
+        }
+        int x = dataStr[i] - 'A', y = dataStr[i+1] - '1';
+        qDebug() << x << "," << y << "\n";
+        dataVec.push_back(Point(x, y));
+    }
+}
+
+// 存档读档按钮信号
 void GameWidget::on_loadButton_clicked()
 {
+    // 文件操作我还没写
 
+    stringToData();
+    judge->updateStep(dataVec);
+    startTimer();
 }
 void GameWidget::on_saveButton_clicked()
 {
+    dataToString();
 
+    // 文件操作我还没写
 }

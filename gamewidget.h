@@ -51,6 +51,8 @@ private:
     void gameLose(int type = 0); // 输掉游戏， type=1 表示超时
     void gameWin(int type = 0);  // 赢了游戏， type=1 表示机器超时
 
+    void dataToString(); // 编码
+    void stringToData(); // 解码
     /*
      * 发送消息
      * type=0 : player win
@@ -66,6 +68,8 @@ private:
     MessageBox *mess = nullptr;
     int columnX, columnY, buttonW, buttonH;
     QPixmap logoImg;
+    char dataStr[28 * 28 * 3 + 5];
+    ItemVector dataVec;
 };
 
 #endif // GAMEWIDGET_H
