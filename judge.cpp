@@ -11,6 +11,7 @@ Judge::Judge(QObject *parent) :
     socket = new NetworkSocket(new QTcpSocket(), this);
 
     connect(server, &NetworkServer::receive, this, &Judge::recDataFromClient);
+    connect(server, &NetworkServer::newConnection, this, [&](){lastClient = server->nextPendingConnection();});
     connect(socket, &NetworkSocket::receive, this, &Judge::recData);
 
     init();

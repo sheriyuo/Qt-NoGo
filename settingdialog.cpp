@@ -129,6 +129,7 @@ void SettingDialog::on_restartBtn_clicked()
     ui->chessbdCB->setDisabled(true);
     ui->switchBtn->setDisabled(false);
 
+    judge->server->close();
     judge->server->listen(QHostAddress::Any, judge->PORT);
 
     emit goOL();
@@ -146,17 +147,11 @@ void SettingDialog::on_reconnectBtn_clicked()
     ui->chessbdCB->setDisabled(true);
     ui->switchBtn->setDisabled(false);
 
-    // 关闭连接
     judge->socket->bye();
-    // 新建连接
     judge->socket->hello(judge->IP, judge->PORT);
     if(!judge->socket->base()->waitForConnected(3000))
     {
         ui->clientStatus->setText("Connect Failed");
-    }
-    else
-    {
-        judge->socket->send(NetworkData(OPCODE::CHAT_OP, "", ""));
     }
 
     emit goOL();

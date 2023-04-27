@@ -23,6 +23,10 @@ OptionDialog::OptionDialog(QString m, int type, QWidget *parent) :
         ui->okBtn->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
         ui->noBtn->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
     }
+    if(type == 1)
+    {
+        setFixedSize(QSize(270, 130));
+    }
 
     connect(ui->okBtn, &QPushButton::clicked, this, [&](){this->close();emit OK();});
     connect(ui->noBtn, &QPushButton::clicked, this, [&](){this->close();emit NO();});
