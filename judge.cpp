@@ -5,11 +5,13 @@ Judge::Judge(QObject *parent) :
 {
     CHESSBOARD_SIZE = 9;
     runMode = 0;
-
     IP = "127.0.0.1";
-    PORT = 14514;
+    PORT = 1919;
     server = new NetworkServer(this);
     socket = new NetworkSocket(new QTcpSocket(), this);
+
+    connect(server, &NetworkServer::receive, this, &Judge::recDataFromClient);
+    connect(socket, &NetworkSocket::receive, this, &Judge::recData);
 
     init();
 }
@@ -36,7 +38,6 @@ int Judge::GridPoint(int x, int y) {return board[x][y];}
 void Judge::SaveStep(int x,int y) // 存下当前步数
 {
     savedStep.push_back(Point(x,y));
-    qDebug() << "Save: " << x << "," << y << "\n";
 }
 
 void Judge::PlaceAPiece(int x, int y)
@@ -123,7 +124,6 @@ void Judge::UpdateCurStep(int x, int y)
     board[x][y] = CurColor();
     blockCnt ++;
     chessBelong[x][y] = blockCnt;
-    // qDebug() << x << "," << y << "->" << blockCnt;
 
     blockLiberty[blockCnt].clear();
     chessBlock[blockCnt].push_back(Point(x, y));
@@ -166,7 +166,6 @@ void Judge::UpdateCurStep(int x, int y)
         for(int j = 0; j < CHESSBOARD_SIZE; j++)
             if(IsEmpty(i, j)&&chessBelong[i][j] != -1)
             {
-                // qDebug() << i << "," << j;
                 Q_ASSERT(chessBelong[i][j] == -1);
             }
 
@@ -195,7 +194,6 @@ void Judge::setPlayerRole(int player)
     playerRole = player;
     if(player == -1) curPlayer = 0;
     else curPlayer = 1;
-    // qDebug() << curPlayer;
 }
 
 // 读档相关
@@ -214,8 +212,20 @@ void Judge::updateStep(ItemVector newStep)
     }
     // timerForPlayer 在 gamewidget 里面，要在外面 init。
 }
-// 网络库相关
-void Judge::recData(QTcpSocket* client, NetworkData data)
-{
 
+// 网络库相关
+void Judge::recDataFromClient(QTcpSocket* client, NetworkData data)
+{
+    lastClient = client;
+    recData(data);
+}
+void Judge::recData(NetworkData d)
+{
+    switch(d.op)
+    {
+    case OPCODE::READY_OP:
+        if(d.data1 != "") emit READY_OP(d.data1.toInt());
+        else emit READY_OP_ForInviter();
+        break;
+    }
 }

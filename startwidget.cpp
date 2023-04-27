@@ -28,9 +28,30 @@ StartWidget::StartWidget(Judge *j, QWidget *parent) :
     settingDialog = new SettingDialog(judge, this);
     curGameLayer = 1;
 
-    connect(settingDialog, &SettingDialog::goOnline, this, &StartWidget::switchToOL);
+    // 联机提示框   谁想出来的写联机逻辑，你摩洛哥炒饼，我重拾你的梦
+    confirmD = new OptionDialog("New online invitation.\nDo you confirm?", 0, this);
+    awaitD = new OptionDialog("Awaiting player\nconfirmation...", 1, this);
+    warnD = new OptionDialog("Not connected yet!", 2, this);
+
+    connect(settingDialog, &SettingDialog::goOL, this, &StartWidget::goOL);
+    connect(settingDialog, &SettingDialog::goOFFL, this, &StartWidget::goOFFL);
     connect(ui->startAsBlack, &QPushButton::clicked, this, &StartWidget::on_startAsBlack_clicked_OFFL);
     connect(ui->startAsWhite, &QPushButton::clicked, this, &StartWidget::on_startAsWhite_clicked_OFFL);
+    connect(confirmD, &OptionDialog::OK, this, [&](){
+        if(oppoRole == 1) {sendStartAsWhite(1); on_startAsWhite_clicked_OFFL();}
+        else {sendStartAsBlack(1); on_startAsBlack_clicked_OFFL();}
+        confirmD->close();
+    });
+    connect(confirmD, &OptionDialog::NO, this, [&](){
+        sendReject();
+        confirmD->close();
+    });
+    connect(judge, &Judge::READY_OP, this, [&](int _oppoRole){confirmD->show();oppoRole = _oppoRole;});
+    connect(judge, &Judge::READY_OP_ForInviter, this, [&](){
+        if(inviterRole == 1) {on_startAsBlack_clicked_OFFL();}
+        else {on_startAsWhite_clicked_OFFL();}
+        awaitD->close();
+    });
 }
 
 StartWidget::~StartWidget()
@@ -56,12 +77,57 @@ void StartWidget::paintEvent(QPaintEvent *event)
     painter.drawPixmap(X, Y, W, H, logoImg);
 }
 
-void StartWidget::switchToOL()
+// 联机相关
+void StartWidget::goOL()
 {
     disconnect(ui->startAsBlack, &QPushButton::clicked, this, &StartWidget::on_startAsBlack_clicked_OFFL);
     disconnect(ui->startAsWhite, &QPushButton::clicked, this, &StartWidget::on_startAsWhite_clicked_OFFL);
     connect(ui->startAsBlack, &QPushButton::clicked, this, &StartWidget::on_startAsBlack_clicked_OL);
     connect(ui->startAsWhite, &QPushButton::clicked, this, &StartWidget::on_startAsWhite_clicked_OL);
+}
+void StartWidget::goOFFL()
+{
+    disconnect(ui->startAsBlack, &QPushButton::clicked, this, &StartWidget::on_startAsBlack_clicked_OL);
+    disconnect(ui->startAsWhite, &QPushButton::clicked, this, &StartWidget::on_startAsWhite_clicked_OL);
+    connect(ui->startAsBlack, &QPushButton::clicked, this, &StartWidget::on_startAsBlack_clicked_OFFL);
+    connect(ui->startAsWhite, &QPushButton::clicked, this, &StartWidget::on_startAsWhite_clicked_OFFL);
+}
+void StartWidget::sendStartAsBlack(bool isFeedback)
+{
+    NetworkData d = NetworkData(OPCODE::READY_OP, "1", "");
+    if(isFeedback) d = NetworkData(OPCODE::READY_OP, "", "");
+    if(judge->runMode == 2)
+    {
+        judge->server->send(judge->lastClient, d);
+    }
+    else
+    {
+        judge->socket->send(d);
+    }
+}
+void StartWidget::sendStartAsWhite(bool isFeedback)
+{
+    NetworkData d = NetworkData(OPCODE::READY_OP, "-1", "");
+    if(isFeedback) d = NetworkData(OPCODE::READY_OP, "", "");
+    if(judge->runMode == 2)
+    {
+        judge->server->send(judge->lastClient, d);
+    }
+    else
+    {
+        judge->socket->send(d);
+    }
+}
+void StartWidget::sendReject()
+{
+    if(judge->runMode == 2)
+    {
+        judge->server->send(judge->lastClient, NetworkData(OPCODE::REJECT_OP, "", ""));
+    }
+    else
+    {
+        judge->socket->send(NetworkData(OPCODE::REJECT_OP, "", ""));
+    }
 }
 
 // 按钮行为
@@ -81,13 +147,29 @@ void StartWidget::on_startAsWhite_clicked_OFFL()
     emit startAs(-1);
     this->close();
 }
-void StartWidget::on_startAsBlack_clicked_OL()
+void StartWidget::on_startAsBlack_clicked_OL() // 1->black
 {
-    MessageBox* mess = new MessageBox("Fyh's Mother Not Found", 0, this);
-    mess->show();
+    if(judge->runMode == 2 && !judge->lastClient)
+    {
+        warnD->show();
+    }
+    else
+    {
+        awaitD->show();
+        inviterRole = 1;
+        sendStartAsBlack(0);
+    }
 }
-void StartWidget::on_startAsWhite_clicked_OL()
+void StartWidget::on_startAsWhite_clicked_OL() // -1->white
 {
-    MessageBox* mess = new MessageBox("Fyh's Father Not Found", 0, this);
-    mess->show();
+    if(judge->runMode == 2 && !judge->lastClient)
+    {
+        warnD->show();
+    }
+    else
+    {
+        sendStartAsWhite(0);
+        inviterRole = -1;
+        awaitD->show();
+    }
 }

@@ -58,11 +58,12 @@ public:
     int playerRole; // -1->white 1->black
     int curPlayer, curPlayerBak; // 0->bot 1->player -1->game over
     int CHESSBOARD_SIZE;
-    int runMode;
+    int runMode;  // 0->PVE  1->PVP  2->Server(PVPOL)  3->Client(PVPOL)
     QString IP;
     quint16 PORT;
     NetworkServer *server;
     NetworkSocket *socket;
+    QTcpSocket *lastClient = nullptr;
 
     int GRID_THICKNESS() {return (CHESSBOARD_LEN / CHESSBOARD_SIZE / 6);}
     double SQUARE_LEN() {return ((double)(CHESSBOARD_LEN) / (CHESSBOARD_SIZE - 1 + 2 * BTOL));}
@@ -71,10 +72,14 @@ public:
 
 signals:
     void modifiedCB(); // 棋盘更新信号
+    // 联机通信协议
+    void READY_OP(int inviterRole);
+    void READY_OP_ForInviter();
 
 public slots:
     void setPlayerRole(int player);
-    void recData(QTcpSocket* client, NetworkData data);
+    void recDataFromClient(QTcpSocket* client, NetworkData data);
+    void recData(NetworkData data);
 
 private:
     void CleanVis(); // 清空 mergedBlock

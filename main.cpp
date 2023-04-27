@@ -4,6 +4,7 @@
 #include "gamewidget.h"
 #include "startwidget.h"
 #include "judge.h"
+#include "optiondialog.h"
 
 int main(int argc, char *argv[])
 {

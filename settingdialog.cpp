@@ -9,16 +9,14 @@ SettingDialog::SettingDialog(Judge *j, QWidget *parent) :
     ui->setupUi(this);
     WIDTH = WINDOW_WIDTH * 3 / 5, HEIGHT = WINDOW_HEIGHT / 2;
     setFixedSize(WIDTH, HEIGHT);
-    // setWindowIcon(QIcon(":/img/icon.png"));
 
     ui->closeBtn->setStyleSheet(ACCENT_COLOR);
+    ui->switchBtn->setStyleSheet(ACCENT_COLOR);
     int H = (double)HEIGHT / 10,
         W = (double)HEIGHT / 5;
     int X = (double)WIDTH / 2 - (double)HEIGHT / 10,
         Y = (double)HEIGHT / 20 * 17 - (double)HEIGHT / 20;
     ui->closeBtn->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
-
-    // ui->gamemodeCB->addItem("");
 
     ui->gamemode->setStyleSheet(ACCENT_COLOR);
     ui->gamemodeCB->setStyleSheet(ACCENT_COLOR);
@@ -63,6 +61,9 @@ SettingDialog::SettingDialog(Judge *j, QWidget *parent) :
     ui->serverStatus->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
         Y = (double)HEIGHT / 20 * 5 - (double)HEIGHT / 20;
     ui->restartBtn->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
+        Y = (double)HEIGHT / 20 * 7 - (double)HEIGHT / 20;
+    ui->switchBtn->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
+    ui->switchBtn->setDisabled(true);
         Y = (double)HEIGHT / 20 * 10 - (double)HEIGHT / 20;
     ui->clientStatus->setGeometry(QRect(QPoint(X, Y), QSize(W, H)));
         Y = (double)HEIGHT / 20 * 12 - (double)HEIGHT / 20;
@@ -70,7 +71,7 @@ SettingDialog::SettingDialog(Judge *j, QWidget *parent) :
 
     connect(ui->gamemodeCB, &QComboBox::activated, this, &SettingDialog::getRunMode);
     connect(ui->chessbdCB, &QComboBox::activated, this, &SettingDialog::getChessBd);
-    connect(judge->socket->base(), &QTcpSocket::connected, this, [&](){this->ui->clientStatus->setText("Connected");});
+    connect(judge->socket->base(), &QTcpSocket::connected, this, [&](){ui->clientStatus->setText("Connected");});
 }
 
 SettingDialog::~SettingDialog()
@@ -111,7 +112,6 @@ void SettingDialog::on_closeBtn_clicked()
 {
     judge->IP = ui->IPinput->text();
     judge->PORT = ui->PORTinput->text().toInt();
-    // qDebug() << judge->IP << ' ' << judge->PORT << '\n';
     this->close();
 }
 void SettingDialog::on_restartBtn_clicked()
@@ -119,34 +119,32 @@ void SettingDialog::on_restartBtn_clicked()
     judge->IP = ui->IPinput->text();
     judge->PORT = ui->PORTinput->text().toInt();
 
-    this->ui->serverStatus->setText("Server: Running");
-    this->ui->PORTtitle->setText("Server Port");
-    this->ui->gamemodeCB->setCurrentIndex(1);
-    this->ui->chessbdCB->setCurrentIndex(0);
-    this->ui->reconnectBtn->setDisabled(true);
-    this->ui->IPinput->setDisabled(true);
-    this->ui->gamemodeCB->setDisabled(true);
-    this->ui->chessbdCB->setDisabled(true);
+    ui->serverStatus->setText("Server: Running");
+    ui->PORTtitle->setText("Server Port");
+    ui->gamemodeCB->setCurrentIndex(1);
+    ui->chessbdCB->setCurrentIndex(0);
+    ui->reconnectBtn->setDisabled(true);
+    ui->IPinput->setDisabled(true);
+    ui->gamemodeCB->setDisabled(true);
+    ui->chessbdCB->setDisabled(true);
+    ui->switchBtn->setDisabled(false);
 
-    disconnect(judge->server, &NetworkServer::receive, judge, &Judge::recData);
-    delete judge->server;
-    judge->server = new NetworkServer(judge);
     judge->server->listen(QHostAddress::Any, judge->PORT);
-    connect(judge->server, &NetworkServer::receive, judge, &Judge::recData);
 
-    emit goOnline();
+    emit goOL();
+    judge->runMode = 2;
 }
 void SettingDialog::on_reconnectBtn_clicked()
 {
     judge->IP = ui->IPinput->text();
     judge->PORT = ui->PORTinput->text().toInt();
 
-    this->ui->clientStatus->setText("Connecting");
-    this->ui->gamemodeCB->setCurrentIndex(1);
-    this->ui->chessbdCB->setCurrentIndex(0);
-    this->ui->restartBtn->setDisabled(true);
-    this->ui->gamemodeCB->setDisabled(true);
-    this->ui->chessbdCB->setDisabled(true);
+    ui->gamemodeCB->setCurrentIndex(1);
+    ui->chessbdCB->setCurrentIndex(0);
+    ui->restartBtn->setDisabled(true);
+    ui->gamemodeCB->setDisabled(true);
+    ui->chessbdCB->setDisabled(true);
+    ui->switchBtn->setDisabled(false);
 
     // 关闭连接
     judge->socket->bye();
@@ -154,8 +152,30 @@ void SettingDialog::on_reconnectBtn_clicked()
     judge->socket->hello(judge->IP, judge->PORT);
     if(!judge->socket->base()->waitForConnected(3000))
     {
-        this->ui->clientStatus->setText("Connect Failed");
+        ui->clientStatus->setText("Connect Failed");
+    }
+    else
+    {
+        judge->socket->send(NetworkData(OPCODE::CHAT_OP, "", ""));
     }
 
-    emit goOnline();
+    emit goOL();
+    judge->runMode = 3;
+}
+void SettingDialog::on_switchBtn_clicked()
+{
+    ui->serverStatus->setText("Server: Paused");
+    ui->PORTtitle->setText("Remote Port");
+    ui->clientStatus->setText("Not Connected");
+    ui->gamemodeCB->setCurrentIndex(0);
+    ui->chessbdCB->setCurrentIndex(0);
+    ui->reconnectBtn->setDisabled(false);
+    ui->restartBtn->setDisabled(false);
+    ui->IPinput->setDisabled(false);
+    ui->gamemodeCB->setDisabled(false);
+    ui->chessbdCB->setDisabled(false);
+    ui->switchBtn->setDisabled(true);
+
+    emit goOFFL();
+    judge->runMode = 0;
 }

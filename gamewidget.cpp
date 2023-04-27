@@ -1,11 +1,11 @@
 #include "gamewidget.h"
 #include "ui_gamewidget.h"
 
-// 玩家的计时器
+/* 玩家的计时器
+将 bot 的计时器内置于 class Bot 中 */
 static QTimer *timerForPlayer;
 static QTimer *timerForBar;
 static time_t basetime;
-// 将 bot 的计时器内置于 class Bot 中
 // static QTimer *timerForBot;
 
 static int deltaY, LOGO_X, LOGO_Y, logoBoardW, logoBoardH;
@@ -77,6 +77,7 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
 {
     emit mousePress();
     if(judge->curPlayer == -1) return; // 判断游戏结束
+    if(!judge->curPlayer) return; // 判断当前局
 
     double x = event->position().x(), y = event->position().y();
     int row = 0,column = 0;
@@ -108,12 +109,20 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
         timerForBar->stop();
         judge->PlaceAPiece(row-1, column-1);
 
-        if(!judge->runMode){
+        if(!judge->runMode)
+        {
             emit turnForBot();
         }
-        timerForPlayer->start(PLAYER_TIMEOUT * 1000);
-        timerForBar->start(100);
-        basetime=clock();
+        if(judge->runMode == 1)
+        {
+            timerForPlayer->start(PLAYER_TIMEOUT * 1000);
+            timerForBar->start(100);
+            basetime=clock();
+        }
+        if(judge->runMode == 2 || judge->runMode == 3)
+        {
+            // 发送 MoveOP 以及处理 recData
+        }
     }
     else
     {
@@ -126,7 +135,6 @@ void GameWidget::updateBar()
 {
     double value;
     value=(clock()-basetime);
-    // qDebug()<<value/(PLAYER_TIMEOUT*1000);
     ui->TimeBar->setValue(1000-value/PLAYER_TIMEOUT);
     repaint();
 }
@@ -385,8 +393,6 @@ void GameWidget::dataToString()
         char x = cur.first + 'A', y = cur.second + '1';
         dataStr[len++] = x, dataStr[len++] = y, dataStr[len++] = ' ';
     }
-
-    qDebug() << dataStr << "\n";
 }
 
 void GameWidget::stringToData()
@@ -401,7 +407,6 @@ void GameWidget::stringToData()
             break;
         }
         int x = dataStr[i] - 'A', y = dataStr[i+1] - '1';
-        qDebug() << x << "," << y << "\n";
         dataVec.push_back(Point(x, y));
     }
 }

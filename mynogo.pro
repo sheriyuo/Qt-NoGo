@@ -16,6 +16,7 @@ HEADERS += \
     network/networkdata.h \
     network/networkserver.h \
     network/networksocket.h \
+    optiondialog.h \
     settingdialog.h \
     startwidget.h
 
@@ -28,11 +29,13 @@ SOURCES += \
     network/networkdata.cpp \
     network/networkserver.cpp \
     network/networksocket.cpp \
+    optiondialog.cpp \
     settingdialog.cpp \
     startwidget.cpp
 
 FORMS += \
     gamewidget.ui \
+    optiondialog.ui \
     settingdialog.ui \
     startwidget.ui
 

@@ -27,9 +27,6 @@ void NetworkSocket::receiveData() {
     for (const auto& block : blocks) {
         try {
             NetworkData recv(block);
-            qDebug() << "Client: "
-                     << static_cast<int>(recv.op) 
-                     << ' ' << recv.data1 << ' ' << recv.data2 << Qt::endl;
             emit receive(recv);
         }
         catch (const InvalidMessage& e) {

@@ -16,11 +16,8 @@ void Bot::makeFirstMove(int player)
 {
     if(player == -1) // bot 先手
     {
-        if(judge->runMode){
-            judge->curPlayer ^= 1;
-            return;
-        }
-        makeAMove();
+        if(judge->runMode == 0) makeAMove();
+        if(judge->runMode == 1) judge->curPlayer ^= 1;
     }
 }
 

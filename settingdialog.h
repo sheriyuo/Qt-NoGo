@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QObject>
 #include <QPainter>
+#include <QColor>
 #include "judge.h"
 #include "messagebox.h"
 
@@ -17,12 +18,14 @@ public:
     ~SettingDialog();
 
 signals:
-    void goOnline();
+    void goOL();
+    void goOFFL();
 
 public slots:
     void on_closeBtn_clicked();
     void on_restartBtn_clicked();
     void on_reconnectBtn_clicked();
+    void on_switchBtn_clicked();
     void getChessBd(int size);
     void getRunMode(int mode);
 

@@ -6,6 +6,7 @@
 #include <QWidget>
 #include "judge.h"
 #include "settingdialog.h"
+#include "optiondialog.h"
 
 namespace Ui { class StartWidget; }
 
@@ -18,6 +19,7 @@ public:
     ~StartWidget();
 
     int curGameLayer;
+    SettingDialog *settingDialog;
 signals:
     void switchLayer(int layerIndex);
     void startAs(int player); // 0->white  1->black
@@ -27,14 +29,22 @@ public slots:
     void on_startAsWhite_clicked_OL();
     void on_startAsBlack_clicked_OL();
     void on_settingsBtn_clicked();
-    void switchToOL();
+    void goOL();
+    void goOFFL();
 
 private:
     void paintEvent(QPaintEvent *event) override;
+    void sendStartAsBlack(bool isFeedback);
+    void sendStartAsWhite(bool isFeedback);
+    void sendReject();
 
     Ui::StartWidget *ui;
-    SettingDialog *settingDialog;
     Judge* judge;
+
+    int oppoRole, inviterRole;
+    OptionDialog* confirmD;
+    OptionDialog* awaitD;
+    OptionDialog* warnD;
 };
 
 #endif // STARTWIDGET_H
