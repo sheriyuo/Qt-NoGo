@@ -11,7 +11,6 @@ Judge::Judge(QObject *parent) :
     socket = new NetworkSocket(new QTcpSocket(), this);
 
     connect(server, &NetworkServer::receive, this, &Judge::recDataFromClient);
-    connect(server, &NetworkServer::newConnection, this, [&](){lastClient = server->nextPendingConnection();});
     connect(socket, &NetworkSocket::receive, this, &Judge::recData);
 
     init();
@@ -227,6 +226,14 @@ void Judge::recData(NetworkData d)
     case OPCODE::READY_OP:
         if(d.data1 != "") emit READY_OP(d.data1.toInt());
         else emit READY_OP_ForInviter();
+        break;
+    case OPCODE::REJECT_OP:
+        emit REJECT_OP();
+        break;
+    case OPCODE::MOVE_OP:
+        int row = QChar(d.data1[0]).unicode()-'A', col = d.data2.toInt()-1;
+        PlaceAPiece(row, col);
+        emit MOVE_OP();
         break;
     }
 }

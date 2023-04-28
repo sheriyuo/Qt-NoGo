@@ -46,11 +46,22 @@ StartWidget::StartWidget(Judge *j, QWidget *parent) :
         sendReject();
         confirmD->close();
     });
-    connect(judge, &Judge::READY_OP, this, [&](int _oppoRole){confirmD->show();oppoRole = _oppoRole;});
+    connect(judge, &Judge::READY_OP, this, [&](int _oppoRole){
+        awaitD->close();
+        warnD->close();
+        confirmD->show();
+        oppoRole = _oppoRole;
+    });
     connect(judge, &Judge::READY_OP_ForInviter, this, [&](){
         if(inviterRole == 1) {on_startAsBlack_clicked_OFFL();}
         else {on_startAsWhite_clicked_OFFL();}
         awaitD->close();
+    });
+    connect(judge, &Judge::REJECT_OP, this, [&](){
+        awaitD->close();
+        confirmD->close();
+        warnD->setMessage("You've been declined!");
+        warnD->show();
     });
 }
 
@@ -149,13 +160,18 @@ void StartWidget::on_startAsWhite_clicked_OFFL()
 }
 void StartWidget::on_startAsBlack_clicked_OL() // 1->black
 {
-    if(judge->runMode == 2 && !judge->lastClient)
+    if(judge->runMode == 2 && judge->lastClient == nullptr)
     {
+        confirmD->close();
+        awaitD->close();
         warnD->show();
     }
     else
     {
+        confirmD->close();
+        warnD->close();
         awaitD->show();
+
         inviterRole = 1;
         sendStartAsBlack(0);
     }
@@ -164,12 +180,17 @@ void StartWidget::on_startAsWhite_clicked_OL() // -1->white
 {
     if(judge->runMode == 2 && !judge->lastClient)
     {
+        confirmD->close();
+        awaitD->close();
         warnD->show();
     }
     else
     {
-        sendStartAsWhite(0);
-        inviterRole = -1;
+        confirmD->close();
+        warnD->close();
         awaitD->show();
+
+        inviterRole = -1;
+        sendStartAsWhite(0);
     }
 }

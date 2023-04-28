@@ -30,15 +30,22 @@ signals:
 public slots:
     void on_loadButton_clicked(); // 链接 load 按钮的行为
     void on_saveButton_clicked(); // 链接 save 按钮的行为
-    void on_resignButton_clicked(); // 链接 resign 按钮的行为
-    void on_restartButton_clicked(); // 链接 restart 按钮的行为
+    void on_resignButton_clicked_OFFL(); // 链接 resign 按钮的行为
+    void on_restartButton_clicked_OFFL(); // 链接 restart 按钮的行为
+    void on_resignButton_clicked_OL();
+    void on_restartButton_clicked_OL();
 
     void startTimer();    // 当对局开始时，无论谁先手（机器下第一个棋子认为不需要时间），都打开玩家的计时器
-    void playerTimeout(); // 玩家超时的槽函数，用于链接计时器
+    void playerTimeout_OFFL(); // 玩家超时的槽函数，用于链接计时器
+    void playerTimeout_OL();
     void botTimeout();    // bot超时的槽函数，用于链接计时器
     void closeMB();       // 再次点击棋盘时关闭消息弹窗
     void updateCB();      // 更新棋盘
     void updateBar();     // 更新倒计时进度条
+
+    void goOL();
+    void goOFFL();
+
 private:
     Ui::GameWidget *ui;
     void paintEvent(QPaintEvent *event) override; // 界面绘制

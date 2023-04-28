@@ -72,9 +72,12 @@ public:
 
 signals:
     void modifiedCB(); // 棋盘更新信号
+
     // 联机通信协议
     void READY_OP(int inviterRole);
     void READY_OP_ForInviter();
+    void REJECT_OP();
+    void MOVE_OP();
 
 public slots:
     void setPlayerRole(int player);

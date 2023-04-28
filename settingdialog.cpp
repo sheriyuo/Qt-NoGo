@@ -153,6 +153,10 @@ void SettingDialog::on_reconnectBtn_clicked()
     {
         ui->clientStatus->setText("Connect Failed");
     }
+    else
+    {
+        judge->socket->send(NetworkData(OPCODE::CHAT_OP, "", ""));
+    }
 
     emit goOL();
     judge->runMode = 3;
