@@ -5,6 +5,8 @@
 #include <QObject>
 #include <QPainter>
 #include <QColor>
+#include <QRegularExpression>
+#include <QValidator>
 #include "judge.h"
 #include "messagebox.h"
 

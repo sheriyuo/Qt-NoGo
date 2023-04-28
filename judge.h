@@ -8,7 +8,7 @@
 #include "network/networkserver.h"
 #include "network/networksocket.h"
 
-#define PLAYER_TIMEOUT 10  // s
+#define PLAYER_TIMEOUT 30  // s
 #define BOT_TIMEOUT 1      // s
 
 #define WINDOW_WIDTH 1024
@@ -59,30 +59,37 @@ public:
     int curPlayer, curPlayerBak; // 0->bot 1->player -1->game over
     int CHESSBOARD_SIZE;
     int runMode;  // 0->PVE  1->PVP  2->Server(PVPOL)  3->Client(PVPOL)
-    QString IP;
-    quint16 PORT;
-    NetworkServer *server;
-    NetworkSocket *socket;
-    QTcpSocket *lastClient = nullptr;
 
     int GRID_THICKNESS() {return (CHESSBOARD_LEN / CHESSBOARD_SIZE / 6);}
     double SQUARE_LEN() {return ((double)(CHESSBOARD_LEN) / (CHESSBOARD_SIZE - 1 + 2 * BTOL));}
     double LEFT_UP() {return ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + BTOL * SQUARE_LEN());}
     double RIGHT_UP() {return ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + CHESSBOARD_LEN);}
 
+    // 联机相关
+    QString IP, usrnameOL, oppoOL;
+    quint16 PORT;
+    NetworkServer *server; QTcpSocket *lastClient = nullptr;
+    NetworkSocket *socket; bool socketConnected = false;
+    void send(NetworkData d);
+
 signals:
     void modifiedCB(); // 棋盘更新信号
 
     // 联机通信协议
-    void READY_OP(int inviterRole);
+    void READY_OP(NetworkData d);
     void READY_OP_ForInviter();
     void REJECT_OP();
     void MOVE_OP();
+    void CHAT_OP(NetworkData d);
+    void TIMEOUT_END_OP();
+    void GIVEUP_OP();
+    void LEAVE_OP();
 
 public slots:
     void setPlayerRole(int player);
     void recDataFromClient(QTcpSocket* client, NetworkData data);
     void recData(NetworkData data);
+    void clearLink(); // 清除联机连接
 
 private:
     void CleanVis(); // 清空 mergedBlock

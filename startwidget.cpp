@@ -46,11 +46,21 @@ StartWidget::StartWidget(Judge *j, QWidget *parent) :
         sendReject();
         confirmD->close();
     });
-    connect(judge, &Judge::READY_OP, this, [&](int _oppoRole){
+    connect(judge, &Judge::READY_OP, this, [&](NetworkData d){
         awaitD->close();
         warnD->close();
-        confirmD->show();
-        oppoRole = _oppoRole;
+        confirmD->close();
+        if(judge->curPlayer == -1)
+        {
+            warnD->setMessage("New invitation from:\n"+judge->oppoOL+"\nRestart to continue.");
+            warnD->show();
+        }
+        else
+        {
+            confirmD->setMessage("New invitation from:\n"+judge->oppoOL+"\nConfirm playing "+(d.data2=="w"?"Black":"White")+"?");
+            confirmD->show();
+        }
+        oppoRole = d.data2 == "b" ? 1 : -1;
     });
     connect(judge, &Judge::READY_OP_ForInviter, this, [&](){
         if(inviterRole == 1) {on_startAsBlack_clicked_OFFL();}
@@ -105,47 +115,20 @@ void StartWidget::goOFFL()
 }
 void StartWidget::sendStartAsBlack(bool isFeedback)
 {
-    NetworkData d = NetworkData(OPCODE::READY_OP, "1", "");
-    if(isFeedback) d = NetworkData(OPCODE::READY_OP, "", "");
-    if(judge->runMode == 2)
-    {
-        judge->server->send(judge->lastClient, d);
-    }
-    else
-    {
-        judge->socket->send(d);
-    }
+    NetworkData d = NetworkData(OPCODE::READY_OP, judge->usrnameOL, "b");
+    if(isFeedback) d = NetworkData(OPCODE::READY_OP, judge->usrnameOL, "");
+    judge->send(d);
 }
 void StartWidget::sendStartAsWhite(bool isFeedback)
 {
-    NetworkData d = NetworkData(OPCODE::READY_OP, "-1", "");
-    if(isFeedback) d = NetworkData(OPCODE::READY_OP, "", "");
-    if(judge->runMode == 2)
-    {
-        judge->server->send(judge->lastClient, d);
-    }
-    else
-    {
-        judge->socket->send(d);
-    }
+    NetworkData d = NetworkData(OPCODE::READY_OP, judge->usrnameOL, "w");
+    if(isFeedback) d = NetworkData(OPCODE::READY_OP, judge->usrnameOL, "");
+    judge->send(d);
 }
-void StartWidget::sendReject()
-{
-    if(judge->runMode == 2)
-    {
-        judge->server->send(judge->lastClient, NetworkData(OPCODE::REJECT_OP, "", ""));
-    }
-    else
-    {
-        judge->socket->send(NetworkData(OPCODE::REJECT_OP, "", ""));
-    }
-}
+void StartWidget::sendReject() {judge->send(NetworkData(OPCODE::REJECT_OP, judge->usrnameOL, ""));}
 
 // 按钮行为
-void StartWidget::on_settingsBtn_clicked()
-{
-    settingDialog->show();
-}
+void StartWidget::on_settingsBtn_clicked() {settingDialog->show();}
 void StartWidget::on_startAsBlack_clicked_OFFL()
 {
     emit switchLayer(curGameLayer);
@@ -160,10 +143,11 @@ void StartWidget::on_startAsWhite_clicked_OFFL()
 }
 void StartWidget::on_startAsBlack_clicked_OL() // 1->black
 {
-    if(judge->runMode == 2 && judge->lastClient == nullptr)
+    if((judge->runMode == 2 && !judge->lastClient) || (judge->runMode == 3 && !judge->socketConnected))
     {
         confirmD->close();
         awaitD->close();
+        warnD->setMessage("Not connected yet!");
         warnD->show();
     }
     else
@@ -178,10 +162,11 @@ void StartWidget::on_startAsBlack_clicked_OL() // 1->black
 }
 void StartWidget::on_startAsWhite_clicked_OL() // -1->white
 {
-    if(judge->runMode == 2 && !judge->lastClient)
+    if((judge->runMode == 2 && !judge->lastClient) || (judge->runMode == 3 && !judge->socketConnected))
     {
         confirmD->close();
         awaitD->close();
+        warnD->setMessage("Not connected yet!");
         warnD->show();
     }
     else

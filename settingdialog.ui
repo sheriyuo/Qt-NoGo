@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>320</width>
-    <height>240</height>
+    <width>638</width>
+    <height>362</height>
    </rect>
   </property>
   <property name="font">
@@ -27,8 +27,8 @@
   <widget class="QPushButton" name="closeBtn">
    <property name="geometry">
     <rect>
-     <x>220</x>
-     <y>200</y>
+     <x>240</x>
+     <y>300</y>
      <width>80</width>
      <height>18</height>
     </rect>
@@ -71,7 +71,7 @@
    <property name="geometry">
     <rect>
      <x>70</x>
-     <y>130</y>
+     <y>110</y>
      <width>111</width>
      <height>21</height>
     </rect>
@@ -121,7 +121,7 @@
    <property name="geometry">
     <rect>
      <x>70</x>
-     <y>150</y>
+     <y>130</y>
      <width>55</width>
      <height>22</height>
     </rect>
@@ -160,7 +160,7 @@
   <widget class="QLabel" name="IPtitle">
    <property name="geometry">
     <rect>
-     <x>200</x>
+     <x>220</x>
      <y>50</y>
      <width>121</width>
      <height>21</height>
@@ -180,8 +180,8 @@
   <widget class="QLabel" name="PORTtitle">
    <property name="geometry">
     <rect>
-     <x>200</x>
-     <y>80</y>
+     <x>220</x>
+     <y>100</y>
      <width>121</width>
      <height>21</height>
     </rect>
@@ -200,8 +200,8 @@
   <widget class="QLineEdit" name="IPinput">
    <property name="geometry">
     <rect>
-     <x>200</x>
-     <y>100</y>
+     <x>220</x>
+     <y>120</y>
      <width>113</width>
      <height>20</height>
     </rect>
@@ -210,7 +210,7 @@
   <widget class="QLineEdit" name="PORTinput">
    <property name="geometry">
     <rect>
-     <x>200</x>
+     <x>220</x>
      <y>70</y>
      <width>113</width>
      <height>20</height>
@@ -220,8 +220,8 @@
   <widget class="QLabel" name="serverStatus">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>180</y>
+     <x>380</x>
+     <y>60</y>
      <width>121</width>
      <height>21</height>
     </rect>
@@ -240,8 +240,8 @@
   <widget class="QLabel" name="clientStatus">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>210</y>
+     <x>380</x>
+     <y>110</y>
      <width>121</width>
      <height>21</height>
     </rect>
@@ -260,8 +260,8 @@
   <widget class="QPushButton" name="restartBtn">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>130</y>
+     <x>380</x>
+     <y>90</y>
      <width>80</width>
      <height>18</height>
     </rect>
@@ -283,8 +283,8 @@
   <widget class="QPushButton" name="reconnectBtn">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>160</y>
+     <x>380</x>
+     <y>140</y>
      <width>80</width>
      <height>18</height>
     </rect>
@@ -306,8 +306,8 @@
   <widget class="QPushButton" name="switchBtn">
    <property name="geometry">
     <rect>
-     <x>150</x>
-     <y>200</y>
+     <x>320</x>
+     <y>220</y>
      <width>80</width>
      <height>18</height>
     </rect>
@@ -324,6 +324,36 @@
    </property>
    <property name="flat">
     <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="usrnameInput">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>220</y>
+     <width>113</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="IDtitle">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>220</y>
+     <width>21</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial Rounded MT Bold</family>
+     <pointsize>13</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>ID</string>
    </property>
   </widget>
  </widget>

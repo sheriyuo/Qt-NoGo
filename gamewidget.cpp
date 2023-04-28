@@ -60,6 +60,19 @@ GameWidget::GameWidget(Judge *j, Bot *b, QWidget *parent) :
         TIME_Y = (LOGO_Y + logoBoardH / 2 + columnY) / 2;
     ui->TimeBar->setGeometry(QRect(QPoint(TIME_X, TIME_Y), QSize(200,15)));
 
+    // 设置聊天框 默认隐藏
+    ui->chatHistory->setReadOnly(true);
+    ui->chatHistory->appendPlainText(QString("It's your turn when time bar turn RED!"));
+    ui->sendButton->setStyleSheet(ACCENT_COLOR);
+    ui->chatInput->setStyleSheet("color: rgb(96, 150, 180); background-color: #ecf9ff;"
+                                 "border-width: 1px; border-style: solid;"
+                                 "border-color: #ecf9ff #ecf9ff rgb(96, 150, 180) #ecf9ff;");
+    ui->chatHistory->setStyleSheet("color: rgb(96, 150, 180); background-color: #ecf9ff;"
+                                   "border-style: none;");
+    ui->chatHistory->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
+    ui->chatInput->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
+    ui->sendButton->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
+
     // 链接计时器
     timerForPlayer = new QTimer;
     timerForBar = new QTimer;
@@ -69,6 +82,15 @@ GameWidget::GameWidget(Judge *j, Bot *b, QWidget *parent) :
     connect(bot, &Bot::timeout, this, &GameWidget::botTimeout);
     connect(ui->resignButton, &QPushButton::clicked, this, &GameWidget::on_resignButton_clicked_OFFL);
     connect(ui->restartButton, &QPushButton::clicked, this, &GameWidget::on_restartButton_clicked_OFFL);
+    connect(ui->chatInput, SIGNAL(returnPressed()), ui->sendButton,SIGNAL(clicked()), Qt::UniqueConnection);
+    connect(judge, &Judge::GIVEUP_OP, this, &GameWidget::remoteResign);
+    connect(judge, &Judge::CHAT_OP, this, [&](NetworkData d){
+        QString s = "<" + judge->oppoOL + "> : \n" + d.data1;
+        ui->chatHistory->appendPlainText(s);
+    });
+    connect(judge, &Judge::TIMEOUT_END_OP, this, [&](){
+        gameLose(0);
+    });
 }
 GameWidget::~GameWidget()
 {
@@ -119,9 +141,7 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
         if(judge->runMode == 2 || judge->runMode == 3)
         {
             // 发送 MOVE_OP 以及处理 recData
-            NetworkData d(OPCODE::MOVE_OP, QString(QChar('A'+row-1)), QString(QChar('1'+column-1)));
-            if(judge->runMode == 2) judge->server->send(judge->lastClient, d);
-            else judge->socket->send(d);
+            judge->send(NetworkData(OPCODE::MOVE_OP, QString(QChar('A'+row-1))+QString(QChar('1'+column-1)), ""));
         }
         timerForPlayer->start(PLAYER_TIMEOUT * 1000);
         timerForBar->start(100);
@@ -136,6 +156,23 @@ void GameWidget::updateCB() {repaint();}
 
 void GameWidget::updateBar()
 {
+    ui->TimeBar->setStyleSheet("QProgressBar{"
+                               "background:rgb(186,215,233);"
+                               "color:white;"
+                               "border-radius:5px;}"
+                               "QProgressBar::chunk{"
+                               "border-radius:5px;"
+                               "background: #EAACB8}");
+    if((judge->runMode == 2 || judge->runMode == 3) && !judge->curPlayer)
+    {
+        ui->TimeBar->setStyleSheet("QProgressBar{"
+                                   "background:rgb(186,215,233);"
+                                   "color:white;"
+                                   "border-radius:5px;}"
+                                   "QProgressBar::chunk{"
+                                   "border-radius:5px;"
+                                   "background: #7acbf5}");
+    }
     double value;
     value=(clock()-basetime);
     ui->TimeBar->setValue(1000-value/PLAYER_TIMEOUT);
@@ -301,19 +338,24 @@ void GameWidget::botTimeout() {if(judge->curPlayer >= 0) gameWin(1);}
 void GameWidget::playerTimeout_OFFL() {if(judge->curPlayer >= 0) gameLose(1);}
 void GameWidget::playerTimeout_OL()
 {
-    if(!judge->curPlayer) return; // 当前是等待相应的一方
-    // 发出 TIMEOUT_END_OP
+    // 发送 TIMEOUT_END_OP
+    if(!judge->curPlayer) // 当前是等待响应的一方，那么对手超时己方胜利
+    {
+        judge->send(NetworkData(OPCODE::TIMEOUT_END_OP, judge->usrnameOL, "Sorry you lose!"));
+        gameWin(0);
+    }
 }
-
 
 /*
  * 弹出消息窗口
- * type=0 : player win
- * type=1 : player lose
+ * type=0 : player win (online)
+ * type=1 : player lose (online)
  * type=2 : invalid position
  * type=3 : player timeout
  * type=4 : bot timeout
- * type=6 : player resign
+ * type=5 : player resign (online / offline)
+ * type=6 : remote player resgin (online)
+ * type=7 : cannot restart (online)
 */
 void GameWidget::sendMessage(int type)
 {
@@ -321,43 +363,62 @@ void GameWidget::sendMessage(int type)
         mess->close();
         mess = nullptr;
     }
-    if(!judge->runMode)
+    if(judge->runMode == 0)
     {
         switch(type)
         {
-            /*case 0:
-                mess = new MessageBox(QString("Congratulations!\n\nYou WIN"), 0, this);
-                break;
-            case 1:
-                mess = new MessageBox(QString("Sorry!\n\nYou LOSE"), 0, this);
-                break;*/
             case 2:
                 mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, this);
                 break;
             case 3:
-                mess = new MessageBox(QString("TIME'S UP! You LOSE!\n\n<detailed info>"), 0, this);
+                mess = new MessageBox(QString("TIME'S UP! You LOSE!")+QString("\n\n<detailed info>"), 0, this);
                 break;
             case 4:
                 mess = new MessageBox(QString("Bot failed to make\na move.\nYou WIN"), 0, this);
                 break;
             case 5:
-                mess = new MessageBox(QString("You Resign!\n\n<detailed info>"), 0, this);
+                mess = new MessageBox(QString("You Resign!")+QString("\n\n<detailed info>"), 0, this);
                 break;
         }
     }
-    else{
+    if(judge->runMode == 1)
+    {
         switch(type)
         {
             case 2:
                 mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, this);
                 break;
             case 3:
-                if(judge->curPlayerBak) mess = new MessageBox(QString("TIME'S UP! Player1 LOSE!\n\n<detailed info>"), 0, this);
-                else mess = new MessageBox(QString("TIME'S UP! Player2 LOSE!\n\n<detailed info>"), 0, this);
+                if(judge->curPlayerBak) mess = new MessageBox(QString("TIME'S UP! Player1 LOSE!>")+QString("\n\n<detailed info>"), 0, this);
+                else mess = new MessageBox(QString("TIME'S UP! Player2 LOSE!")+QString("\n\n<detailed info>"), 0, this);
                 break;
             case 5:
-                if(judge->curPlayerBak) mess = new MessageBox(QString("Player1 Resign!\n\n<detailed info>"), 0, this);
-                else mess = new MessageBox(QString("Player2 Resign!\n\n<detailed info>"), 0, this);
+                if(judge->curPlayerBak) mess = new MessageBox(QString("Player1 Resign!")+QString("\n\n<detailed info>"), 0, this);
+                else mess = new MessageBox(QString("Player2 Resign!")+QString("\n\n<detailed info>"), 0, this);
+                break;
+        }
+    }
+    if(judge->runMode == 2 || judge->runMode == 3)
+    {
+        switch(type)
+        {
+            case 0:
+                mess = new MessageBox(QString("You WIN!\n\n") + judge->oppoOL + QString("\ntime out."), 0, this);
+                break;
+            case 1:
+                mess = new MessageBox(QString("TIME'S UP!\n\n") + judge->oppoOL + QString("\nwins."), 0, this);
+                break;
+            case 2:
+                mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, this);
+                break;
+            case 5:
+                mess = new MessageBox(QString("You resign!\n\n") + judge->oppoOL + QString("\nwins."), 0, this);
+                break;
+            case 6:
+                mess = new MessageBox(QString("You WIN!\n\n") + judge->oppoOL + QString("\nresigns."), 0, this);
+                break;
+            case 7:
+                mess = new MessageBox(QString("Please resign before\nrestarting the game."), 2000, this);
                 break;
         }
     }
@@ -375,10 +436,22 @@ void GameWidget::goOL()
 
     // 布局
     columnX = judge->RIGHT_UP() + (WINDOW_WIDTH - judge->RIGHT_UP()) / 2;
-    columnY = (double)WINDOW_HEIGHT / 20 * 10;
-    buttonH = (double)WINDOW_HEIGHT / 31 * 2;
-    buttonW = (double)WINDOW_HEIGHT / 31 * 6;
-    deltaY = (double)(judge->RIGHT_UP() - columnY) / 4;
+    columnY = (double)WINDOW_HEIGHT / 20 * 8.5;
+    int TIME_X = columnX - 100,
+        TIME_Y = (LOGO_Y + logoBoardH / 2 + columnY) / 2;
+    ui->TimeBar->setGeometry(QRect(QPoint(TIME_X, TIME_Y), QSize(200,15)));
+    int editH = (double)WINDOW_HEIGHT / 31 * 5,
+        editW = (double)WINDOW_HEIGHT / 31 * 8,
+        X1 = columnX - editW / 2, Y1 = columnY;
+    ui->chatHistory->setGeometry(QRect(QPoint(X1, Y1), QSize(editW, editH)));
+        Y1 = columnY + editH,
+        editH = (double)WINDOW_HEIGHT / 25,
+        editW = (double)WINDOW_HEIGHT / 31 * 8 - (double)WINDOW_HEIGHT / 31 * 2;
+    ui->chatInput->setGeometry(QRect(QPoint(X1, Y1), QSize(editW, editH)));
+        X1 = X1 + editW;
+        editW = (double)WINDOW_HEIGHT / 31 * 2;
+    ui->sendButton->setGeometry(QRect(QPoint(X1, Y1), QSize(editW, editH)));
+
     ui->saveButton->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
     ui->loadButton->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
 }
@@ -400,9 +473,32 @@ void GameWidget::goOFFL()
     int X1 = columnX - buttonW / 2, Y1 = columnY - buttonH / 2;
     ui->loadButton->setGeometry(QRect(QPoint(X1, Y1), QSize(buttonW, buttonH)));
     ui->saveButton->setGeometry(QRect(QPoint(X1, Y1 + deltaY), QSize(buttonW, buttonH)));
+    int TIME_X = columnX - 100,
+        TIME_Y = (LOGO_Y + logoBoardH / 2 + columnY) / 2;
+    ui->TimeBar->setGeometry(QRect(QPoint(TIME_X, TIME_Y), QSize(200,15)));
+
+    ui->chatHistory->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
+    ui->chatInput->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
+    ui->sendButton->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
+}
+void GameWidget::remoteResign()
+{
+    sendMessage(6);
+    judge->curPlayerBak = judge->curPlayer;
+    judge->curPlayer = -1;
+    timerForPlayer->stop();
+    timerForBar->stop();
 }
 
 // 定义按钮行为
+void GameWidget::on_sendButton_clicked()
+{
+    QString data = ui->chatInput->text();
+    QString s = "<" + judge->usrnameOL + "> : \n" + data;
+    ui->chatHistory->appendPlainText(s);
+    ui->chatInput->setText("");
+    judge->send(NetworkData(OPCODE::CHAT_OP, data, ""));
+}
 void GameWidget::on_restartButton_clicked_OFFL()
 {
     if(mess){
@@ -426,11 +522,21 @@ void GameWidget::on_resignButton_clicked_OFFL()
 }
 void GameWidget::on_restartButton_clicked_OL()
 {
-    // 发出 LEAVE_OP
+    // 不发送 LEAVE_OP，返回到主界面，相当于重置
+    if(judge->curPlayer != -1) // 棋局尚在进行
+    {
+        sendMessage(7);
+        return;
+    }
+    ui->chatHistory->clear();
+    ui->chatHistory->appendPlainText(QString("It's your turn when time bar turn RED!"));
+    on_restartButton_clicked_OFFL();
 }
 void GameWidget::on_resignButton_clicked_OL()
 {
-    // 发出 GIVEUP_END_OP
+    // 发送 GIVEUP_OP
+    on_resignButton_clicked_OFFL();
+    judge->send(NetworkData(OPCODE::GIVEUP_OP, judge->usrnameOL, ""));
 }
 
 // 存档读档相关编码

@@ -34,6 +34,7 @@ public slots:
     void on_restartButton_clicked_OFFL(); // 链接 restart 按钮的行为
     void on_resignButton_clicked_OL();
     void on_restartButton_clicked_OL();
+    void on_sendButton_clicked(); // 链接 send 按钮的行为
 
     void startTimer();    // 当对局开始时，无论谁先手（机器下第一个棋子认为不需要时间），都打开玩家的计时器
     void playerTimeout_OFFL(); // 玩家超时的槽函数，用于链接计时器
@@ -43,8 +44,10 @@ public slots:
     void updateCB();      // 更新棋盘
     void updateBar();     // 更新倒计时进度条
 
+    // 联机相关
     void goOL();
     void goOFFL();
+    void remoteResign();
 
 private:
     Ui::GameWidget *ui;

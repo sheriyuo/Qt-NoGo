@@ -9,6 +9,8 @@ Judge::Judge(QObject *parent) :
     PORT = 1919;
     server = new NetworkServer(this);
     socket = new NetworkSocket(new QTcpSocket(), this);
+    srand(time(0) + clock());
+    usrnameOL = QString("OnlinePlayer") + QString::number(rand() % 90000 + 10000);
 
     connect(server, &NetworkServer::receive, this, &Judge::recDataFromClient);
     connect(socket, &NetworkSocket::receive, this, &Judge::recData);
@@ -31,6 +33,7 @@ void Judge::init()
     memset(blockVis, 0, sizeof(blockVis));
     memset(chessBelong, -1, sizeof(chessBelong));
     blockCnt = 0;
+    curPlayer = 0;
 }
 
 int Judge::GridPoint(int x, int y) {return board[x][y];}
@@ -221,19 +224,70 @@ void Judge::recDataFromClient(QTcpSocket* client, NetworkData data)
 }
 void Judge::recData(NetworkData d)
 {
+    int row, col;
     switch(d.op)
     {
     case OPCODE::READY_OP:
-        if(d.data1 != "") emit READY_OP(d.data1.toInt());
+        oppoOL = d.data1;
+        if(d.data2 != "") emit READY_OP(d);
         else emit READY_OP_ForInviter();
         break;
     case OPCODE::REJECT_OP:
         emit REJECT_OP();
         break;
     case OPCODE::MOVE_OP:
-        int row = QChar(d.data1[0]).unicode()-'A', col = d.data2.toInt()-1;
+        row = QChar(d.data1[0]).unicode()-'A', col = QChar(d.data1[1]).unicode()-'1';
         PlaceAPiece(row, col);
         emit MOVE_OP();
         break;
+    case OPCODE::CHAT_OP:
+        if(d.data1 != "") emit CHAT_OP(d);
+        break;
+    case OPCODE::TIMEOUT_END_OP:
+        if(d.data2 != "")
+        {
+            if(runMode == 2) {server->send(lastClient, NetworkData(OPCODE::TIMEOUT_END_OP, usrnameOL, ""));}
+            else {socket->send(NetworkData(OPCODE::TIMEOUT_END_OP, usrnameOL, ""));}
+            emit TIMEOUT_END_OP();
+        }
+        break;
+    case OPCODE::GIVEUP_OP:
+        if(runMode == 2) {server->send(lastClient, NetworkData(OPCODE::GIVEUP_END_OP, usrnameOL, "Sorry you resign"));}
+        else {socket->send(NetworkData(OPCODE::GIVEUP_END_OP, usrnameOL, "Sorry you resign"));}
+        emit GIVEUP_OP();
+        break;
+    case OPCODE::GIVEUP_END_OP:
+        if(d.data2 != "")
+        {
+            if(runMode == 2) {server->send(lastClient, NetworkData(OPCODE::GIVEUP_END_OP, usrnameOL, ""));}
+            else {socket->send(NetworkData(OPCODE::GIVEUP_END_OP, usrnameOL, ""));}
+        }
+        break;
+    case OPCODE::LEAVE_OP:
+        clearLink();
+        emit LEAVE_OP();
+        break;
+//    case OPCODE::SUICIDE_END_OP:
     }
+}
+void Judge::send(NetworkData d)
+{
+    if(runMode != 2 && runMode != 3) return;
+    if(runMode == 2) server->send(lastClient, d);
+    else socket->send(d);
+}
+void Judge::clearLink()
+{
+    if(runMode == 2)
+    {
+        server->leave(lastClient);
+        server->close();
+        lastClient = nullptr;
+    }
+    if(runMode == 3)
+    {
+        socket->bye();
+        socketConnected = false;
+    }
+    oppoOL = "";
 }
