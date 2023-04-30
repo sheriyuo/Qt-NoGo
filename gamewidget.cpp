@@ -17,7 +17,7 @@ GameWidget::GameWidget(Judge *j, Bot *b, QWidget *parent) :
     bot(b)
 {
     columnX = judge->RIGHT_UP() + (WINDOW_WIDTH - judge->RIGHT_UP()) / 2;
-    columnY = (double)WINDOW_HEIGHT / 20 * 10;
+    columnY = (double)WINDOW_HEIGHT / 20 * 9;
     // 右边侧栏位置中线
     buttonH = (double)WINDOW_HEIGHT / 31 * 2;
     buttonW = (double)WINDOW_HEIGHT / 31 * 6;
@@ -50,14 +50,14 @@ GameWidget::GameWidget(Judge *j, Bot *b, QWidget *parent) :
 
     // 设置 logo 的位置
     logoImg.load(":/img/logo.png");
-    logoBoardW = (WINDOW_WIDTH - judge->RIGHT_UP()) * 0.8; // 等比缩放
+    logoBoardW = (WINDOW_WIDTH - judge->RIGHT_UP()) * 0.65; // 等比缩放
     logoBoardH = (double)logoImg.height() * logoBoardW / logoImg.width();
     LOGO_X = columnX - logoBoardW / 2;
-    LOGO_Y = columnY - 2.5 * deltaY - logoBoardH / 2;
+    LOGO_Y = judge->LEFT_UP() + 15;
 
     //设置 timebar 的位置
     int TIME_X = columnX - 100,
-        TIME_Y = (LOGO_Y + logoBoardH / 2 + columnY) / 2;
+        TIME_Y = (LOGO_Y + logoBoardH + columnY) / 2 - 15;
     ui->TimeBar->setGeometry(QRect(QPoint(TIME_X, TIME_Y), QSize(200,15)));
 
     // 设置聊天框 默认隐藏
@@ -436,21 +436,35 @@ void GameWidget::goOL()
 
     // 布局
     columnX = judge->RIGHT_UP() + (WINDOW_WIDTH - judge->RIGHT_UP()) / 2;
-    columnY = (double)WINDOW_HEIGHT / 20 * 8.5;
+    columnY = (double)WINDOW_HEIGHT / 20 * 7.5;
+    buttonH = (double)WINDOW_HEIGHT / 31 * 2;
+    buttonW = (double)WINDOW_HEIGHT / 31 * 6;
+    int hisH = (double)WINDOW_HEIGHT / 31 * 6,
+        hisW = (double)WINDOW_HEIGHT / 31 * 8;
+    int sendH = (double)WINDOW_HEIGHT / 25,
+        sendW = (double)WINDOW_HEIGHT / 31 * 2;
+    int inputH = sendH,
+        inputW = hisW - sendW;
+    int X1 = columnX - hisW / 2,
+        Y1 = WINDOW_HEIGHT - judge->LEFT_UP() - hisH - inputH;
+    ui->chatHistory->setGeometry(QRect(QPoint(X1, Y1), QSize(hisW, hisH)));
+    int X2 = X1,
+        Y2 = Y1 + hisH;
+    ui->chatInput->setGeometry(QRect(QPoint(X2, Y2), QSize(inputW, inputH)));
+        X2 += inputW;
+    ui->sendButton->setGeometry(QRect(QPoint(X2, Y2), QSize(sendW, sendH)));
+    deltaY = (double)(Y1 - columnY - 15) / 2;
+    int X3 = columnX - buttonW / 2,
+        Y3 = columnY;
+    ui->resignButton->setGeometry(QRect(QPoint(X3, Y3), QSize(buttonW, buttonH)));
+    int X4 = X3,
+        Y4 = Y3 + deltaY;
+    ui->restartButton->setGeometry(QRect(QPoint(X4, Y4), QSize(buttonW, buttonH)));
+    LOGO_X = columnX - logoBoardW / 2;
+    LOGO_Y = judge->LEFT_UP();
     int TIME_X = columnX - 100,
-        TIME_Y = (LOGO_Y + logoBoardH / 2 + columnY) / 2;
+        TIME_Y = (LOGO_Y + logoBoardH + columnY - 10) / 2;
     ui->TimeBar->setGeometry(QRect(QPoint(TIME_X, TIME_Y), QSize(200,15)));
-    int editH = (double)WINDOW_HEIGHT / 31 * 5,
-        editW = (double)WINDOW_HEIGHT / 31 * 8,
-        X1 = columnX - editW / 2, Y1 = columnY;
-    ui->chatHistory->setGeometry(QRect(QPoint(X1, Y1), QSize(editW, editH)));
-        Y1 = columnY + editH,
-        editH = (double)WINDOW_HEIGHT / 25,
-        editW = (double)WINDOW_HEIGHT / 31 * 8 - (double)WINDOW_HEIGHT / 31 * 2;
-    ui->chatInput->setGeometry(QRect(QPoint(X1, Y1), QSize(editW, editH)));
-        X1 = X1 + editW;
-        editW = (double)WINDOW_HEIGHT / 31 * 2;
-    ui->sendButton->setGeometry(QRect(QPoint(X1, Y1), QSize(editW, editH)));
 
     ui->saveButton->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
     ui->loadButton->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
@@ -466,15 +480,26 @@ void GameWidget::goOFFL()
 
     // 布局
     columnX = judge->RIGHT_UP() + (WINDOW_WIDTH - judge->RIGHT_UP()) / 2;
-    columnY = (double)WINDOW_HEIGHT / 20 * 10;
+    columnY = (double)WINDOW_HEIGHT / 20 * 9;
     buttonH = (double)WINDOW_HEIGHT / 31 * 2;
     buttonW = (double)WINDOW_HEIGHT / 31 * 6;
     deltaY = (double)(judge->RIGHT_UP() - columnY) / 4;
-    int X1 = columnX - buttonW / 2, Y1 = columnY - buttonH / 2;
+    int X1 = columnX - buttonW / 2,
+        Y1 = columnY - buttonH / 2;
     ui->loadButton->setGeometry(QRect(QPoint(X1, Y1), QSize(buttonW, buttonH)));
-    ui->saveButton->setGeometry(QRect(QPoint(X1, Y1 + deltaY), QSize(buttonW, buttonH)));
+    int X2 = X1,
+        Y2 = Y1 + deltaY;
+    ui->saveButton->setGeometry(QRect(QPoint(X2, Y2), QSize(buttonW, buttonH)));
+    int X3 = X1,
+        Y3 = Y2 + deltaY;
+    ui->resignButton->setGeometry(QRect(QPoint(X3, Y3), QSize(buttonW, buttonH)));
+    int X4 = X1,
+        Y4 = Y3 + deltaY;
+    ui->restartButton->setGeometry(QRect(QPoint(X4, Y4), QSize(buttonW, buttonH)));
+    LOGO_X = columnX - logoBoardW / 2;
+    LOGO_Y = judge->LEFT_UP() + 15;
     int TIME_X = columnX - 100,
-        TIME_Y = (LOGO_Y + logoBoardH / 2 + columnY) / 2;
+        TIME_Y = (LOGO_Y + logoBoardH + columnY) / 2 - 15;
     ui->TimeBar->setGeometry(QRect(QPoint(TIME_X, TIME_Y), QSize(200,15)));
 
     ui->chatHistory->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));

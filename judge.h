@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QDebug>
 #include <QTimer>
+#include <QRandomGenerator>
 #include <set>
 #include "network/networkserver.h"
 #include "network/networksocket.h"
@@ -57,13 +58,13 @@ public:
 
     int playerRole; // -1->white 1->black
     int curPlayer, curPlayerBak; // 0->bot 1->player -1->game over
-    int CHESSBOARD_SIZE;
+    int CHESSBOARD_SIZE; // 外棋盘的边长
     int runMode;  // 0->PVE  1->PVP  2->Server(PVPOL)  3->Client(PVPOL)
 
     int GRID_THICKNESS() {return (CHESSBOARD_LEN / CHESSBOARD_SIZE / 6);}
     double SQUARE_LEN() {return ((double)(CHESSBOARD_LEN) / (CHESSBOARD_SIZE - 1 + 2 * BTOL));}
-    double LEFT_UP() {return ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + BTOL * SQUARE_LEN());}
-    double RIGHT_UP() {return ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + CHESSBOARD_LEN);}
+    double LEFT_UP() {return ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + BTOL * SQUARE_LEN());} // 内棋盘左上角的 X坐标（横向）
+    double RIGHT_UP() {return ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + CHESSBOARD_LEN);} // 外棋盘右上角的 X坐标（横向）
 
     // 联机相关
     QString IP, usrnameOL, oppoOL;

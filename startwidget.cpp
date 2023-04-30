@@ -91,7 +91,7 @@ void StartWidget::paintEvent(QPaintEvent *event)
 
     QPixmap logoImg;
     logoImg.load(":/img/logo.png");
-    int H = (double)WINDOW_HEIGHT / 5,
+    int H = (double)WINDOW_HEIGHT / 9,
         W = (double)H * logoImg.width() / logoImg.height();
     int X = (double)WINDOW_WIDTH / 2 - (double)W / 2,
         Y = (double)WINDOW_HEIGHT / 20 * 6 - (double)H / 2;
