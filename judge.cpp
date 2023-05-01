@@ -1,5 +1,13 @@
 #include "judge.h"
 
+/*
+*   @file: judge.cpp
+*   @brief: 声明 Judge 类，
+*           控制下棋过程中的逻辑，包括进程调度，局面判断
+*   @author: sheriyuo, ce-amtic, duality314
+*   @time: 2023/5/1
+*/
+
 Judge::Judge(QObject *parent) :
     QObject(parent)
 {

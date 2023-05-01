@@ -1,6 +1,14 @@
 #include "gamewidget.h"
 #include "ui_gamewidget.h"
 
+/*
+*   @file: gamewidget.cpp
+*   @brief: 声明 GameWidget 类，
+*           维护对局过程中的棋盘状态，控制信号槽及文件读写
+*   @author: sheriyuo, ce-amtic, duality314
+*   @time: 2023/5/1
+*/
+
 /* 玩家的计时器
 将 bot 的计时器内置于 class Bot 中 */
 static QTimer *timerForPlayer;
@@ -598,18 +606,52 @@ void GameWidget::stringToData()
     }
 }
 
-// 存档读档按钮信号
+// 读档按钮信号
 void GameWidget::on_loadButton_clicked()
 {
-    // 文件操作我还没写
+    QString fileName = QFileDialog::getSaveFileName(nullptr, tr("Save Data"), "", tr("DATA (*.dat)"));
+    // QFileDialog 读取文件 fileName
+
+    if (fileName.isEmpty())
+        return;
+    else
+    {
+        QFile file(fileName);
+        if (!file.open(QIODevice::ReadOnly)) // 无法读入时报错
+        {
+            QMessageBox::information(nullptr, tr("Unable to open file"),file.errorString());
+            return;
+        }
+
+        QByteArray fileData = file.readAll();
+        memcpy(dataStr, fileData, sizeof(fileData));
+        file.close();
+        // QFile 直接读入为 QByteArray 再转为 char*
+    }
 
     stringToData();
     judge->updateStep(dataVec);
     startTimer();
+    // 重新开始游戏 judge
 }
+// 存档按钮信号
 void GameWidget::on_saveButton_clicked()
 {
     dataToString();
+    QString fileName = QFileDialog::getSaveFileName(nullptr, tr("Save Data"), "", tr("DATA (*.dat)"));
+    // QFileDialog 读取文件 fileName
 
-    // 文件操作我还没写
+    if (fileName.isEmpty())
+        return;
+    else
+    {
+        QFile file(fileName);
+        if (!file.open(QIODevice::WriteOnly)) // 无法覆写时报错
+        {
+            QMessageBox::information(nullptr, tr("Unable to open file"),file.errorString());
+            return;
+        }
+        file.write(dataStr); // QFile 直接读写文件
+        file.close();
+    }
 }

@@ -7,9 +7,21 @@
 #include <QMouseEvent>
 #include <math.h>
 #include <ctime>
+#include <QFile>
+#include <QFileDialog>
+#include <QMessageBox>
+
 #include "judge.h"
 #include "bot.h"
 #include "messagebox.h"
+
+/*
+*   @file: gamewidget.h
+*   @brief: 声明 GameWidget 类，
+*           维护对局过程中的棋盘状态，控制信号槽及文件读写
+*   @author: sheriyuo, ce-amtic, duality314
+*   @time: 2023/5/1
+*/
 
 namespace Ui { class GameWidget; }
 
