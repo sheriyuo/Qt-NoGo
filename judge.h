@@ -62,7 +62,7 @@ public:
     void SaveStep(int x,int y); // 记录当前在 (x, y) 下棋
 
     ItemVector getStep(); // 读取记录步数
-    void updateStep(ItemVector newStep); // 更新记录步数并更改棋局
+    void updateStep(int newCurPlayer, ItemVector newStep); // 更新记录步数并更改棋局
 
     int playerRole; // -1->white 1->black
     int curPlayer, curPlayerBak; // 0->bot 1->player -1->game over

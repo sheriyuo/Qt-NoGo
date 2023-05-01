@@ -577,6 +577,8 @@ void GameWidget::dataToString()
 {
     std::memset(dataStr,0,sizeof(dataStr));
     int len = 0;
+    dataStr[len++] = judge->curPlayer + '0', dataStr[len++] = ' ';
+
     ItemVector step = judge->getStep(); // 读取 savedStep
     for(Item cur : step)
     {
@@ -596,7 +598,7 @@ void GameWidget::stringToData()
     int len = strlen(dataStr);
 
     qDebug() << dataStr << "\n";
-    for(int i = 0; i < len; i += 3)
+    for(int i = 2; i < len; i += 3)
     {
         if(i == len - 1)
         {
@@ -634,7 +636,7 @@ void GameWidget::on_loadButton_clicked()
     }
 
     stringToData();
-    judge->updateStep(dataVec);
+    judge->updateStep(dataStr[0] - '0', dataVec);
     startTimer();
     // 重新开始游戏 judge
 }

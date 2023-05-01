@@ -213,10 +213,12 @@ ItemVector Judge::getStep()
     return savedStep;
 }
 // 更新 savedStep 并更新 board 数组
-void Judge::updateStep(ItemVector newStep)
+void Judge::updateStep(int newCurPlayer, ItemVector newStep)
 {
     savedStep.clear();
-    Judge::init(); // 更新 savedStep
+    init(); // 更新 savedStep
+    curPlayer = newCurPlayer;
+
     for(Item cur : newStep)
     {
         Judge::PlaceAPiece(cur.first, cur.second); // 重新绘制棋盘并处理状态
