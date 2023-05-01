@@ -594,6 +594,8 @@ void GameWidget::stringToData()
 {
     dataVec.clear();
     int len = strlen(dataStr);
+
+    qDebug() << dataStr << "\n";
     for(int i = 0; i < len; i += 3)
     {
         if(i == len - 1)
@@ -603,13 +605,14 @@ void GameWidget::stringToData()
         }
         int x = dataStr[i] - 'A', y = dataStr[i+1] - '1';
         dataVec.push_back(Point(x, y));
+        qDebug() << i << ":" << x << "," << y << "\n";
     }
 }
 
 // 读档按钮信号
 void GameWidget::on_loadButton_clicked()
 {
-    QString fileName = QFileDialog::getSaveFileName(nullptr, tr("Save Data"), "", tr("DATA (*.dat)"));
+    QString fileName = QFileDialog::getOpenFileName(nullptr, tr("Load Data"), "", tr("DATA (*.dat)"));
     // QFileDialog 读取文件 fileName
 
     if (fileName.isEmpty())
@@ -624,8 +627,9 @@ void GameWidget::on_loadButton_clicked()
         }
 
         QByteArray fileData = file.readAll();
-        memcpy(dataStr, fileData, sizeof(fileData));
-        file.close();
+
+        qDebug() << fileData << "\n";
+        memcpy(dataStr, fileData, fileData.size());
         // QFile 直接读入为 QByteArray 再转为 char*
     }
 
