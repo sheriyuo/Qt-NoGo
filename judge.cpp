@@ -13,12 +13,18 @@ Judge::Judge(QObject *parent) :
 {
     CHESSBOARD_SIZE = 9;
     runMode = 0;
-    IP = "127.0.0.1";
+    // IP = "127.0.0.1";
+    foreach (QHostAddress address, QHostInfo::fromName(QHostInfo::localHostName()).addresses()) {
+        if(address.protocol() == QAbstractSocket::IPv4Protocol){
+            IP = address.toString();
+        }
+    }
     PORT = 1919;
     server = new NetworkServer(this);
     socket = new NetworkSocket(new QTcpSocket(), this);
     srand(time(0) + clock());
-    usrnameOL = QString("OnlinePlayer") + QString::number(QRandomGenerator::global()->bounded(89999) + 10000);
+    // usrnameOL = QString("OnlinePlayer") + QString::number(QRandomGenerator::global()->bounded(89999) + 10000);
+    usrnameOL = QHostInfo::localHostName();
 
     connect(server, &NetworkServer::receive, this, &Judge::recDataFromClient);
     connect(socket, &NetworkSocket::receive, this, &Judge::recData);

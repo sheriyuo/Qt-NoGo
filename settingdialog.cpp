@@ -136,11 +136,17 @@ void SettingDialog::on_closeBtn_clicked()
 }
 void SettingDialog::on_restartBtn_clicked()
 {
-    judge->IP = ui->IPinput->text();
     judge->PORT = ui->PORTinput->text().toInt();
     judge->usrnameOL = ui->usrnameInput->text();
+    foreach (QHostAddress address, QHostInfo::fromName(QHostInfo::localHostName()).addresses()) {
+        if(address.protocol() == QAbstractSocket::IPv4Protocol){
+            judge->IP = address.toString();
+        }
+    }
 
     ui->serverStatus->setText("Server: Running");
+    ui->IPinput->setText(judge->IP);
+    ui->IPtitle->setText("Server IP");
     ui->PORTtitle->setText("Server Port");
     ui->gamemodeCB->setCurrentIndex(1);
     ui->chessbdCB->setCurrentIndex(0);
@@ -189,6 +195,7 @@ void SettingDialog::on_switchBtn_clicked()
 {
     // 发送 LEAVE_OP 信号并断开连接
     ui->serverStatus->setText("Server: Paused");
+    ui->IPtitle->setText("Remote IP");
     ui->PORTtitle->setText("Remote Port");
     ui->clientStatus->setText("Not Connected");
     ui->gamemodeCB->setCurrentIndex(0);
