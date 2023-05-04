@@ -640,6 +640,7 @@ void GameWidget::on_loadButton_clicked()
 
     if(judge->loadState) // 是否为终局
     {
+        // 这个地方函数里的 1 是 PVE, PVP 还没放进 data 里
         if(judge->loadState == 'W')
             gameWin(1);
         if(judge->loadState == 'L')
