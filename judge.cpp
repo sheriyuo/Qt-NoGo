@@ -46,6 +46,7 @@ void Judge::init()
     memset(board, 0, sizeof(board));
     memset(blockVis, 0, sizeof(blockVis));
     memset(chessBelong, -1, sizeof(chessBelong));
+    savedStep.clear();
     blockCnt = 0;
     curPlayer = 0;
 }
@@ -96,7 +97,7 @@ void Judge::MergeSet(LibertySet &x, LibertySet y)
 
 bool Judge::CheckVaild(int x, int y)
 {
-    Q_ASSERT(blockCnt <= CHESSBOARD_SIZE * CHESSBOARD_SIZE); // 检测 blockCnt
+    //Q_ASSERT(blockCnt <= CHESSBOARD_SIZE * CHESSBOARD_SIZE); // 检测 blockCnt
     if(!IsEmpty(x, y)) return false;
 
     int testNum = blockCnt + 1;
@@ -219,11 +220,11 @@ ItemVector Judge::getStep()
     return savedStep;
 }
 // 更新 savedStep 并更新 board 数组
-void Judge::updateStep(int newCurPlayer, ItemVector newStep)
+void Judge::updateStep(int newPlayerRole, ItemVector newStep)
 {
     savedStep.clear();
     init(); // 更新 savedStep
-    curPlayer = newCurPlayer;
+    setPlayerRole(newPlayerRole);
 
     for(Item cur : newStep)
     {

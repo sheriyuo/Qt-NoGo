@@ -17,6 +17,7 @@ signals:
     void timeout();
 
 public slots:
+
     void makeFirstMove(int player);
     void makeAMove();
 

@@ -565,7 +565,7 @@ void GameWidget::dataToString()
 {
     std::memset(dataStr,0,sizeof(dataStr));
     int len = 0;
-    dataStr[len++] = judge->curPlayer + '0', dataStr[len++] = ' ';
+    dataStr[len++] = judge->playerRole + '1', dataStr[len++] = ' ';
 
     ItemVector step = judge->getStep(); // 读取 savedStep
     for(Item cur : step)
@@ -595,7 +595,7 @@ void GameWidget::stringToData()
         }
         int x = dataStr[i] - 'A', y = dataStr[i+1] - '1';
         dataVec.push_back(Point(x, y));
-        qDebug() << i << ":" << x << "," << y << "\n";
+        //qDebug() << i << ":" << x << "," << y << "\n";
     }
 }
 
@@ -619,12 +619,13 @@ void GameWidget::on_loadButton_clicked()
         QByteArray fileData = file.readAll();
 
         qDebug() << fileData << "\n";
+        memset(dataStr, 0, sizeof(dataStr)); // 先清零不然 copy 位数小于时会更新不了后面的
         memcpy(dataStr, fileData, fileData.size());
         // QFile 直接读入为 QByteArray 再转为 char*
     }
 
     stringToData();
-    judge->updateStep(dataStr[0] - '0', dataVec);
+    judge->updateStep(dataStr[0] - '1', dataVec);
     startTimer();
     // 重新开始游戏 judge
 }
@@ -645,6 +646,7 @@ void GameWidget::on_saveButton_clicked()
             QMessageBox::information(nullptr, tr("Unable to open file"),file.errorString());
             return;
         }
+        qDebug() << dataStr << "\n";
         file.write(dataStr); // QFile 直接读写文件
         file.close();
     }
