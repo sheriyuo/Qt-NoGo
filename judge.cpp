@@ -109,7 +109,7 @@ bool Judge::CheckVaild(int x, int y)
         if(!IsInBoard(xx, yy)) continue; // 判断边界条件
 
         int num = chessBelong[xx][yy];
-        if(board[xx][yy] == 0) blockLiberty[testNum].insert(std::make_pair(xx, yy));
+        if(board[xx][yy] == 0) blockLiberty[testNum].insert(Point(xx, yy));
         else
         {
             if(board[xx][yy] == CurColor()) // 统计合并之后的气数
@@ -128,8 +128,8 @@ bool Judge::CheckVaild(int x, int y)
 
     if(mergedBlock.size())
         CleanVis();
-    if(blockLiberty[testNum].find(std::make_pair(x, y)) != blockLiberty[testNum].end())
-        blockLiberty[testNum].erase(std::make_pair(x, y));
+    if(blockLiberty[testNum].find(Point(x, y)) != blockLiberty[testNum].end())
+        blockLiberty[testNum].erase(Point(x, y));
 
     if(blockLiberty[testNum].size() == 0) // 没有气
         return false;
@@ -220,7 +220,7 @@ ItemVector Judge::getStep()
     return savedStep;
 }
 // 更新 savedStep 并更新 board 数组
-void Judge::updateStep(int newPlayerRole, ItemVector newStep)
+void Judge::updateStep(int newPlayerRole, ItemVector newStep, char newState)
 {
     savedStep.clear();
     init(); // 更新 savedStep
@@ -230,7 +230,10 @@ void Judge::updateStep(int newPlayerRole, ItemVector newStep)
     {
         Judge::PlaceAPiece(cur.first, cur.second); // 重新绘制棋盘并处理状态
     }
+
+    loadState = newState;
     // timerForPlayer 在 gamewidget 里面，要在外面 init。
+    // loadState 也要在 gamewidget 里面判断是否终局。
 }
 
 // 网络库相关

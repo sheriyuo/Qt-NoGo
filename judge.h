@@ -62,12 +62,13 @@ public:
     void SaveStep(int x,int y); // 记录当前在 (x, y) 下棋
 
     ItemVector getStep(); // 读取记录步数
-    void updateStep(int newCurPlayer, ItemVector newStep); // 更新记录步数并更改棋局
+    void updateStep(int newCurPlayer, ItemVector newStep, char newState); // 更新记录步数并更改棋局
 
     int playerRole; // -1->white 1->black
     int curPlayer, curPlayerBak; // 0->bot 1->player -1->game over
     int CHESSBOARD_SIZE; // 外棋盘的边长
     int runMode;  // 0->PVE  1->PVP  2->Server(PVPOL)  3->Client(PVPOL)
+    char loadState; // G->Resign W->Win L->Timeout
 
     int GRID_THICKNESS() {return (CHESSBOARD_LEN / CHESSBOARD_SIZE / 6);}
     double SQUARE_LEN() {return ((double)(CHESSBOARD_LEN) / (CHESSBOARD_SIZE - 1 + 2 * BTOL));}

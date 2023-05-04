@@ -90,6 +90,9 @@ private:
     MessageBox *mess = nullptr;
     int columnX, columnY, buttonW, buttonH;
     QPixmap logoImg;
+
+    // 存储一个临时的存档
+    char strState;
     char dataStr[28 * 28 * 3 + 5];
     ItemVector dataVec;
 };

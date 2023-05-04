@@ -312,6 +312,7 @@ void GameWidget::gameLose(int type)
     if(!type) sendMessage(1);
     else sendMessage(3);
     judge->curPlayer = -1;
+    judge->loadState = 'L';
 }
 void GameWidget::gameWin(int type)
 {
@@ -319,6 +320,7 @@ void GameWidget::gameWin(int type)
     if(!type) sendMessage(0);
     else sendMessage(4);
     judge->curPlayer = -1;
+    judge->loadState = 'W';
 }
 void GameWidget::startTimer() {
     timerForPlayer->stop();
@@ -538,6 +540,7 @@ void GameWidget::on_resignButton_clicked_OFFL()
     sendMessage(5);
     judge->curPlayerBak = judge->curPlayer;
     judge->curPlayer = -1;
+    judge->loadState = 'G';
     timerForPlayer->stop();
     timerForBar->stop();
 }
@@ -578,19 +581,25 @@ void GameWidget::dataToString()
         char x = cur.first + 'A', y = cur.second + '1';
         dataStr[len++] = x, dataStr[len++] = y, dataStr[len++] = ' ';
     }
+
+    char dataState = judge->loadState;
+    if(dataState)
+        dataStr[len++] = dataState;
+    else
+        dataStr[--len] = 0;
 }
 
 void GameWidget::stringToData()
 {
     dataVec.clear();
     int len = strlen(dataStr);
-
+    strState = 0;
     qDebug() << dataStr << "\n";
     for(int i = 2; i < len; i += 3)
     {
         if(i == len - 1)
         {
-            // 'G' 我还没写
+            strState = dataStr[i];
             break;
         }
         int x = dataStr[i] - 'A', y = dataStr[i+1] - '1';
@@ -625,8 +634,20 @@ void GameWidget::on_loadButton_clicked()
     }
 
     stringToData();
-    judge->updateStep(dataStr[0] - '1', dataVec);
-    startTimer();
+    judge->updateStep(dataStr[0] - '1', dataVec, strState);
+
+    startTimer(); // 重置计时器
+
+    if(judge->loadState) // 是否为终局
+    {
+        if(judge->loadState == 'W')
+            gameWin(1);
+        if(judge->loadState == 'L')
+            gameLose(1);
+        if(judge->loadState == 'G')
+            on_resignButton_clicked_OFFL();
+    }
+
     // 重新开始游戏 judge
 }
 // 存档按钮信号
