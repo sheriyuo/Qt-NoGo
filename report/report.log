@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2023.2.22)  4 APR 2023 18:16
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2023.1.16)  4 MAY 2023 16:51
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -710,15 +710,15 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
  [0
 
 ]
-File: img/UI.png Graphic file (type bmp)
-<img/UI.png>
-
 
 Package xeCJK Warning: Unknown CJK family `\CJKsfdefault' is being ignored.
 (xeCJK)                
 (xeCJK)                Try to use `\setCJKsansfont[...]{...}' to define it.
 
 [1]
+File: img/UI.png Graphic file (type bmp)
+<img/UI.png>
+ [2]
 File: img/fyh.png Graphic file (type bmp)
 <img/fyh.png>
 
@@ -727,7 +727,7 @@ Package xeCJK Warning: Unknown CJK family `\CJKttdefault' is being ignored.
 (xeCJK)                
 (xeCJK)                Try to use `\setCJKmonofont[...]{...}' to define it.
 
-[2]
+[3]
 
 Package fontspec Info: Font family 'Consolas(0)' created for font 'Consolas'
 (fontspec)             with options [].
@@ -789,7 +789,7 @@ Package fontspec Info: Font family 'ConsolasItalic(0)' created for font
 (fontspec)             Italic/BI/OT:script=latn;language=dflt;"
 (fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.: 
 
- [3]
+ [4]
 File: img/tip.png Graphic file (type bmp)
 <img/tip.png>
 File: img/win.png Graphic file (type bmp)
@@ -798,17 +798,42 @@ File: img/resign.png Graphic file (type bmp)
 <img/resign.png>
 File: img/TLE.png Graphic file (type bmp)
 <img/TLE.png>
- [4]
-LaTeX Font Info:    Calculating math sizes for size <13.04874> on input line 18
-0.
- [5] [6] (./report.aux) ) 
-Here is how much of TeX's memory you used:
- 11523 strings out of 476179
- 265181 string characters out of 5813072
- 854396 words of memory out of 5000000
- 31988 multiletter control sequences out of 15000+600000
- 486931 words of font info for 143 fonts, out of 8000000 for 9000
- 1348 hyphenation exceptions out of 8191
- 88i,15n,91p,266b,1101s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ [5]
+Overfull \hbox (26.3576pt too wide) in paragraph at lines 178--179
+[]\TU/SimSun(0)/m/n/10.53937 联 机 功 能 使 用 基 于 [][]\TU/lmtt/m/n/10.53937 QTcpServ
+er, QTcpSocket []\TU/SimSun(0)/m/n/10.53937 二 次 封 装 的 [][]\TU/lmtt/m/n/10.53937
+ NetworkServer, NetworkSocket
+ []
 
-Output written on report.pdf (7 pages).
+[6]
+File: img/web1.png Graphic file (type bmp)
+<img/web1.png>
+ [7]
+Overfull \hbox (9.971pt too wide) in paragraph at lines 218--219
+[]\TU/SimSun(0)/m/n/10.53937 此 时，|  提 出 邀 请 发 发 送 [][]\TU/lmtt/m/n/10.53937 REA
+DY_OP []\TU/SimSun(0)/m/n/10.53937 型 数 据，|  接 收 方 识 别 该 数 据，|  并 弹 出 同 样 的 [][]
+\TU/lmtt/m/n/10.53937 OptionDialog
+ []
+
+File: img/web4.png Graphic file (type bmp)
+<img/web4.png>
+File: img/web5.png Graphic file (type bmp)
+<img/web5.png>
+File: img/web2.png Graphic file (type bmp)
+<img/web2.png>
+File: img/web3.png Graphic file (type bmp)
+<img/web3.png>
+[8]
+LaTeX Font Info:    Calculating math sizes for size <13.04874> on input line 25
+4.
+ [9] (./report.aux) ) 
+Here is how much of TeX's memory you used:
+ 11642 strings out of 477146
+ 269724 string characters out of 5829170
+ 852166 words of memory out of 5000000
+ 32044 multiletter control sequences out of 15000+600000
+ 486947 words of font info for 145 fonts, out of 8000000 for 9000
+ 622 hyphenation exceptions out of 8191
+ 88i,14n,91p,315b,1101s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+Output written on report.pdf (10 pages).

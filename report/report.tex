@@ -171,6 +171,80 @@
 	
 	不如看一下隔壁队伍写的前后端分离。
 	
+	\section{联机对战设计}
+	
+	\subsection{通信协议}
+	
+	联机功能使用基于 \verb|QTcpServer, QTcpSocket| 二次封装的 \verb|NetworkServer, NetworkSocket| 类实现，可以通过 TCP 协议进行同一局域网内两个终端点对点的数据交换。
+	
+	联机传输的数据通过 \verb|NetworkData| 类进行封装，数据类型如下：
+	\begin{lstlisting}
+	enum class OPCODE : int {
+    	READY_OP = 200000,  // 申请对局
+    	REJECT_OP,          // 拒绝对局
+	    MOVE_OP,            // 一方落子
+	    GIVEUP_OP,          // 一方认输
+	    TIMEOUT_END_OP,     // 结算，终局条件为一方超时未落子
+	    GIVEUP_END_OP,      // 结算，终局条件为一方认输
+	    LEAVE_OP,           // 一方断开连接
+	    CHAT_OP,            // 进行聊天数据交换
+	};
+	\end{lstlisting}
+
+    \subsection{联机对战逻辑}
+    
+    进行一场联机对战可以抽象为一下三个步骤：1.双方建立连接；2.一方发起对局，另一方确认对局；3.完成对局并确认胜负，返回第一步结束后的状态。
+	
+	\subsubsection{双方建立连接}
+	
+	首先在设置 UI 中加入 IP、端口、用户昵称的输入框，以获取必要的信息。然后在数据库 \verb|Judge| 类中创建 \verb|(NetworkServer*)server, (NetworkSocket*)socket| 对象，在构造函数中初始化，用于建立连接。
+	
+	在设置 UI 中加入 启动服务器(Restart Server) 与 连接服务器(Reconnect) 的按钮，行为如下：当 Restart Server 按钮被点击时，调用 \verb|QTcpServer::listen(port)| API 来监听用户所输入的端口；当 Reconnect 按钮被点击时，调用 \verb|NetworkSocket::hello(host, port)| API 来尝试与地址为 \verb|host:port| 的主机通信。
+	
+	调用 \verb|QTcpSocket::waitForConnected()| API 来判断是否连接超时，若超时则提示未连接并禁止用户发起对局，否则提示连接正常并等待下一步。
+	
+	\begin{figure}[!htb]{
+			\centering
+			\includegraphics[width=0.8\textwidth]{img/web1.png}
+			\counterwithin{figure}{subsection}
+			\caption{联机设置页面}
+		}
+	\end{figure}
+	
+	\subsubsection{一方发起对局，另一方确认对局}
+	
+	当 Restart Server 和 Reconnect 按钮中有一者被点击时，视作应用程序进入了联机模式。在联机模式下，点击对局开始按钮并不会立刻跳转到棋盘界面，而是会弹出 \verb|OptionDialog| 类所创建的提示窗口，提示等待连接。其中 \verb|OptionDialog| 类基于 \verb|QDialog| 类二次封装，并进行了一些美化。
+	
+	此时，提出邀请发发送 \verb|READY_OP| 型数据，接收方识别该数据，并弹出同样的 \verb|OptionDialog| 来确认对局是否成立，返回 \verb|READY_OP| 或 \verb|REJECT_OP|。
+	
+	当对局成立时，双方同时进入棋盘界面，否则返回第一步结束后的状态。 
+
+    \subsubsection{完成对局并确认胜负}
+    
+    对局成立后执黑先行。对于当前落子一方，每次落子成立时均会向对方发送 \verb|MOVE_OP| 信号，并结束监听鼠标点击。对方接受 \verb|MOVE_OP| 信号后会绘制该棋子，并开始监听己方鼠标点击。
+    
+    在对局中，双方可以通过界面右下的聊天框进行实时沟通，通过互相发送 \verb|CHAT_OP| 实现。
+    
+   \begin{figure}[!htb]
+    	\centering
+    	\includegraphics[width=6cm]{img/web4.png}
+    	\includegraphics[width=6cm]{img/web5.png}
+    	\includegraphics[width=6cm]{img/web2.png}
+    	\includegraphics[width=6cm]{img/web3.png}
+    	\counterwithin{figure}{subsection}
+    	\caption{联机对局界面演示}
+    \end{figure}
+    
+    由于在判断落子成立时禁止了棋手自杀，因此对局结束的条件只有超时和认输两种。
+    
+    当一方认输，即点击 Resign 按钮后，认输方发送 \verb|GIVE_UP_OP|，胜方在收到该信息后回复 \verb|GIVE_UO_END_OP| 表示请求已“一方认输”为理由结束对局。认输方收到 \verb|GIVE_UO_END_OP| 回复同样的信息以确认。此时联机对战结束，棋盘不能被操作。
+    
+    当一方超时，胜方的计时器会调用 \verb|GameWidget::playerTimeout_OL()| 槽函数，发送 \verb|TIMEOUT_END_OP| 表示请求已“一方超时”为理由结束对局，负方回复同样的信息以确认。此时联机对战结束，棋盘不能被操作。
+    
+    当联机对战结束时，对局双方可以分别选择是否返回开始界面。当双方都返回开始界面后，此时程序视作重置到了第一步完成后的状态，可以选择重新开始联机或单人对局。
+    
+
+	
 	\section{AI 算法设计}
 	
 	由于现在还是第一阶段，所以我们采用了非常粗犷的 bot 写法：随机下棋。

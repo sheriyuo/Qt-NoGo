@@ -1,13 +1,19 @@
-\contentsline {section}{\numberline {1}团队构成}{1}{}%
-\contentsline {subsection}{\numberline {1.1}闲话}{1}{}%
-\contentsline {subsection}{\numberline {1.2}小组分工}{1}{}%
-\contentsline {section}{\numberline {2}Qt 图形界面应用设计}{1}{}%
-\contentsline {subsection}{\numberline {2.1}UI 设计}{1}{}%
-\contentsline {subsection}{\numberline {2.2}基本逻辑}{2}{}%
-\contentsline {subsection}{\numberline {2.3}棋盘逻辑和结局判断}{3}{}%
-\contentsline {subsection}{\numberline {2.4}设置}{4}{}%
-\contentsline {subsection}{\numberline {2.5}计时器}{4}{}%
-\contentsline {subsection}{\numberline {2.6}更多功能}{4}{}%
-\contentsline {section}{\numberline {3}AI 算法设计}{5}{}%
-\contentsline {subsection}{\numberline {3.1}min-max 搜索和 $\alpha -\beta $ 剪枝}{5}{}%
-\contentsline {section}{\numberline {4}感谢}{5}{}%
+\contentsline {section}{\numberline {1}团队构成}{2}{}%
+\contentsline {subsection}{\numberline {1.1}闲话}{2}{}%
+\contentsline {subsection}{\numberline {1.2}小组分工}{2}{}%
+\contentsline {section}{\numberline {2}Qt 图形界面应用设计}{2}{}%
+\contentsline {subsection}{\numberline {2.1}UI 设计}{2}{}%
+\contentsline {subsection}{\numberline {2.2}基本逻辑}{3}{}%
+\contentsline {subsection}{\numberline {2.3}棋盘逻辑和结局判断}{4}{}%
+\contentsline {subsection}{\numberline {2.4}设置}{5}{}%
+\contentsline {subsection}{\numberline {2.5}计时器}{5}{}%
+\contentsline {subsection}{\numberline {2.6}更多功能}{5}{}%
+\contentsline {section}{\numberline {3}联机对战设计}{6}{}%
+\contentsline {subsection}{\numberline {3.1}通信协议}{6}{}%
+\contentsline {subsection}{\numberline {3.2}联机对战逻辑}{7}{}%
+\contentsline {subsubsection}{\numberline {3.2.1}双方建立连接}{7}{}%
+\contentsline {subsubsection}{\numberline {3.2.2}一方发起对局，另一方确认对局}{7}{}%
+\contentsline {subsubsection}{\numberline {3.2.3}完成对局并确认胜负}{8}{}%
+\contentsline {section}{\numberline {4}AI 算法设计}{9}{}%
+\contentsline {subsection}{\numberline {4.1}min-max 搜索和 $\alpha -\beta $ 剪枝}{9}{}%
+\contentsline {section}{\numberline {5}感谢}{9}{}%
