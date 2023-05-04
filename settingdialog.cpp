@@ -177,7 +177,7 @@ void SettingDialog::on_reconnectBtn_clicked()
     ui->usrnameInput->setDisabled(false);
 
     judge->socket->hello(judge->IP, judge->PORT);
-    if(!judge->socket->base()->waitForConnected(3000))
+    if(!judge->socket->base()->waitForConnected(15000))
     {
         ui->clientStatus->setText("Connect Failed");
         judge->socketConnected = false;

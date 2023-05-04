@@ -142,23 +142,13 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
         timerForBar->stop();
         judge->PlaceAPiece(row-1, column-1);
 
-        if(!judge->runMode)
-        {
-            emit turnForBot();
-        }
-        if(judge->runMode == 2 || judge->runMode == 3)
-        {
-            // 发送 MOVE_OP 以及处理 recData
+        if(!judge->runMode) emit turnForBot();
+        if(judge->runMode == 2 || judge->runMode == 3) // 发送 MOVE_OP 以及处理 recData
             judge->send(NetworkData(OPCODE::MOVE_OP, QString(QChar('A'+row-1))+QString(QChar('1'+column-1)), ""));
-        }
-        timerForPlayer->start(PLAYER_TIMEOUT * 1000);
-        timerForBar->start(100);
-        basetime=clock();
+
+        startTimer();
     }
-    else
-    {
-        sendMessage(2);
-    }
+    else sendMessage(2);
 }
 void GameWidget::updateCB() {repaint();}
 
@@ -232,16 +222,11 @@ void GameWidget :: drawChessboard(QPainter &painter)
 
     // 水平线
     for(int i = 0 ; i < number ; i++)
-    {
-
         painter.drawLine( judge->LEFT_UP() , judge->LEFT_UP() + i * L , judge->LEFT_UP() + ( number - 1 ) * L , judge->LEFT_UP() + i * L );
-    }
 
     //垂直线
     for(int i = 0 ; i < number ; i++)
-    {
         painter.drawLine( judge->LEFT_UP() + i * L , judge->LEFT_UP() ,  judge->LEFT_UP() + i * L ,  judge->LEFT_UP() + ( number - 1 ) * L );
-    }
 }
 
 void GameWidget::drawWhite(QPainter &painter, double i, double j)
@@ -338,9 +323,12 @@ void GameWidget::gameWin(int type)
 void GameWidget::startTimer() {
     timerForPlayer->stop();
     timerForBar->stop();
-    timerForPlayer->start(PLAYER_TIMEOUT * 1000);
-    timerForBar->start(100);
-    basetime=clock();
+    if(judge->curPlayer >= 0)
+    {
+        timerForPlayer->start(PLAYER_TIMEOUT * 1000);
+        timerForBar->start(100);
+        basetime=clock();
+    }
 }
 void GameWidget::botTimeout() {if(judge->curPlayer >= 0) gameWin(1);}
 void GameWidget::playerTimeout_OFFL() {if(judge->curPlayer >= 0) gameLose(1);}

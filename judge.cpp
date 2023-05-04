@@ -245,7 +245,10 @@ void Judge::recData(NetworkData d)
     {
     case OPCODE::READY_OP:
         oppoOL = d.data1;
-        if(d.data2 != "") emit READY_OP(d);
+        if(d.data2 != ""){
+            emit READY_OP(d);
+            if(curPlayer == -1) send(NetworkData(OPCODE::REJECT_OP, "", ""));
+        }
         else emit READY_OP_ForInviter();
         break;
     case OPCODE::REJECT_OP:
