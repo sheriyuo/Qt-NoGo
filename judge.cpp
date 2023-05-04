@@ -220,11 +220,12 @@ ItemVector Judge::getStep()
     return savedStep;
 }
 // 更新 savedStep 并更新 board 数组
-void Judge::updateStep(int newPlayerRole, ItemVector newStep, char newState)
+void Judge::updateStep(int newPlayerRole, int newRunMode, ItemVector newStep, char newState)
 {
     savedStep.clear();
     init(); // 更新 savedStep
     setPlayerRole(newPlayerRole);
+    runMode = newRunMode;
 
     for(Item cur : newStep)
     {

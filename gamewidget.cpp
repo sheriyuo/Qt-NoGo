@@ -569,6 +569,7 @@ void GameWidget::dataToString()
     std::memset(dataStr,0,sizeof(dataStr));
     int len = 0;
     dataStr[len++] = judge->playerRole + '1', dataStr[len++] = ' ';
+    dataStr[len++] = judge->runMode + '0', dataStr[len++] = ' ';
 
     ItemVector step = judge->getStep(); // 读取 savedStep
     for(Item cur : step)
@@ -595,7 +596,7 @@ void GameWidget::stringToData()
     int len = strlen(dataStr);
     strState = 0;
     qDebug() << dataStr << "\n";
-    for(int i = 2; i < len; i += 3)
+    for(int i = 4; i < len; i += 3)
     {
         if(i == len - 1)
         {
@@ -634,17 +635,19 @@ void GameWidget::on_loadButton_clicked()
     }
 
     stringToData();
-    judge->updateStep(dataStr[0] - '1', dataVec, strState);
+    judge->updateStep(dataStr[0] - '1', dataStr[2] - '0', dataVec, strState);
+    // 理论上，没有判断非法 .dat
 
     startTimer(); // 重置计时器
 
+    qDebug() << judge->loadState << " " << judge->runMode << "\n";
+
     if(judge->loadState) // 是否为终局
     {
-        // 这个地方函数里的 1 是 PVE, PVP 还没放进 data 里
         if(judge->loadState == 'W')
-            gameWin(1);
+            gameWin(judge->runMode ^ 1);
         if(judge->loadState == 'L')
-            gameLose(1);
+            gameLose(judge->runMode ^ 1);
         if(judge->loadState == 'G')
             on_resignButton_clicked_OFFL();
     }
