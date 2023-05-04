@@ -5,7 +5,15 @@
 #include <QLabel>
 #include <QTimer>
 #include <QMouseEvent>
-#include "judge.h"
+#include "Object/judge.h"
+
+/*
+*   @file: messagebox.h
+*   @brief: 声明 MessageBox 类，
+*           在对局中弹出提示，或结算信息
+*   @author: sheriyuo, ce-amtic, duality314
+*   @time: 2023/5/1
+*/
 
 class MessageBox : public QLabel
 {

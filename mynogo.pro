@@ -9,35 +9,35 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 HEADERS += \
-    bot.h \
-    gamewidget.h \
-    judge.h \
-    messagebox.h \
-    network/networkdata.h \
-    network/networkserver.h \
-    network/networksocket.h \
-    optiondialog.h \
-    settingdialog.h \
-    startwidget.h
+    Object/bot.h \
+    Object/judge.h \
+    Network/networkdata.h \
+    Network/networkserver.h \
+    Network/networksocket.h \
+    DialogBox/messagebox.h \
+    DialogBox/optiondialog.h \
+    DialogBox/settingdialog.h \
+    Widget/gamewidget.h \
+    Widget/startwidget.h
 
 SOURCES += \
-    bot.cpp \
-    gamewidget.cpp \
-    judge.cpp \
     main.cpp \
-    messagebox.cpp \
-    network/networkdata.cpp \
-    network/networkserver.cpp \
-    network/networksocket.cpp \
-    optiondialog.cpp \
-    settingdialog.cpp \
-    startwidget.cpp
+    Object/bot.cpp \
+    Object/judge.cpp \
+    Network/networkdata.cpp \
+    Network/networkserver.cpp \
+    Network/networksocket.cpp \
+    DialogBox/messagebox.cpp \
+    DialogBox/optiondialog.cpp \
+    DialogBox/settingdialog.cpp \
+    Widget/gamewidget.cpp \
+    Widget/startwidget.cpp
 
 FORMS += \
-    gamewidget.ui \
-    optiondialog.ui \
-    settingdialog.ui \
-    startwidget.ui
+    DialogBox/optiondialog.ui \
+    DialogBox/settingdialog.ui \
+    Widget/gamewidget.ui \
+    Widget/startwidget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

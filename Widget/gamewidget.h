@@ -11,9 +11,9 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-#include "judge.h"
-#include "bot.h"
-#include "messagebox.h"
+#include "Object/judge.h"
+#include "Object/bot.h"
+#include "DialogBox/messagebox.h"
 
 /*
 *   @file: gamewidget.h
@@ -42,14 +42,14 @@ signals:
 public slots:
     void on_loadButton_clicked(); // 链接 load 按钮的行为
     void on_saveButton_clicked(); // 链接 save 按钮的行为
-    void on_resignButton_clicked_OFFL(); // 链接 resign 按钮的行为
-    void on_restartButton_clicked_OFFL(); // 链接 restart 按钮的行为
+    void on_resignButton_clicked_OFFL(); // 链接 resign 按钮的行为 (offline)
+    void on_restartButton_clicked_OFFL(); // 链接 restart 按钮的行为 (offline)
     void on_resignButton_clicked_OL();
     void on_restartButton_clicked_OL();
     void on_sendButton_clicked(); // 链接 send 按钮的行为
 
     void startTimer();    // 当对局开始时，无论谁先手（机器下第一个棋子认为不需要时间），都打开玩家的计时器
-    void playerTimeout_OFFL(); // 玩家超时的槽函数，用于链接计时器
+    void playerTimeout_OFFL(); // 玩家超时的槽函数，用于链接计时器 (offline)
     void playerTimeout_OL();
     void botTimeout();    // bot超时的槽函数，用于链接计时器
     void closeMB();       // 再次点击棋盘时关闭消息弹窗
@@ -68,20 +68,25 @@ private:
     void drawBlack(QPainter &painter, double px, double py);
     void drawWhite(QPainter &painer, double px, double py);
     void drawDemo(QPainter &painter);
+    void setColorForBar(); // 计时器的颜色与当前执棋颜色一致
 
     void mousePressEvent(QMouseEvent *event) override; // 监听鼠标坐标
-    void gameLose(int type = 0); // 输掉游戏， type=1 表示超时
-    void gameWin(int type = 0);  // 赢了游戏， type=1 表示机器超时
+    void gameLose(int type = 0); // 输掉游戏（0->PVE 1->PVP）
+    void gameWin(int type = 0);  // 赢了游戏（0->PVE 1->PVP）
 
     void dataToString(); // 编码
     void stringToData(); // 解码
+
     /*
-     * 发送消息
-     * type=0 : player win
-     * type=1 : player lose
+     * 弹出消息窗口
+     * type=0 : player win (online)
+     * type=1 : player lose (online)
      * type=2 : invalid position
      * type=3 : player timeout
      * type=4 : bot timeout
+     * type=5 : player resign (online / offline)
+     * type=6 : remote player resgin (online)
+     * type=7 : cannot restart (online)
     */
     void sendMessage(int type);
 

@@ -1,4 +1,4 @@
-#include "gamewidget.h"
+#include "Widget/gamewidget.h"
 #include "ui_gamewidget.h"
 
 /*
@@ -70,7 +70,7 @@ GameWidget::GameWidget(Judge *j, Bot *b, QWidget *parent) :
 
     // 设置聊天框 默认隐藏
     ui->chatHistory->setReadOnly(true);
-    ui->chatHistory->appendPlainText(QString("It's your turn when time bar turn RED!"));
+    ui->chatHistory->appendPlainText(QString("Feel free to chat..."));
     ui->sendButton->setStyleSheet(ACCENT_COLOR);
     ui->chatInput->setStyleSheet("color: rgb(96, 150, 180); background-color: #ecf9ff;"
                                  "border-width: 1px; border-style: solid;"
@@ -97,7 +97,7 @@ GameWidget::GameWidget(Judge *j, Bot *b, QWidget *parent) :
         ui->chatHistory->appendPlainText(s);
     });
     connect(judge, &Judge::TIMEOUT_END_OP, this, [&](){
-        gameLose(0);
+        gameLose(1);
     });
 }
 GameWidget::~GameWidget()
@@ -151,17 +151,12 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
     else sendMessage(2);
 }
 void GameWidget::updateCB() {repaint();}
+void GameWidget::closeMB() {if(mess) mess->close();}
 
-void GameWidget::updateBar()
+void GameWidget::setColorForBar()
 {
-    ui->TimeBar->setStyleSheet("QProgressBar{"
-                               "background:rgb(186,215,233);"
-                               "color:white;"
-                               "border-radius:5px;}"
-                               "QProgressBar::chunk{"
-                               "border-radius:5px;"
-                               "background: #EAACB8}");
-    if((judge->runMode == 2 || judge->runMode == 3) && !judge->curPlayer)
+    if(judge->curPlayer == -1) return;
+    if(judge->CurColor() == -1) // White
     {
         ui->TimeBar->setStyleSheet("QProgressBar{"
                                    "background:rgb(186,215,233);"
@@ -170,13 +165,45 @@ void GameWidget::updateBar()
                                    "QProgressBar::chunk{"
                                    "border-radius:5px;"
                                    "background: #7acbf5}");
+        /*if((judge->runMode == 2 || judge->runMode == 3) && !judge->curPlayer)
+        {
+            ui->TimeBar->setStyleSheet("QProgressBar{"
+                                       "background:rgba(186,215,233,85);"
+                                       "color:white;"
+                                       "border-radius:5px;}"
+                                       "QProgressBar::chunk{"
+                                       "border-radius:5px;"
+                                       "background:rgba(122,203,245,75)}");
+        }*/
     }
+    else // Black
+    {
+        ui->TimeBar->setStyleSheet("QProgressBar{"
+                                   "background:rgb(186,215,233);"
+                                   "color:white;"
+                                   "border-radius:5px;}"
+                                   "QProgressBar::chunk{"
+                                   "border-radius:5px;"
+                                   "background: #EAACB8}");
+        /*if((judge->runMode == 2 || judge->runMode == 3) && !judge->curPlayer)
+        {
+            ui->TimeBar->setStyleSheet("QProgressBar{"
+                                       "background:rgba(186,215,233,85);"
+                                       "color:white;"
+                                       "border-radius:5px;}"
+                                       "QProgressBar::chunk{"
+                                       "border-radius:5px;"
+                                       "background:hsl(348, 60%, 88%)}");
+        }*/
+    }
+}
+void GameWidget::updateBar()
+{
     double value;
     value=(clock()-basetime);
     ui->TimeBar->setValue(1000-value/PLAYER_TIMEOUT);
     repaint();
 }
-void GameWidget::closeMB() {if(mess) mess->close();}
 
 void GameWidget::paintEvent(QPaintEvent *event)
 {
@@ -309,7 +336,7 @@ void GameWidget::drawDemo(QPainter &painter) // 绘画 FYH
 void GameWidget::gameLose(int type)
 {
     judge->curPlayerBak = judge->curPlayer;
-    if(!type) sendMessage(1);
+    if(type) sendMessage(1);
     else sendMessage(3);
     judge->curPlayer = -1;
     judge->loadState = 'L';
@@ -317,12 +344,13 @@ void GameWidget::gameLose(int type)
 void GameWidget::gameWin(int type)
 {
     judge->curPlayerBak = judge->curPlayer;
-    if(!type) sendMessage(0);
+    if(type) sendMessage(0);
     else sendMessage(4);
     judge->curPlayer = -1;
     judge->loadState = 'W';
 }
 void GameWidget::startTimer() {
+    setColorForBar();
     timerForPlayer->stop();
     timerForBar->stop();
     if(judge->curPlayer >= 0)
@@ -332,15 +360,15 @@ void GameWidget::startTimer() {
         basetime=clock();
     }
 }
-void GameWidget::botTimeout() {if(judge->curPlayer >= 0) gameWin(1);}
-void GameWidget::playerTimeout_OFFL() {if(judge->curPlayer >= 0) gameLose(1);}
+void GameWidget::botTimeout() {if(judge->curPlayer >= 0) gameWin(0);}
+void GameWidget::playerTimeout_OFFL() {if(judge->curPlayer >= 0) gameLose(0);}
 void GameWidget::playerTimeout_OL()
 {
     // 发送 TIMEOUT_END_OP
     if(!judge->curPlayer) // 当前是等待响应的一方，那么对手超时己方胜利
     {
         judge->send(NetworkData(OPCODE::TIMEOUT_END_OP, judge->usrnameOL, "Sorry you lose!"));
-        gameWin(0);
+        gameWin(1);
     }
 }
 
@@ -553,7 +581,7 @@ void GameWidget::on_restartButton_clicked_OL()
         return;
     }
     ui->chatHistory->clear();
-    ui->chatHistory->appendPlainText(QString("It's your turn when time bar turn RED!"));
+    ui->chatHistory->appendPlainText(QString("Feel free to chat..."));
     on_restartButton_clicked_OFFL();
 }
 void GameWidget::on_resignButton_clicked_OL()
@@ -645,9 +673,9 @@ void GameWidget::on_loadButton_clicked()
     if(judge->loadState) // 是否为终局
     {
         if(judge->loadState == 'W')
-            gameWin(judge->runMode ^ 1);
+            gameWin(judge->runMode);
         if(judge->loadState == 'L')
-            gameLose(judge->runMode ^ 1);
+            gameLose(judge->runMode);
         if(judge->loadState == 'G')
             on_resignButton_clicked_OFFL();
     }

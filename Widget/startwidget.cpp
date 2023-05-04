@@ -1,5 +1,13 @@
-#include "startwidget.h"
+#include "Widget/startwidget.h"
 #include "ui_startwidget.h"
+
+/*
+*   @file: startwidget.h
+*   @brief: 声明 StartWidget 类，
+*           实现欢迎界面
+*   @author: sheriyuo, ce-amtic, duality314
+*   @time: 2023/5/1
+*/
 
 StartWidget::StartWidget(Judge *j, QWidget *parent) :
     QWidget(parent),
@@ -128,7 +136,11 @@ void StartWidget::sendStartAsWhite(bool isFeedback)
 void StartWidget::sendReject() {judge->send(NetworkData(OPCODE::REJECT_OP, judge->usrnameOL, ""));}
 
 // 按钮行为
-void StartWidget::on_settingsBtn_clicked() {settingDialog->show();}
+void StartWidget::on_settingsBtn_clicked()
+{
+    settingDialog->show();
+    settingDialog->autoFill();
+}
 void StartWidget::on_startAsBlack_clicked_OFFL()
 {
     emit switchLayer(curGameLayer);

@@ -1,4 +1,12 @@
-#include "messagebox.h"
+#include "DialogBox/messagebox.h"
+
+/*
+*   @file: messagebox.h
+*   @brief: 声明 MessageBox 类，
+*           在对局中弹出提示，或结算信息
+*   @author: sheriyuo, ce-amtic, duality314
+*   @time: 2023/5/1
+*/
 
 /*
  * 关闭方法有手动点击消息框和超时关闭

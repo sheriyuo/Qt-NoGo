@@ -4,9 +4,17 @@
 #include <QPushButton>
 #include <QPainter>
 #include <QWidget>
-#include "judge.h"
-#include "settingdialog.h"
-#include "optiondialog.h"
+#include "Object/judge.h"
+#include "DialogBox/settingdialog.h"
+#include "DialogBox/optiondialog.h"
+
+/*
+*   @file: startwidget.h
+*   @brief: 声明 StartWidget 类，
+*           实现欢迎界面
+*   @author: sheriyuo, ce-amtic, duality314
+*   @time: 2023/5/1
+*/
 
 namespace Ui { class StartWidget; }
 
@@ -18,29 +26,33 @@ public:
     StartWidget(Judge *j, QWidget *parent = nullptr);
     ~StartWidget();
 
-    int curGameLayer;
+    int curGameLayer; // 用于切换到 gameWidget 界面
     SettingDialog *settingDialog;
 signals:
     void switchLayer(int layerIndex);
     void startAs(int player); // 0->white  1->black
 public slots:
+    // 按钮行为
     void on_startAsWhite_clicked_OFFL();
     void on_startAsBlack_clicked_OFFL();
     void on_startAsWhite_clicked_OL();
     void on_startAsBlack_clicked_OL();
     void on_settingsBtn_clicked();
+
+    // 切换 online offline 槽函数
     void goOL();
     void goOFFL();
 
 private:
     void paintEvent(QPaintEvent *event) override;
-    void sendStartAsBlack(bool isFeedback);
-    void sendStartAsWhite(bool isFeedback);
-    void sendReject();
+    void sendStartAsBlack(bool isFeedback); // 联机
+    void sendStartAsWhite(bool isFeedback); // 联机
+    void sendReject(); // 联机被拒
 
     Ui::StartWidget *ui;
     Judge* judge;
 
+    // 联机对话框
     int oppoRole, inviterRole;
     OptionDialog* confirmD;
     OptionDialog* awaitD;

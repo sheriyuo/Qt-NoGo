@@ -5,7 +5,15 @@
 #include <QObject>
 #include <QPainter>
 #include <QColor>
-#include "judge.h"
+#include "Object/judge.h"
+
+/*
+*   @file: optiondialog.h
+*   @brief: 声明 OptionDialog 类，
+*           在联机对局时弹出申请窗口等
+*   @author: sheriyuo, ce-amtic, duality314
+*   @time: 2023/5/1
+*/
 
 namespace Ui { class OptionDialog; }
 
@@ -16,6 +24,7 @@ class OptionDialog : public QDialog
 public:
     /*
      * OptionDialog(QString m, int type, QWidget *parent = nullptr)
+     * 弹出一个含有提示词 m 的选项框，所含按钮如下
      * type = 0:  yes/no 按钮
      * type = 1:  不含按钮
      * type = 2:  close 按钮

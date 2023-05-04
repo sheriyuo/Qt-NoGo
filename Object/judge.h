@@ -6,8 +6,8 @@
 #include <QTimer>
 #include <QRandomGenerator>
 #include <set>
-#include "network/networkserver.h"
-#include "network/networksocket.h"
+#include "Network/networkserver.h"
+#include "Network/networksocket.h"
 
 /*
 *   @file: judge.h
@@ -30,8 +30,8 @@
 // #define GRID_THICKNESS (CHESSBOARD_LEN / CHESSBOARD_SIZE / 6)
 #define ACCENT_COLOR "color: rgb(96, 150, 180)" //0x6096b4
 
-#define CUS_BLACK 0xEAACB8
-#define CUS_WHITE 0x7ACBF5
+#define CUS_BLACK 0xEAACB8 // RED -> BLACK
+#define CUS_WHITE 0x7ACBF5 // BLUE -> WHITE
 
 #define BTOL (double)0.8
     //(外边框与小正方形变长的比例

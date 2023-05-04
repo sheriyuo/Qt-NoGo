@@ -1,5 +1,13 @@
-#include "settingdialog.h"
+#include "DialogBox/settingdialog.h"
 #include "ui_settingdialog.h"
+
+/*
+*   @file: settingdialog.h
+*   @brief: 声明 SettingDialog 类，
+*           实现图形化更改游戏选项
+*   @author: sheriyuo, ce-amtic, duality314
+*   @time: 2023/5/1
+*/
 
 SettingDialog::SettingDialog(Judge *j, QWidget *parent) :
     QDialog(parent),
@@ -96,6 +104,21 @@ SettingDialog::SettingDialog(Judge *j, QWidget *parent) :
 SettingDialog::~SettingDialog()
 {
     delete this;
+}
+
+void SettingDialog::autoFill()
+{
+    if(judge->runMode == 2 || judge->runMode == 3) return;
+    ui->gamemodeCB->setCurrentIndex(judge->runMode);
+    int sizeNum = 0;
+    switch(judge->CHESSBOARD_SIZE)
+    {
+    case 9: sizeNum = 0; break;
+    case 11: sizeNum = 1; break;
+    case 13: sizeNum = 2; break;
+    case 28: sizeNum = 3; break;
+    }
+    ui->chessbdCB->setCurrentIndex(sizeNum);
 }
 
 void SettingDialog::paintEvent(QPaintEvent *event)

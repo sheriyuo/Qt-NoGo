@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QDebug>
-#include "judge.h"
+#include "Object/judge.h"
 
 class Bot : public QObject
 {

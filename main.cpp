@@ -1,10 +1,10 @@
 #include <QApplication>
 #include <QFontDatabase>
 #include <QStackedLayout>
-#include "gamewidget.h"
-#include "startwidget.h"
-#include "judge.h"
-#include "optiondialog.h"
+#include "Widget/gamewidget.h"
+#include "Widget/startwidget.h"
+#include "Object/judge.h"
+#include "DialogBox/optiondialog.h"
 
 int main(int argc, char *argv[])
 {

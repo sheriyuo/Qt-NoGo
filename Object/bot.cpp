@@ -1,4 +1,4 @@
-#include "bot.h"
+#include "Object/bot.h"
 
 Bot::Bot(Judge *j, QObject *parent) :
     QObject(parent),
