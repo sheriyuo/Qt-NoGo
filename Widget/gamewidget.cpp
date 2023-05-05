@@ -216,20 +216,41 @@ void GameWidget::paintEvent(QPaintEvent *event)
     if(judge->CHESSBOARD_SIZE == 28)
         drawDemo(painter);
 
+
+
+
     // 绘制棋子
     for(int i = 0; i < judge->CHESSBOARD_SIZE; i++)
         for(int j = 0; j < judge->CHESSBOARD_SIZE; j++)
         {
             if(this->judge->GridPoint(i, j) == -1)
             {
-                drawWhite(painter, i, j);
+                //if(xxx==i&&yyy==j)
+                {
+                    drawWhite(painter, i, j);
+                    //drawheat(painter,i,j);
+
+                }
+                //else
+                    //drawWhite(painter, i, j);
             }
             if(this->judge->GridPoint(i, j) == 1)
             {
-                drawBlack(painter, i, j);
+                //if(xxx==i&&yyy==j)
+                {
+                    drawBlack(painter, i, j);
+                    //drawheat(painter,i,j);
+
+                }
+                //else
+                   drawBlack(painter, i, j);
             }
 
         }
+
+
+
+
 }
 
 void GameWidget :: drawChessboard(QPainter &painter)
@@ -268,6 +289,27 @@ void GameWidget::drawWhite(QPainter &painter, double i, double j)
     painter.setBrush(QColor(BG_COLOR));
 
     painter.drawEllipse(xi, yi, Size, Size);
+
+    int xxx=-100;
+    int yyy=-100;
+    ItemVector step = judge->getStep();
+    if(!step.empty())
+    {
+        xxx=step[step.size()-1].first;
+        yyy=step[step.size()-1].second;
+    }
+    if(xxx==i&&yyy==j)
+    {
+        double Size = judge->SQUARE_LEN() * 0.18, Strength = Size / 4;
+
+        double xi = judge->LEFT_UP() + ( i - 0.09 ) * judge->SQUARE_LEN();
+        double yi = judge->LEFT_UP() + ( j - 0.09 ) * judge->SQUARE_LEN();
+
+        painter.setPen(QPen(QColor(CUS_WHITE), Strength, Qt::SolidLine));
+        painter.setBrush(QColor(CUS_WHITE));
+
+        painter.drawEllipse(xi, yi, Size, Size);
+    }
 }
 
 void GameWidget::drawBlack(QPainter &painter, double i, double j)
@@ -281,6 +323,44 @@ void GameWidget::drawBlack(QPainter &painter, double i, double j)
     painter.setBrush(QColor(BG_COLOR));
 
     painter.drawEllipse(xi, yi, Size, Size);
+
+    int xxx=-100;
+    int yyy=-100;
+    ItemVector step = judge->getStep();
+    if(!step.empty())
+    {
+        xxx=step[step.size()-1].first;
+        yyy=step[step.size()-1].second;
+    }
+    if(xxx==i&&yyy==j)
+    {
+        double Size = judge->SQUARE_LEN() * 0.18, Strength = Size / 4;
+
+        double xi = judge->LEFT_UP() + ( i - 0.09 ) * judge->SQUARE_LEN();
+        double yi = judge->LEFT_UP() + ( j - 0.09 ) * judge->SQUARE_LEN();
+
+        painter.setPen(QPen(QColor(CUS_BLACK), Strength, Qt::SolidLine));
+        painter.setBrush(QColor(CUS_BLACK));
+
+        painter.drawEllipse(xi, yi, Size, Size);
+    }
+}
+void GameWidget::drawheat(QPainter &painter,double i, double j)
+{
+
+    double Size = judge->SQUARE_LEN() * 0.2, Strength = Size / 4;
+    double xi = judge->LEFT_UP() + ( i - 0.1 ) * judge->SQUARE_LEN();
+    double yi = judge->LEFT_UP() + ( j - 0.1 ) * judge->SQUARE_LEN();
+
+    int color=judge->CurColor();
+    if(color==-1)
+        painter.setPen(QPen(QColor(CUS_WHITE), Strength, Qt::SolidLine));
+    else
+        painter.setPen(QPen(QColor(CUS_BLACK), Strength, Qt::SolidLine));
+    painter.setBrush(QColor(BG_COLOR));
+
+    painter.drawEllipse(xi, yi, Size, Size);
+
 }
 
 void GameWidget::drawDemo(QPainter &painter) // 绘画 FYH
@@ -385,6 +465,11 @@ void GameWidget::playerTimeout_OL()
 */
 void GameWidget::sendMessage(int type)
 {
+    ItemVector step = judge->getStep();
+    int steps=step.size();
+    if(judge->loadState=='G')
+            steps++;
+    QString ssteps = QString::number(steps);
     if(mess){
         mess->close();
         mess = nullptr;
@@ -397,13 +482,13 @@ void GameWidget::sendMessage(int type)
                 mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, this);
                 break;
             case 3:
-                mess = new MessageBox(QString("TIME'S UP! You LOSE!")+QString("\n\n<detailed info>"), 0, this);
+                mess = new MessageBox(QString("TIME'S UP! You LOSE!")+QString("\n\nTotal step : ")+ssteps, 0, this);
                 break;
             case 4:
                 mess = new MessageBox(QString("Bot failed to make\na move.\nYou WIN"), 0, this);
                 break;
             case 5:
-                mess = new MessageBox(QString("You Resign!")+QString("\n\n<detailed info>"), 0, this);
+                mess = new MessageBox(QString("You Resign!")+QString("\n\nTotal step : ")+ssteps, 0, this);
                 break;
         }
     }
@@ -415,12 +500,12 @@ void GameWidget::sendMessage(int type)
                 mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, this);
                 break;
             case 3:
-                if(judge->curPlayerBak) mess = new MessageBox(QString("TIME'S UP! Player1 LOSE!>")+QString("\n\n<detailed info>"), 0, this);
-                else mess = new MessageBox(QString("TIME'S UP! Player2 LOSE!")+QString("\n\n<detailed info>"), 0, this);
+                if(judge->curPlayerBak) mess = new MessageBox(QString("TIME'S UP! Player1 LOSE!>")+QString("\n\nTotal step : "+ssteps), 0, this);
+                else mess = new MessageBox(QString("TIME'S UP! Player2 LOSE!")+QString("\n\nTotal step : "+ssteps), 0, this);
                 break;
             case 5:
-                if(judge->curPlayerBak) mess = new MessageBox(QString("Player1 Resign!")+QString("\n\n<detailed info>"), 0, this);
-                else mess = new MessageBox(QString("Player2 Resign!")+QString("\n\n<detailed info>"), 0, this);
+                if(judge->curPlayerBak) mess = new MessageBox(QString("Player1 Resign!")+QString("\n\nTotal step : "+ssteps), 0, this);
+                else mess = new MessageBox(QString("Player2 Resign!")+QString("\n\nTotal step : ")+ssteps, 0, this);
                 break;
         }
     }

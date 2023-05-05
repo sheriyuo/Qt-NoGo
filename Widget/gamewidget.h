@@ -67,6 +67,9 @@ private:
     void drawChessboard(QPainter &painter);
     void drawBlack(QPainter &painter, double px, double py);
     void drawWhite(QPainter &painer, double px, double py);
+    void drawheat(QPainter &painer, double px, double py);
+
+
     void drawDemo(QPainter &painter);
     void setColorForBar(); // 计时器的颜色与当前执棋颜色一致
 

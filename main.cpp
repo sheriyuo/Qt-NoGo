@@ -8,7 +8,7 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+     QApplication a(argc, argv);
 
     // 建立主窗口
     QWidget *w = new QWidget;
