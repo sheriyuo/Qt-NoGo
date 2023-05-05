@@ -30,11 +30,11 @@
 	
 	\subsection{小组分工}
 	
-	笔者负责了项目 UI 的主要设计、棋盘逻辑的编写和报告的撰写。
+	笔者负责了项目 UI 的主要设计、棋盘逻辑的维护、文件部分的编写和报告的撰写。
 	
-	冯友和同学负责了项目框架的建构、初始 bot 的设计。
+	冯友和同学负责了项目框架的建构、初始 bot 的设计、联机部分的编写和项目的美化。
 	
-	赵培宇同学负责了棋盘的生成、按钮的部分实现。
+	赵培宇同学负责了棋盘的生成、按钮的部分实现和状态的显示。
 	
 	\section{Qt 图形界面应用设计}
 	
@@ -57,7 +57,7 @@
 			\centering
 			\includegraphics[width=0.8\textwidth]{img/fyh.png}
 			\counterwithin{figure}{subsection}
-			\caption{自定义棋盘大小~(29)}
+			\caption{自定义棋盘大小~($28\times 28$)}
 		}
 	\end{figure}
 	
@@ -65,44 +65,51 @@
 
 	\subsection{基本逻辑}
 	
-	\begin{verbatim}
-	|-- Qt-NoGo
-	    |-- mynogo.pro            // QMake 项目管理文件
-	    |-- mynogo.pro.user
-	    |-- Headers
-	    |   |-- bot.h
-	    |   |-- gamewidget.h      // 控制程序运行的类
-	    |   |-- judge.h           // 控制棋盘操作和逻辑的类
-	    |   |-- mainwindow.h
-	    |   |-- messagebox.h
-	    |   |-- startwidget.h
-	    |-- Sources
-	    |   |-- bot.cpp           // 随机下棋 bot
-	    |   |-- gamewidget.cpp
-	    |   |-- judge.cpp
-	    |   |-- main.cpp          // 程序入口
-	    |   |-- mainwindow.cpp
-	    |   |-- messagebox.cpp
-	    |   |-- startwidget.cpp
-	    |-- Forms
-	    |   |-- gamewidget.ui
-	    |   |-- mainwindow.ui
-	    |   |-- startwidget.ui
-	    |-- Resources
-	    |   |-- img.qrc           // 图片配置文件
-	    |-- img
-	    |   |-- logo.png          // Logo 图片
-	    |-- report                // 项目报告
-	    |-- README.md
+    \begin{verbatim}
+|-- Qt-NoGo
+    |-- DialogBox
+    |   |-- messagebox.cpp
+    |   |-- messagebox.h       // 弹出提示或结算信息
+    |   |-- optiondialog.cpp
+    |   |-- optiondialog.h     // 在联机对局时弹出申请窗口
+    |   |-- optiondialog.ui
+    |   |-- settingdialog.cpp
+    |   |-- settingdialog.h    // 实现图形化更改游戏选项
+    |   |-- settingdialog.ui
+    |-- Object
+    |   |-- bot.cpp
+    |   |-- bot.h              // 随机下棋 bot
+    |   |-- judge.cpp
+    |   |-- judge.h            // 控制下棋过程逻辑，进程调度，局面判断
+    |-- Resource.qrc           // 图片配置文件
+    |-- Widget
+    |   |-- gamewidget.cpp
+    |   |-- gamewidget.h       // 维护对局棋盘状态，控制信号槽及文件读写
+    |   |-- gamewidget.ui
+    |   |-- startwidget.cpp    // 实现欢迎界面
+    |   |-- startwidget.h
+    |   |-- startwidget.ui
+    |-- img                    // Logo 和 icon 图片
+    |-- main.cpp
+    |-- mynogo.pro             // QMake 项目管理文件
+    |-- mynogo.pro.user
+    |-- network                // 网络库相关
+    |   |-- networkdata.cpp
+    |   |-- networkdata.h
+    |   |-- networkserver.cpp
+    |   |-- networkserver.h
+    |   |-- networksocket.cpp
+    |   |-- networksocket.h
+    |-- report                 // 项目报告
 	\end{verbatim}
 
-	基本逻辑为 main 打开 mainwindow，mainwindow 切换到 startwidget 和 gamewidget，由 gamewidget 初始化 judge 开始游戏。
+	基本逻辑为 \verb|main| 连接信号槽后切换到 \verb|startwidget|，通过 \verb|optiondialog| 设置后进入 \verb|gamewidget|，由 \verb|gamewidget| 初始化 \verb|judge| 开始游戏。游戏过程由 \verb|judge| 判断，发现终局后传输到 \verb|gamewidget| 然后输出 \verb|messagebox| 信息，至此一局游戏结束。
 
 	\subsection{棋盘逻辑和结局判断}
 	
-	由于最后 NoGo-Cup 给 AI 的限时是 1s，留给 AI 计算的时间并不充裕，所以本项目采用了高效率的棋盘底层逻辑，以期为 AI 的运行提供尽可能多的时间。
+	由于最后 NoGo-Cup 给 AI 的限时是 $1s$，留给 AI 计算的时间并不充裕，所以本项目采用了高效率的棋盘底层逻辑，以期为 AI 的运行提供尽可能多的时间。
 	
-	相较于传统的 dfs 判断棋子，笔者创新性地采用了启发式合并的方法来判断棋子的连通性与气数，在 judge.h 中的定义如下：
+	相较于传统的 dfs 判断棋子，笔者创新性地采用了启发式合并的方法来判断棋子的连通性与气数，在 \verb|judge.h| 中的定义如下：
 	
 	\begin{lstlisting}
 	typedef std::pair<int, int> Item;
@@ -119,7 +126,7 @@
 	std::vector<int>mergedBlock;
 	\end{lstlisting}
 
-	本程序用 vector 存储每一个连通块棋子的位置，用 set 存储每一个连通块气的位置。对于一次合并，将两端连通块的 vector 和 set 分别启发式合并即可。此处采用 set 是因为其本身具有判重的特性，可以在合并时对气做出高效率的处理。
+	本程序用 \verb|vector| 存储每一个连通块棋子的位置，用 \verb|set| 存储每一个连通块气的位置。对于一次合并，将两端连通块的 \verb|vector| 和 \verb|set| 分别启发式合并即可。此处采用 \verb|set| 是因为其本身具有判重的特性，可以在合并时对气做出高效率的处理。
 	
 	\begin{lstlisting}
 		
@@ -147,29 +154,91 @@
 	
 	\begin{figure}[htbp]
 		\centering
-		\includegraphics[width=5.5cm]{img/tip.png}
+		
+		\includegraphics[width=5.5cm]{img/tip.png}	
 		\includegraphics[width=5.5cm]{img/win.png}
+		
 		\includegraphics[width=5.5cm]{img/resign.png}
 		\includegraphics[width=5.5cm]{img/TLE.png}
+		
 		\counterwithin{figure}{subsection}
 		\caption{状态判断}
 	\end{figure}
 	
 	\subsection{设置}
 	
-	我们写了一个设置。
+	设置部分基于 \verb|optiondialog| 类，使用 Qt 自带的文本选择框和按钮对 \verb|gamewidget| 传入棋盘大小、游戏模式和联机部分的信息，将在线与离线、PVP 与 PVE 利用有限的空间优秀地集成为一体，用按钮切换在线模式与离线模式。
+	
+	在线模式下，参数采用统一的 $9\times 9$ 棋盘大小。
+		
+	\begin{figure}[!htb]{
+			\centering
+			\includegraphics[width=8cm]{img/web1.png}
+			\counterwithin{figure}{subsection}
+			\caption{设置页面}
+		}
+	\end{figure}
 	
 	\subsection{计时器}
 	
-	我们还没写好计时器。
+	计时器基于 \verb|QProgressBar| 自带的 \verb|TimeBar|，用 CSS 设置美化后用于本项目的计时器设计。计时器采用从右向左线性读条的方法计时，进度条结束后判定为超时。
+	
+	在终局（胜利、失败、认输）后，计时器会与棋盘本题一起冻结，读取终局存档依然保持冻结。
+	
+	\subsection{读档和存档}
+	
+	项目将棋盘的每一步存入 \verb|vector| 中，并编码为形如 \verb|0/2 0/1 A1 B4 D3 G/W/L| 的字符串形式存入 \verb|DATA(.dat)| 文件中。第一个数字 \verb|0| 代表执黑、\verb|2| 代表执白，第二个数字 \verb|0| 代表 PVP、\verb|1| 代表 PVE，最后的字符 \verb|G/W/L| 代表认输/胜利/失败。
+	
+	文件操作基于 \verb|QFile| 和 \verb|QFileDialog| 实现，\verb|QFileDialog::getSaveFileName| 可以实现打开文件框保存文件，\verb|QFileDialog::getOpenFileName| 可以实现打开文件框读取文件。文件流使用 \verb|QFile::readAll| 和 \verb|QFile::write|，传输类型为 \verb|QByteArray| 与 \verb|char*|。
+	
+	以下是存档部分的实现：
+	
+	\begin{lstlisting}
+	// 存档按钮信号
+	void GameWidget::on_saveButton_clicked()
+	{
+		dataToString(); // 将数据编码到 char* dataStr 中
+		QString fileName = QFileDialog::getSaveFileName(nullptr, tr("Save Data"), "", tr("DATA (*.dat)"));
+		// QFileDialog 读取文件 fileName
+		if (fileName.isEmpty())
+			return;
+		else
+		{
+			QFile file(fileName);
+			if (!file.open(QIODevice::WriteOnly)) // 无法覆写时报错
+			{
+				QMessageBox::information(nullptr, tr("Unable to open file"),file.errorString());
+				return;
+			}
+			file.write(dataStr); // QFile 直接读写文件
+			file.close();
+		}
+	}
+	\end{lstlisting}
+	
+	读档后，程序重新初始化棋盘，强制传入存档内的设置参数，顺序模拟所有下棋操作。操作完成后得到的便是 Save 时的游戏状态，读档后 TimeBar 重置为初始时间，如果不是终局仍可以继续下棋，并随时可以执行新的 Save 和 Load。
+	
+	对于终局情况的 \verb|DATA|，目前只能复现出终局。
+	
+	\subsection{信息窗口}
+	
+	\verb|messagebox| 类实现了页面内的弹出信息，下棋界面内的信息包括自杀的濒死检测和游戏终局的判断。
+	
+	信息窗口会一直显示到检测鼠标单击，而对于终局显示的信息窗口，至少显示 $3s$ 后才能关闭。
 	
 	\subsection{更多功能}
 	
-	第一阶段还没结束，卷什么。
+	有没有可能原来大作业的要求越来越低了，所以我们还没有写更多功能。
 	
-	在写了在写了。
+	没有写更多功能是怎么回事呢？大作业相信大家很熟悉，但是没有写更多功能是怎么回事呢？笔者也不是很清楚，大家也可能感到很惊讶，没有写更多功能是怎么回事呢？但事实就是这样，可以前往 \href{https://ce-amtic.github.io/}{ce-amtic 的博客} 看博客。
 	
-	不如看一下隔壁队伍写的前后端分离。
+	理论上我们实现了半个附加功能。
+	
+	哦，应该是 duality314 比较摆烂没写，记得去 push。
+	
+	\sout{这是什么？更多功能，写一下。这是什么？更多功能，写一下。这是什么？更多功能，\newline 写一下。}
+	
+	反正第三阶段都要写，不如再去看一下隔壁队伍写的前后端分离。
 	
 	\section{联机对战设计}
 	
@@ -203,14 +272,6 @@
 	
 	调用 \verb|QTcpSocket::waitForConnected()| API 来判断是否连接超时，若超时则提示未连接并禁止用户发起对局，否则提示连接正常并等待下一步。
 	
-	\begin{figure}[!htb]{
-			\centering
-			\includegraphics[width=0.8\textwidth]{img/web1.png}
-			\counterwithin{figure}{subsection}
-			\caption{联机设置页面}
-		}
-	\end{figure}
-	
 	\subsubsection{一方发起对局，另一方确认对局}
 	
 	当 Restart Server 和 Reconnect 按钮中有一者被点击时，视作应用程序进入了联机模式。在联机模式下，点击对局开始按钮并不会立刻跳转到棋盘界面，而是会弹出 \verb|OptionDialog| 类所创建的提示窗口，提示等待连接。其中 \verb|OptionDialog| 类基于 \verb|QDialog| 类二次封装，并进行了一些美化。
@@ -227,19 +288,22 @@
     
    \begin{figure}[!htb]
     	\centering
-    	\includegraphics[width=6cm]{img/web4.png}
-    	\includegraphics[width=6cm]{img/web5.png}
-    	\includegraphics[width=6cm]{img/web2.png}
-    	\includegraphics[width=6cm]{img/web3.png}
+    	
+    	\includegraphics[width=5.5cm]{img/web4.png}
+    	\includegraphics[width=5.5cm]{img/web5.png}
+    	
+    	\includegraphics[width=5.5cm]{img/web2.png}
+    	\includegraphics[width=5.5cm]{img/web3.png}
+    	
     	\counterwithin{figure}{subsection}
     	\caption{联机对局界面演示}
     \end{figure}
     
     由于在判断落子成立时禁止了棋手自杀，因此对局结束的条件只有超时和认输两种。
     
-    当一方认输，即点击 Resign 按钮后，认输方发送 \verb|GIVE_UP_OP|，胜方在收到该信息后回复 \verb|GIVE_UO_END_OP| 表示请求已“一方认输”为理由结束对局。认输方收到 \verb|GIVE_UO_END_OP| 回复同样的信息以确认。此时联机对战结束，棋盘不能被操作。
+    当一方认输，即点击 Resign 按钮后，认输方发送 \verb|GIVE_UP_OP|，胜方在收到该信息后回复 \verb|GIVE_UO_END_OP| 表示请求以“一方认输”为理由结束对局。认输方收到 \verb|GIVE_UO_END_OP| 回复同样的信息以确认。此时联机对战结束，棋盘不能被操作。
     
-    当一方超时，胜方的计时器会调用 \verb|GameWidget::playerTimeout_OL()| 槽函数，发送 \verb|TIMEOUT_END_OP| 表示请求已“一方超时”为理由结束对局，负方回复同样的信息以确认。此时联机对战结束，棋盘不能被操作。
+    当一方超时，胜方的计时器会调用 \verb|GameWidget::playerTimeout_OL()| 槽函数，发送 \verb|TIMEOUT_END_OP| 表示请求以“一方超时”为理由结束对局，负方回复同样的信息以确认。此时联机对战结束，棋盘不能被操作。
     
     当联机对战结束时，对局双方可以分别选择是否返回开始界面。当双方都返回开始界面后，此时程序视作重置到了第一步完成后的状态，可以选择重新开始联机或单人对局。
     
@@ -247,13 +311,15 @@
 	
 	\section{AI 算法设计}
 	
-	由于现在还是第一阶段，所以我们采用了非常粗犷的 bot 写法：随机下棋。
+	由于现在还是第二阶段，所以我们依然采用了非常粗犷的 bot 写法：随机下棋。
 	
 	对于没有围棋基础的人来说，随机下棋的 bot 分布较好，bot 有获胜的可能。但是对于有基本围棋知识的人来说，只要斜着下棋、构造活眼就可以几乎 $100\%$ 战胜这个随机下棋 bot。
 	
 	\subsection{min-max 搜索和 $\alpha-\beta$ 剪枝}
 	
 	别卷了，还没写，你家程设就 $2$ 分。
+	
+	有没有可能程设半期已经寄了。
 	
 	\section{感谢}
 	
@@ -263,7 +329,7 @@
 	
 	感谢冯友和、赵培宇同学组成的团队。
 	
-	感谢彭文博、李知非同学于 2023/3/2 军理课后请本队吃的 KFC 疯狂星期四。
+	感谢彭文博、李知非同学于 2023/3/2 军理课后请本队吃的 KFC 疯狂星期四，并日常交流四人立直麻将。
 	
 	感谢北京大学 ghastlcon 同学提供的帮助。
 	

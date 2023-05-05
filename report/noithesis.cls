@@ -7,6 +7,7 @@
 \RequirePackage{graphicx,subfigure}
 \RequirePackage{amsmath,amsthm,amsfonts,amssymb,bm}
 \RequirePackage{fontspec}
+\RequirePackage{hyperref}
 \RequirePackage{xeCJK}
 \RequirePackage{longtable,multirow}
 \RequirePackage{color,xcolor}
@@ -22,6 +23,14 @@
 \RequirePackage{ulem}
 \RequirePackage{clrscode3e}
 \RequirePackage{chngcntr}
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=black,
+	filecolor=magenta,
+	urlbordercolor=cyan,
+	pdfpagemode=FullScreen,
+}
 
 \lstset{                        %Settings for listings package.
 	language=[ANSI]{C},
