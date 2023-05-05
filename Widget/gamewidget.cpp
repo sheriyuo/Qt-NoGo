@@ -151,7 +151,7 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
     else sendMessage(2);
 }
 void GameWidget::updateCB() {repaint();}
-void GameWidget::closeMB() {if(mess) mess->close();}
+void GameWidget::closeMB() {if(mess) mess->clickToClose();}
 
 void GameWidget::setColorForBar()
 {
@@ -479,16 +479,16 @@ void GameWidget::sendMessage(int type)
         switch(type)
         {
             case 2:
-                mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, this);
+                mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, false, this);
                 break;
             case 3:
-                mess = new MessageBox(QString("TIME'S UP! You LOSE!")+QString("\n\nTotal step : ")+ssteps, 0, this);
+                mess = new MessageBox(QString("TIME'S UP! You LOSE!")+QString("\n\nTotal step : ")+ssteps, 0, true, this);
                 break;
             case 4:
-                mess = new MessageBox(QString("Bot failed to make\na move.\nYou WIN"), 0, this);
+                mess = new MessageBox(QString("Bot failed to make\na move.\nYou WIN"), 0, true, this);
                 break;
             case 5:
-                mess = new MessageBox(QString("You Resign!")+QString("\n\nTotal step : ")+ssteps, 0, this);
+                mess = new MessageBox(QString("You Resign!")+QString("\n\nTotal step : ")+ssteps, 0, true, this);
                 break;
         }
     }
@@ -497,15 +497,15 @@ void GameWidget::sendMessage(int type)
         switch(type)
         {
             case 2:
-                mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, this);
+                mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, false, this);
                 break;
             case 3:
-                if(judge->curPlayerBak) mess = new MessageBox(QString("TIME'S UP! Player1 LOSE!>")+QString("\n\nTotal step : "+ssteps), 0, this);
-                else mess = new MessageBox(QString("TIME'S UP! Player2 LOSE!")+QString("\n\nTotal step : "+ssteps), 0, this);
+                if(judge->curPlayerBak) mess = new MessageBox(QString("TIME'S UP! Player1 LOSE!>")+QString("\n\nTotal step : "+ssteps), 0, true, this);
+                else mess = new MessageBox(QString("TIME'S UP! Player2 LOSE!")+QString("\n\nTotal step : "+ssteps), 0, true, this);
                 break;
             case 5:
-                if(judge->curPlayerBak) mess = new MessageBox(QString("Player1 Resign!")+QString("\n\nTotal step : "+ssteps), 0, this);
-                else mess = new MessageBox(QString("Player2 Resign!")+QString("\n\nTotal step : ")+ssteps, 0, this);
+                if(judge->curPlayerBak) mess = new MessageBox(QString("Player1 Resign!")+QString("\n\nTotal step : "+ssteps), 0, true, this);
+                else mess = new MessageBox(QString("Player2 Resign!")+QString("\n\nTotal step : ")+ssteps, 0, true, this);
                 break;
         }
     }
@@ -514,16 +514,16 @@ void GameWidget::sendMessage(int type)
         switch(type)
         {
             case 0:
-                mess = new MessageBox(QString("You WIN!\n\n") + judge->oppoOL + QString("\ntime out."), 0, this);
+                mess = new MessageBox(QString("You WIN!\n\n") + judge->oppoOL + QString("\ntime out."), 0, true, this);
                 break;
             case 1:
-                mess = new MessageBox(QString("TIME'S UP!\n\n") + judge->oppoOL + QString("\nwins."), 0, this);
+                mess = new MessageBox(QString("TIME'S UP!\n\n") + judge->oppoOL + QString("\nwins."), 0, true, this);
                 break;
             case 2:
-                mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, this);
+                mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, false, this);
                 break;
             case 5:
-                mess = new MessageBox(QString("You resign!\n\n") + judge->oppoOL + QString("\nwins."), 0, this);
+                mess = new MessageBox(QString("You resign!\n\n") + judge->oppoOL + QString("\nwins."), 0, true, this);
                 break;
             case 6:
                 mess = new MessageBox(QString("You WIN!\n\n") + judge->oppoOL + QString("\nresigns."), 0, this);

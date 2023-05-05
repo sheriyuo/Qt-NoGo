@@ -12,9 +12,11 @@
  * 关闭方法有手动点击消息框和超时关闭
  * tim : 超时设置
  * 设置为 0 时， 必须要手动点击消息框才可关闭
+ * pendingClos : 强制显示 3s 不能被关闭
 */
-MessageBox::MessageBox(QString text, int tim, QWidget *parent):
-    QLabel(text, parent)
+MessageBox::MessageBox(QString text, int tim, bool pendingClos, QWidget *parent):
+    QLabel(text, parent),
+    pendingClose(pendingClos)
 {
     if(tim > 0){
         timer = new QTimer(this);
@@ -22,7 +24,6 @@ MessageBox::MessageBox(QString text, int tim, QWidget *parent):
         timer->setSingleShot(true);
         connect(timer, &QTimer::timeout, this, &MessageBox::timeUpClose);
     }
-    connect(this, &MessageBox::mousePress, this, &MessageBox::timeUpClose);
 
     this->setAlignment(Qt::AlignCenter);
     this->setWindowFlag(Qt::FramelessWindowHint);
@@ -34,6 +35,8 @@ MessageBox::MessageBox(QString text, int tim, QWidget *parent):
                         "background-color: rgb(234, 241, 214);"
                         "border-radius: 20px;"
                         "color: rgb(96, 153, 102);");
+
+    baseTime = clock();
 }
 
 MessageBox::~MessageBox()
@@ -41,12 +44,12 @@ MessageBox::~MessageBox()
     delete this;
 }
 
-void MessageBox::mousePressEvent(QMouseEvent *event)
+void MessageBox::mousePressEvent(QMouseEvent *event) {clickToClose();}
+
+void MessageBox::clickToClose()
 {
-    emit mousePress();
+    if(pendingClose && clock() - baseTime <= 3000) return;
+    timeUpClose();
 }
 
-void MessageBox::timeUpClose()
-{
-    this->close();
-}
+void MessageBox::timeUpClose() {this->close();}

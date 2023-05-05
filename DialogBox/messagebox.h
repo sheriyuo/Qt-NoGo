@@ -20,18 +20,20 @@ class MessageBox : public QLabel
     Q_OBJECT
 
 public:
-    MessageBox (QString text, int tim, QWidget *parent = nullptr);
+    MessageBox (QString text, int tim,  bool pendingClose, QWidget *parent = nullptr);
     ~MessageBox();
 
 signals:
-    void mousePress();
 
 public slots:
+    void clickToClose();
     void timeUpClose();
 
 private:
     QTimer *timer;
+    time_t baseTime;
     void mousePressEvent(QMouseEvent *event) override;
+    bool pendingClose;
 };
 
 #endif // MESSAGEBOX_H
