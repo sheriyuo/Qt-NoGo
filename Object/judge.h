@@ -8,7 +8,7 @@
 #include <set>
 #include "Network/networkserver.h"
 #include "Network/networksocket.h"
-
+#include "logger.h"
 /*
 *   @file: judge.h
 *   @brief: 声明 Judge 类，
@@ -81,6 +81,11 @@ public:
     NetworkServer *server; QTcpSocket *lastClient = nullptr;
     NetworkSocket *socket; bool socketConnected = false;
     void send(NetworkData d);
+
+    //日志相关
+    void make_send_or_receive_log(NetworkData d,bool seorre);
+
+
 
 signals:
     void modifiedCB(); // 棋盘更新信号

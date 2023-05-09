@@ -17,10 +17,12 @@ HEADERS += \
     DialogBox/messagebox.h \
     DialogBox/optiondialog.h \
     DialogBox/settingdialog.h \
+    Object/logger.h \
     Widget/gamewidget.h \
     Widget/startwidget.h
 
 SOURCES += \
+    Object/logger.cpp \
     main.cpp \
     Object/bot.cpp \
     Object/judge.cpp \

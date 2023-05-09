@@ -245,6 +245,9 @@ void Judge::recDataFromClient(QTcpSocket* client, NetworkData data)
 }
 void Judge::recData(NetworkData d)
 {
+
+    make_send_or_receive_log(d,0);  // log
+
     int row, col;
     switch(d.op)
     {
@@ -293,10 +296,14 @@ void Judge::recData(NetworkData d)
 }
 void Judge::send(NetworkData d)
 {
+    make_send_or_receive_log(d,1);  // log
+
     if(runMode != 2 && runMode != 3) return;
     if(runMode == 2) server->send(lastClient, d);
     else socket->send(d);
 }
+
+
 void Judge::clearLink()
 {
     if((runMode == 2 && !!lastClient) || (runMode == 3 && socketConnected))
@@ -315,4 +322,27 @@ void Judge::clearLink()
         socketConnected = false;
     }
     oppoOL = "";
+}
+
+//log
+void Judge::make_send_or_receive_log(NetworkData d,bool seorre)
+{
+    Logger sendlog;
+    QString reorsend;
+    if(seorre)
+        reorsend="send";
+    else
+        reorsend="receive";
+    QString steps=QString::number(this->getStep().size());
+    QString ipAddress = (this->socket->base()->peerAddress()).toString();
+    QString logop = QString::number(int(d.op));
+    QString message = QString("[%1] [%2] [%3] [%4] [%5] [%6]\n")
+                        .arg(reorsend)
+                        .arg(steps)
+                        .arg(ipAddress)
+                        .arg(logop)
+                        .arg(d.data1)
+                        .arg(d.data2)
+            ;
+    sendlog.log(Logger::Level::Info,message);
 }
