@@ -6,13 +6,12 @@
 *           在对局中弹出提示，或结算信息
 *   @author: sheriyuo, ce-amtic, duality314
 *   @time: 2023/5/1
-*/
-
-/*
- * 关闭方法有手动点击消息框和超时关闭
- * tim : 超时设置
- * 设置为 0 时， 必须要手动点击消息框才可关闭
- * pendingClos : 强制显示 3s 不能被关闭
+*
+*   @constructor: MessageBox(QString text, int tim, bool pendingClos, QWidget *parent)
+*                 关闭方法有手动点击消息框和超时关闭
+*                 tim : 超时设置
+*                 设置为 0 时， 必须要手动点击消息框才可关闭
+*                 pendingClos : 强制显示 3s 不能被关闭
 */
 MessageBox::MessageBox(QString text, int tim, bool pendingClos, QWidget *parent):
     QLabel(text, parent),

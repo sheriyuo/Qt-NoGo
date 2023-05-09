@@ -182,6 +182,7 @@ void SettingDialog::on_restartBtn_clicked()
     ui->switchBtn->setDisabled(false);
     ui->usrnameInput->setDisabled(false);
 
+    judge->clearLink();
     judge->server->listen(QHostAddress::Any, judge->PORT);
 
     emit goOL();
@@ -201,8 +202,9 @@ void SettingDialog::on_reconnectBtn_clicked()
     ui->switchBtn->setDisabled(false);
     ui->usrnameInput->setDisabled(false);
 
+    judge->clearLink();
     judge->socket->hello(judge->IP, judge->PORT);
-    if(!judge->socket->base()->waitForConnected(15000))
+    if(!judge->socket->base()->waitForConnected(5000))
     {
         ui->clientStatus->setText("Connect Failed");
         judge->socketConnected = false;
@@ -233,11 +235,7 @@ void SettingDialog::on_switchBtn_clicked()
     ui->switchBtn->setDisabled(true);
     ui->usrnameInput->setDisabled(true);
 
-    if((judge->runMode == 2 && !!judge->lastClient) || (judge->runMode == 3 && judge->socketConnected))
-    {
-        judge->send(NetworkData(OPCODE::LEAVE_OP, judge->usrnameOL, ""));
-        judge->clearLink();
-    }
+    judge->clearLink();
 
     emit goOFFL();
     judge->runMode = 0;

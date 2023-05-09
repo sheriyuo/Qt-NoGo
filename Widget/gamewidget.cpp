@@ -85,6 +85,7 @@ GameWidget::GameWidget(Judge *j, Bot *b, QWidget *parent) :
     timerForPlayer = new QTimer;
     timerForBar = new QTimer;
 
+    connect(this, &GameWidget::mousePress, this, &GameWidget::clickToCloseMB);
     connect(timerForPlayer,&QTimer::timeout, this, &GameWidget::playerTimeout_OFFL);
     connect(timerForBar,&QTimer::timeout,this,&GameWidget::updateBar);
     connect(bot, &Bot::timeout, this, &GameWidget::botTimeout);
@@ -151,7 +152,20 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
     else sendMessage(2);
 }
 void GameWidget::updateCB() {repaint();}
-void GameWidget::closeMB() {if(mess) mess->clickToClose();}
+void GameWidget::clickToCloseMB(){
+    if(mess){
+        mess->clickToClose();
+        // delete mess;
+        mess = nullptr;
+    }
+}
+void GameWidget::closeMB() {
+    if(mess){
+        mess->timeUpClose();
+        // delete mess;
+        mess = nullptr;
+    }
+}
 
 void GameWidget::setColorForBar()
 {
@@ -470,10 +484,7 @@ void GameWidget::sendMessage(int type)
     if(judge->loadState=='G')
             steps++;
     QString ssteps = QString::number(steps);
-    if(mess){
-        mess->close();
-        mess = nullptr;
-    }
+    closeMB();
     if(judge->runMode == 0)
     {
         switch(type)
@@ -526,10 +537,10 @@ void GameWidget::sendMessage(int type)
                 mess = new MessageBox(QString("You resign!\n\n") + judge->oppoOL + QString("\nwins."), 0, true, this);
                 break;
             case 6:
-                mess = new MessageBox(QString("You WIN!\n\n") + judge->oppoOL + QString("\nresigns."), 0, this);
+                mess = new MessageBox(QString("You WIN!\n\n") + judge->oppoOL + QString("\nresigns."), 0, true, this);
                 break;
             case 7:
-                mess = new MessageBox(QString("Please resign before\nrestarting the game."), 2000, this);
+                mess = new MessageBox(QString("Please resign before\nrestarting the game."), 2000, false, this);
                 break;
         }
     }
@@ -637,10 +648,7 @@ void GameWidget::on_sendButton_clicked()
 }
 void GameWidget::on_restartButton_clicked_OFFL()
 {
-    if(mess){
-        mess->close();
-        mess = nullptr;
-    }
+    closeMB();
     this->close();
 
     timerForPlayer->stop();

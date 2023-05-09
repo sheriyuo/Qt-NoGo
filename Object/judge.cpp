@@ -25,7 +25,7 @@ Judge::Judge(QObject *parent) :
     srand(time(0) + clock());
     // usrnameOL = QString("OnlinePlayer") + QString::number(QRandomGenerator::global()->bounded(89999) + 10000);
     usrnameOL = QHostInfo::localHostName();
-
+\
     connect(server, &NetworkServer::receive, this, &Judge::recDataFromClient);
     connect(socket, &NetworkSocket::receive, this, &Judge::recData);
 
@@ -302,6 +302,10 @@ void Judge::send(NetworkData d)
 }
 void Judge::clearLink()
 {
+    if((runMode == 2 && !!lastClient) || (runMode == 3 && socketConnected))
+    {
+        send(NetworkData(OPCODE::LEAVE_OP, usrnameOL, ""));
+    }
     if(runMode == 2)
     {
         if(lastClient != nullptr) server->leave(lastClient);

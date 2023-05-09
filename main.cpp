@@ -30,7 +30,6 @@ int main(int argc, char *argv[])
     QObject::connect(startWidget->settingDialog, &SettingDialog::goOFFL, gameWidget, &GameWidget::goOFFL);
     QObject::connect(gameWidget, &GameWidget::restartSingal, stackLayout, &QStackedLayout::setCurrentIndex);
     QObject::connect(gameWidget, &GameWidget::resignSingal, stackLayout, &QStackedLayout::setCurrentIndex);
-    QObject::connect(gameWidget, &GameWidget::mousePress, gameWidget, &GameWidget::closeMB);
     QObject::connect(gameWidget, &GameWidget::turnForBot, bot, &Bot::makeAMove);
     QObject::connect(judge, &Judge::modifiedCB, gameWidget, &GameWidget::updateCB);
     QObject::connect(judge, &Judge::MOVE_OP, gameWidget, &GameWidget::startTimer);

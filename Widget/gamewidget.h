@@ -52,6 +52,7 @@ public slots:
     void playerTimeout_OFFL(); // 玩家超时的槽函数，用于链接计时器 (offline)
     void playerTimeout_OL();
     void botTimeout();    // bot超时的槽函数，用于链接计时器
+    void clickToCloseMB();
     void closeMB();       // 再次点击棋盘时关闭消息弹窗
     void updateCB();      // 更新棋盘
     void updateBar();     // 更新倒计时进度条
