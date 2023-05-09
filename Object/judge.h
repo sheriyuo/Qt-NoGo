@@ -92,6 +92,7 @@ signals:
     void MOVE_OP();
     void CHAT_OP(NetworkData d);
     void TIMEOUT_END_OP();
+    void SUICIDE_END_OP();
     void GIVEUP_OP();
     void LEAVE_OP();
 

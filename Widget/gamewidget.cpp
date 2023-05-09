@@ -85,7 +85,7 @@ GameWidget::GameWidget(Judge *j, Bot *b, QWidget *parent) :
     timerForPlayer = new QTimer;
     timerForBar = new QTimer;
 
-    connect(this, &GameWidget::mousePress, this, &GameWidget::clickToCloseMB);
+    connect(this, &GameWidget::mousePress, this, [&](){clickToCloseMB();});
     connect(timerForPlayer,&QTimer::timeout, this, &GameWidget::playerTimeout_OFFL);
     connect(timerForBar,&QTimer::timeout,this,&GameWidget::updateBar);
     connect(bot, &Bot::timeout, this, &GameWidget::botTimeout);
@@ -93,12 +93,11 @@ GameWidget::GameWidget(Judge *j, Bot *b, QWidget *parent) :
     connect(ui->restartButton, &QPushButton::clicked, this, &GameWidget::on_restartButton_clicked_OFFL);
     connect(ui->chatInput, SIGNAL(returnPressed()), ui->sendButton,SIGNAL(clicked()), Qt::UniqueConnection);
     connect(judge, &Judge::GIVEUP_OP, this, &GameWidget::remoteResign);
+    connect(judge, &Judge::TIMEOUT_END_OP, this, [&](){gameLose(1);});
+    connect(judge, &Judge::SUICIDE_END_OP, this, [&](){gameWin(1);});
     connect(judge, &Judge::CHAT_OP, this, [&](NetworkData d){
         QString s = "<" + judge->oppoOL + "> : \n" + d.data1;
         ui->chatHistory->appendPlainText(s);
-    });
-    connect(judge, &Judge::TIMEOUT_END_OP, this, [&](){
-        gameLose(1);
     });
 }
 GameWidget::~GameWidget()
@@ -152,18 +151,15 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
     else sendMessage(2);
 }
 void GameWidget::updateCB() {repaint();}
-void GameWidget::clickToCloseMB(){
+void GameWidget::clickToCloseMB(bool force){
     if(mess){
-        mess->clickToClose();
-        // delete mess;
-        mess = nullptr;
-    }
-}
-void GameWidget::closeMB() {
-    if(mess){
-        mess->timeUpClose();
-        // delete mess;
-        mess = nullptr;
+        if(force){
+            mess->timeUpClose();
+            mess = nullptr;
+        }
+        else if(mess->clickToClose()){
+            mess = nullptr;
+        }
     }
 }
 
@@ -484,7 +480,7 @@ void GameWidget::sendMessage(int type)
     if(judge->loadState=='G')
             steps++;
     QString ssteps = QString::number(steps);
-    closeMB();
+    clickToCloseMB(true);
     if(judge->runMode == 0)
     {
         switch(type)
@@ -648,7 +644,7 @@ void GameWidget::on_sendButton_clicked()
 }
 void GameWidget::on_restartButton_clicked_OFFL()
 {
-    closeMB();
+    clickToCloseMB(true);
     this->close();
 
     timerForPlayer->stop();

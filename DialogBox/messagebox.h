@@ -26,7 +26,7 @@ public:
 signals:
 
 public slots:
-    void clickToClose();
+    bool clickToClose();
     void timeUpClose();
 
 private:

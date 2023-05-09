@@ -45,10 +45,11 @@ MessageBox::~MessageBox()
 
 void MessageBox::mousePressEvent(QMouseEvent *event) {clickToClose();}
 
-void MessageBox::clickToClose()
+bool MessageBox::clickToClose()
 {
-    if(pendingClose && clock() - baseTime <= 3000) return;
+    if(pendingClose && clock() - baseTime <= 3000) return false;
     timeUpClose();
+    return true;
 }
 
 void MessageBox::timeUpClose() {this->close();}

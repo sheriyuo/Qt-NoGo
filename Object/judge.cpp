@@ -270,28 +270,25 @@ void Judge::recData(NetworkData d)
     case OPCODE::TIMEOUT_END_OP:
         if(d.data2 != "")
         {
-            if(runMode == 2) {server->send(lastClient, NetworkData(OPCODE::TIMEOUT_END_OP, usrnameOL, ""));}
-            else {socket->send(NetworkData(OPCODE::TIMEOUT_END_OP, usrnameOL, ""));}
+            send(NetworkData(OPCODE::TIMEOUT_END_OP, usrnameOL, ""));
             emit TIMEOUT_END_OP();
         }
         break;
     case OPCODE::GIVEUP_OP:
-        if(runMode == 2) {server->send(lastClient, NetworkData(OPCODE::GIVEUP_END_OP, usrnameOL, "Sorry you resign"));}
-        else {socket->send(NetworkData(OPCODE::GIVEUP_END_OP, usrnameOL, "Sorry you resign"));}
+        send(NetworkData(OPCODE::GIVEUP_END_OP, usrnameOL, "Sorry you resign"));
         emit GIVEUP_OP();
         break;
     case OPCODE::GIVEUP_END_OP:
-        if(d.data2 != "")
-        {
-            if(runMode == 2) {server->send(lastClient, NetworkData(OPCODE::GIVEUP_END_OP, usrnameOL, ""));}
-            else {socket->send(NetworkData(OPCODE::GIVEUP_END_OP, usrnameOL, ""));}
-        }
+        send(NetworkData(OPCODE::GIVEUP_END_OP, usrnameOL, ""));
         break;
     case OPCODE::LEAVE_OP:
         clearLink();
         emit LEAVE_OP();
         break;
-//    case OPCODE::SUICIDE_END_OP:
+    case OPCODE::SUICIDE_END_OP:
+        send(NetworkData(OPCODE::SUICIDE_END_OP, usrnameOL, ""));
+        emit SUICIDE_END_OP();
+        break;
     }
 }
 void Judge::send(NetworkData d)
