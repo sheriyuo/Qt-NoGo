@@ -97,9 +97,9 @@ SettingDialog::SettingDialog(Judge *j, QWidget *parent) :
 
     connect(ui->gamemodeCB, &QComboBox::activated, this, &SettingDialog::getRunMode);
     connect(ui->chessbdCB, &QComboBox::activated, this, &SettingDialog::getChessBd);
-    connect(judge->socket->base(), &QTcpSocket::connected, this, [&](){ui->clientStatus->setText("Connected");});
     connect(judge, &Judge::LEAVE_OP, this, [&](){ui->clientStatus->setText("Disconnected");});
-    connect(judge->server, &QTcpServer::newConnection, this, [&](){ui->clientStatus->setText("Connected");});
+    connect(judge, &Judge::socketConnect, this, [&](){ui->clientStatus->setText("Connected");});
+    connect(judge, &Judge::serverConnect, this, [&](){ui->clientStatus->setText("Connected");});
 }
 
 SettingDialog::~SettingDialog()
@@ -182,11 +182,10 @@ void SettingDialog::on_restartBtn_clicked()
     ui->switchBtn->setDisabled(false);
     ui->usrnameInput->setDisabled(false);
 
-    judge->clearLink();
-    judge->server->listen(QHostAddress::Any, judge->PORT);
+    judge->runMode = 2;
+    judge->connect();
 
     emit goOL();
-    judge->runMode = 2;
 }
 void SettingDialog::on_reconnectBtn_clicked()
 {
@@ -202,21 +201,11 @@ void SettingDialog::on_reconnectBtn_clicked()
     ui->switchBtn->setDisabled(false);
     ui->usrnameInput->setDisabled(false);
 
-    judge->clearLink();
-    judge->socket->hello(judge->IP, judge->PORT);
-    if(!judge->socket->base()->waitForConnected(5000))
-    {
-        ui->clientStatus->setText("Connect Failed");
-        judge->socketConnected = false;
-    }
-    else
-    {
-        judge->socket->send(NetworkData(OPCODE::CHAT_OP, "", ""));
-        judge->socketConnected = true;
-    }
+    judge->runMode = 3;
+    judge->connect();
+    if(!judge->isConnected()) ui->clientStatus->setText("Connect Failed");
 
     emit goOL();
-    judge->runMode = 3;
 }
 void SettingDialog::on_switchBtn_clicked()
 {
@@ -236,7 +225,7 @@ void SettingDialog::on_switchBtn_clicked()
     ui->usrnameInput->setDisabled(true);
 
     judge->clearLink();
+    judge->runMode = 0;
 
     emit goOFFL();
-    judge->runMode = 0;
 }

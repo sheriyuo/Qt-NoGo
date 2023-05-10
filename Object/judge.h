@@ -5,10 +5,12 @@
 #include <QDebug>
 #include <QTimer>
 #include <QRandomGenerator>
+#include <QStandardPaths>
 #include <set>
 #include "Network/networkserver.h"
 #include "Network/networksocket.h"
-#include "logger.h"
+#include "Object/logger.h"
+
 /*
 *   @file: judge.h
 *   @brief: 声明 Judge 类，
@@ -76,21 +78,19 @@ public:
     double RIGHT_UP() {return ((double)(WINDOW_HEIGHT-CHESSBOARD_LEN ) / 2 + CHESSBOARD_LEN);} // 外棋盘右上角的 X坐标（横向）
 
     // 联机相关
-    QString IP, usrnameOL, oppoOL;
-    quint16 PORT;
-    NetworkServer *server; QTcpSocket *lastClient = nullptr;
-    NetworkSocket *socket; bool socketConnected = false;
-    void send(NetworkData d);
-
-    //日志相关
-    void make_send_or_receive_log(NetworkData d,bool seorre);
-
-
+    QString IP; // 本机IP(server) 或对方IP(client)
+    QString usrnameOL, oppoOL; // 本机用户名， 对方用户名
+    quint16 PORT; // 本机端口(server) 或对方端口(client)
+    void send(NetworkData d); // 发送数据
+    void connect();
+    bool isConnected(); // 是否连接
 
 signals:
     void modifiedCB(); // 棋盘更新信号
 
     // 联机通信协议
+    void serverConnect();
+    void socketConnect();
     void READY_OP(NetworkData d);
     void READY_OP_ForInviter();
     void REJECT_OP();
@@ -112,6 +112,7 @@ private:
     void WriteCurStep(int x, int y); // 记录当前操作
     void MergeBlock(int x, int y); // 启发式合并
     void MergeSet(LibertySet &x, LibertySet y); // 启发式合并
+    void loggingSendReceive(NetworkData d, QString ipAddress, bool seorre); // 生成日志
 
     int board[52][52]; // 当前棋盘状态
     int chessBelong[52][52]; // 棋子属于的棋子块
@@ -122,6 +123,15 @@ private:
     ItemVector chessBlock[(52) * (52)]; // 棋子块的编号
     ItemVector savedStep; // 记录棋局的 vector<pair<int,int> >
     std::vector<int>mergedBlock;
+
+    // 网络库
+    NetworkServer *server;
+    QTcpSocket *lastClient = nullptr;
+    NetworkSocket *socket;
+    bool socketConnected = false;
+
+    // 生成日志
+    Logger *logger;
 };
 
 #endif // JUDGE_H

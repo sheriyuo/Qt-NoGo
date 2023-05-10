@@ -155,7 +155,7 @@ void StartWidget::on_startAsWhite_clicked_OFFL()
 }
 void StartWidget::on_startAsBlack_clicked_OL() // 1->black
 {
-    if((judge->runMode == 2 && !judge->lastClient) || (judge->runMode == 3 && !judge->socketConnected))
+    if(!judge->isConnected())
     {
         confirmD->close();
         awaitD->close();
@@ -174,7 +174,7 @@ void StartWidget::on_startAsBlack_clicked_OL() // 1->black
 }
 void StartWidget::on_startAsWhite_clicked_OL() // -1->white
 {
-    if((judge->runMode == 2 && !judge->lastClient) || (judge->runMode == 3 && !judge->socketConnected))
+    if(!judge->isConnected())
     {
         confirmD->close();
         awaitD->close();

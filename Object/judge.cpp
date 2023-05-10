@@ -11,6 +11,8 @@
 Judge::Judge(QObject *parent) :
     QObject(parent)
 {
+    logger = new Logger(this);
+
     CHESSBOARD_SIZE = 9;
     runMode = 0;
     // IP = "127.0.0.1";
@@ -24,10 +26,16 @@ Judge::Judge(QObject *parent) :
     socket = new NetworkSocket(new QTcpSocket(), this);
     srand(time(0) + clock());
     // usrnameOL = QString("OnlinePlayer") + QString::number(QRandomGenerator::global()->bounded(89999) + 10000);
-    usrnameOL = QHostInfo::localHostName();
+    usrnameOL = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).section("/",-1,-1);
 \
-    connect(server, &NetworkServer::receive, this, &Judge::recDataFromClient);
-    connect(socket, &NetworkSocket::receive, this, &Judge::recData);
+    QObject::connect(server, &NetworkServer::receive, this, &Judge::recDataFromClient);
+    QObject::connect(socket, &NetworkSocket::receive, this, [&](NetworkData d){
+        logger->log(Logger::Level::Info, QString("receives from server"));
+        loggingSendReceive(d, IP, 0);
+        recData(d);
+    });
+    QObject::connect(server, &QTcpServer::newConnection, this, [&](){emit serverConnect();});
+    QObject::connect(socket->base(), &QTcpSocket::connected, this, [&](){emit socketConnect();});
 
     init();
 }
@@ -238,16 +246,69 @@ void Judge::updateStep(int newPlayerRole, int newRunMode, ItemVector newStep, ch
 }
 
 // 网络库相关
-void Judge::recDataFromClient(QTcpSocket* client, NetworkData data)
+bool Judge::isConnected()
 {
+    return (runMode == 2 && !!lastClient) || (runMode == 3 && socketConnected);
+}
+void Judge::clearLink()
+{
+    if(isConnected()) send(NetworkData(OPCODE::LEAVE_OP, usrnameOL, ""));
+    if(runMode == 2)
+    {
+        if(lastClient != nullptr)
+        {
+            logger->log(Logger::Level::Info, QString("server leave"));
+            server->leave(lastClient);
+        }
+        if(server->isListening())
+        {
+            logger->log(Logger::Level::Info, QString("server stopped"));
+            server->close();
+        }
+        lastClient = nullptr;
+    }
+    if(runMode == 3)
+    {
+        logger->log(Logger::Level::Info, QString("socket leave"));
+        socket->bye();
+        socketConnected = false;
+    }
+    oppoOL = "";
+}
+void Judge::connect()
+{
+    clearLink();
+    if(runMode == 2)
+    {
+        logger->log(Logger::Level::Info, QString("server listen<")+IP+":"+QString::number(PORT)+">");
+        server->listen(QHostAddress(IP), PORT);
+    }
+    else
+    {
+        logger->log(Logger::Level::Info, QString("socket connectToHost<")+IP+":"+QString::number(PORT)+">");
+        socket->hello(IP, PORT);
+        if(!socket->base()->waitForConnected(5000))
+        {
+            logger->log(Logger::Level::Warning, QString("socket connect failed"));
+            socketConnected = false;
+        }
+        else
+        {
+            logger->log(Logger::Level::Info, QString("socket connect successed"));
+            send(NetworkData(OPCODE::CHAT_OP, "", ""));
+            socketConnected = true;
+        }
+    }
+}
+void Judge::recDataFromClient(QTcpSocket* client, NetworkData d)
+{
+    logger->log(Logger::Level::Info, QString("receives from socket"));
+    loggingSendReceive(d, (client->peerAddress()).toString(), 0);  // log
     lastClient = client;
-    recData(data);
+    recData(d);
 }
 void Judge::recData(NetworkData d)
 {
-
-    make_send_or_receive_log(d,0);  // log
-
     int row, col;
     switch(d.op)
     {
@@ -296,53 +357,42 @@ void Judge::recData(NetworkData d)
 }
 void Judge::send(NetworkData d)
 {
-    make_send_or_receive_log(d,1);  // log
-
     if(runMode != 2 && runMode != 3) return;
-    if(runMode == 2) server->send(lastClient, d);
-    else socket->send(d);
-}
-
-
-void Judge::clearLink()
-{
-    if((runMode == 2 && !!lastClient) || (runMode == 3 && socketConnected))
-    {
-        send(NetworkData(OPCODE::LEAVE_OP, usrnameOL, ""));
-    }
     if(runMode == 2)
     {
-        if(lastClient != nullptr) server->leave(lastClient);
-        if(server->isListening()) server->close();
-        lastClient = nullptr;
+        loggingSendReceive(d, (lastClient->peerAddress()).toString(), 1);
+        server->send(lastClient, d);
     }
-    if(runMode == 3)
+    else
     {
-        socket->bye();
-        socketConnected = false;
+        loggingSendReceive(d, IP, 1);
+        socket->send(d);
     }
-    oppoOL = "";
 }
 
 //log
-void Judge::make_send_or_receive_log(NetworkData d,bool seorre)
+void Judge::loggingSendReceive(NetworkData d, QString ipAddress, bool seorre)
 {
-    Logger sendlog;
-    QString reorsend;
-    if(seorre)
-        reorsend="send";
-    else
-        reorsend="receive";
-    QString steps=QString::number(this->getStep().size());
-    QString ipAddress = (this->socket->base()->peerAddress()).toString();
-    QString logop = QString::number(int(d.op));
-    QString message = QString("[%1] [%2] [%3] [%4] [%5] [%6]\n")
+    QString reorsend = seorre ? "send":"receive";
+    QString steps = QString::number(getStep().size());
+    QString logop;
+    switch (int(d.op)){
+        case 200000: logop="READY_OP";break;
+        case 200001: logop="REJECT_OP";break;
+        case 200002: logop="MOVE_OP";break;
+        case 200003: logop="GIVEUP_OP";break;
+        case 200004: logop="TIMEOUT_END_OP";break;
+        case 200005: logop="SUICIDE_END_OP";break;
+        case 200006: logop="GIVEUP_END_OP";break;
+        case 200007: logop="LEAVE_OP";break;
+        case 200008: logop="CHAT_OP";break;
+    }
+    QString message = QString("<%1> <%2> steps:%3 {%4, '%5', '%6'}\n")
                         .arg(reorsend)
-                        .arg(steps)
                         .arg(ipAddress)
+                        .arg(steps)
                         .arg(logop)
                         .arg(d.data1)
-                        .arg(d.data2)
-            ;
-    sendlog.log(Logger::Level::Info,message);
+                        .arg(d.data2);
+    logger->log(Logger::Level::Debug, message);
 }
