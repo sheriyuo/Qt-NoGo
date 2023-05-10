@@ -654,6 +654,7 @@ void GameWidget::on_restartButton_clicked_OFFL()
 }
 void GameWidget::on_resignButton_clicked_OFFL()
 {
+    if(judge->curPlayer == -1) return;
     sendMessage(5);
     judge->curPlayerBak = judge->curPlayer;
     judge->curPlayer = -1;
@@ -675,6 +676,7 @@ void GameWidget::on_restartButton_clicked_OL()
 }
 void GameWidget::on_resignButton_clicked_OL()
 {
+    if(judge->curPlayer == -1) return;
     // 发送 GIVEUP_OP
     on_resignButton_clicked_OFFL();
     judge->send(NetworkData(OPCODE::GIVEUP_OP, judge->usrnameOL, ""));
