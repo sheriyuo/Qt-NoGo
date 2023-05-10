@@ -84,6 +84,7 @@ public:
     void send(NetworkData d); // 发送数据
     void connect();
     bool isConnected(); // 是否连接
+    void clearLink(bool isPassive = false); // 清除联机连接
 
 signals:
     void modifiedCB(); // 棋盘更新信号
@@ -105,7 +106,6 @@ public slots:
     void setPlayerRole(int player);
     void recDataFromClient(QTcpSocket* client, NetworkData data);
     void recData(NetworkData data);
-    void clearLink(); // 清除联机连接
 
 private:
     void CleanVis(); // 清空 mergedBlock

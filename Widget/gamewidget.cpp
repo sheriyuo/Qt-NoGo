@@ -120,7 +120,7 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
         int xi = judge->LEFT_UP() + (i-1) * judge->SQUARE_LEN();
         if(abs ( x - xi ) < checklen)
         {
-            row = i;
+            column = i;
             break;
         }
     }
@@ -129,7 +129,7 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
         int yi = judge->LEFT_UP() + ( i - 1 ) * judge->SQUARE_LEN();
         if(abs( y - yi ) < checklen)
         {
-            column = i;
+            row = i;
             break;
         }
     }
@@ -292,8 +292,8 @@ void GameWidget::drawWhite(QPainter &painter, double i, double j)
 
     double Size = judge->SQUARE_LEN() * 0.7, Strength = Size / 4;
 
-    double xi = judge->LEFT_UP() + ( i - 0.35 ) * judge->SQUARE_LEN();
-    double yi = judge->LEFT_UP() + ( j - 0.35 ) * judge->SQUARE_LEN();
+    double xi = judge->LEFT_UP() + ( j - 0.35 ) * judge->SQUARE_LEN();
+    double yi = judge->LEFT_UP() + ( i - 0.35 ) * judge->SQUARE_LEN();
 
     painter.setPen(QPen(QColor(CUS_WHITE), Strength, Qt::SolidLine));
     painter.setBrush(QColor(BG_COLOR));
@@ -312,8 +312,8 @@ void GameWidget::drawWhite(QPainter &painter, double i, double j)
     {
         double Size = judge->SQUARE_LEN() * 0.18, Strength = Size / 4;
 
-        double xi = judge->LEFT_UP() + ( i - 0.09 ) * judge->SQUARE_LEN();
-        double yi = judge->LEFT_UP() + ( j - 0.09 ) * judge->SQUARE_LEN();
+        double xi = judge->LEFT_UP() + ( j - 0.09 ) * judge->SQUARE_LEN();
+        double yi = judge->LEFT_UP() + ( i - 0.09 ) * judge->SQUARE_LEN();
 
         painter.setPen(QPen(QColor(CUS_WHITE), Strength, Qt::SolidLine));
         painter.setBrush(QColor(CUS_WHITE));
@@ -326,8 +326,8 @@ void GameWidget::drawBlack(QPainter &painter, double i, double j)
 {
 
     double Size = judge->SQUARE_LEN() * 0.7, Strength = Size / 4;
-    double xi = judge->LEFT_UP() + ( i - 0.35 ) * judge->SQUARE_LEN();
-    double yi = judge->LEFT_UP() + ( j - 0.35 ) * judge->SQUARE_LEN();
+    double xi = judge->LEFT_UP() + ( j - 0.35 ) * judge->SQUARE_LEN();
+    double yi = judge->LEFT_UP() + ( i - 0.35 ) * judge->SQUARE_LEN();
 
     painter.setPen(QPen(QColor(CUS_BLACK), Strength, Qt::SolidLine));
     painter.setBrush(QColor(BG_COLOR));
@@ -346,8 +346,8 @@ void GameWidget::drawBlack(QPainter &painter, double i, double j)
     {
         double Size = judge->SQUARE_LEN() * 0.18, Strength = Size / 4;
 
-        double xi = judge->LEFT_UP() + ( i - 0.09 ) * judge->SQUARE_LEN();
-        double yi = judge->LEFT_UP() + ( j - 0.09 ) * judge->SQUARE_LEN();
+        double xi = judge->LEFT_UP() + ( j - 0.09 ) * judge->SQUARE_LEN();
+        double yi = judge->LEFT_UP() + ( i - 0.09 ) * judge->SQUARE_LEN();
 
         painter.setPen(QPen(QColor(CUS_BLACK), Strength, Qt::SolidLine));
         painter.setBrush(QColor(CUS_BLACK));
@@ -359,8 +359,8 @@ void GameWidget::drawheat(QPainter &painter,double i, double j)
 {
 
     double Size = judge->SQUARE_LEN() * 0.2, Strength = Size / 4;
-    double xi = judge->LEFT_UP() + ( i - 0.1 ) * judge->SQUARE_LEN();
-    double yi = judge->LEFT_UP() + ( j - 0.1 ) * judge->SQUARE_LEN();
+    double xi = judge->LEFT_UP() + ( j - 0.1 ) * judge->SQUARE_LEN();
+    double yi = judge->LEFT_UP() + ( i - 0.1 ) * judge->SQUARE_LEN();
 
     int color=judge->CurColor();
     if(color==-1)
@@ -405,20 +405,20 @@ void GameWidget::drawDemo(QPainter &painter) // 绘画 FYH
     for(int i = 0; i < judge->CHESSBOARD_SIZE; i++)
         for(int j = 0; j < judge->CHESSBOARD_SIZE; j++)
         {
-            if(!fyhBoard[j][i]) continue;
-            if(fyhBoard[j][i] > 0)
+            if(!fyhBoard[i][j]) continue;
+            if(fyhBoard[i][j] > 0)
                 drawWhite(painter, i, j);
             else
                 drawBlack(painter, i, j);
         }
     for(int i = 0; i < Len; i++)
-        for(int j = 0; j < Len; j++) // 心形线
+        for(int j = 0; j < Len; j++)  // 心形线
         {
             double x = (i - Len / 2.0) / Len * 2, y = (j + 1 - Len / 2.0) / Len * 2;
             if(fabs(pow((x * x + y * y - 0.4), 1) - 4 * x * x * y * y * y) <= 0.143 * 28 / judge->CHESSBOARD_SIZE)
-                drawBlack(painter, i + Len + op, (Len - j - 1) + Len + op);
+                drawBlack(painter, (Len - j - 1) + Len + op, i + Len + op);
             else
-                drawWhite(painter, i + Len + op, (Len - j - 1) + Len + op);
+                drawWhite(painter, (Len - j - 1) + Len + op, i + Len + op);
         }
 }
 
@@ -712,7 +712,6 @@ void GameWidget::stringToData()
     dataVec.clear();
     int len = strlen(dataStr);
     strState = 0;
-    qDebug() << dataStr << "\n";
     for(int i = 4; i < len; i += 3)
     {
         if(i == len - 1)
@@ -722,7 +721,6 @@ void GameWidget::stringToData()
         }
         int x = dataStr[i] - 'A', y = dataStr[i+1] - '1';
         dataVec.push_back(Point(x, y));
-        //qDebug() << i << ":" << x << "," << y << "\n";
     }
 }
 
@@ -745,7 +743,6 @@ void GameWidget::on_loadButton_clicked()
 
         QByteArray fileData = file.readAll();
 
-        qDebug() << fileData << "\n";
         memset(dataStr, 0, sizeof(dataStr)); // 先清零不然 copy 位数小于时会更新不了后面的
         memcpy(dataStr, fileData, fileData.size());
         // QFile 直接读入为 QByteArray 再转为 char*
@@ -756,8 +753,6 @@ void GameWidget::on_loadButton_clicked()
     // 理论上，没有判断非法 .dat
 
     startTimer(); // 重置计时器
-
-    qDebug() << judge->loadState << " " << judge->runMode << "\n";
 
     if(judge->loadState) // 是否为终局
     {
@@ -788,7 +783,6 @@ void GameWidget::on_saveButton_clicked()
             QMessageBox::information(nullptr, tr("Unable to open file"),file.errorString());
             return;
         }
-        qDebug() << dataStr << "\n";
         file.write(dataStr); // QFile 直接读写文件
         file.close();
     }

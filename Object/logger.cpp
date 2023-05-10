@@ -3,7 +3,9 @@
 Logger::Logger(QObject *parent) :
     QObject(parent)
 {
-    token = QString::number(QRandomGenerator::global()->bounded(114514));
+    // token = QString::number(QRandomGenerator::global()->bounded(114514));
+    token = QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
+    log(Level::Info, "program started");
 }
 Logger::~Logger()
 {
@@ -34,7 +36,7 @@ void Logger::log(Level level, const QString &message)
 
     QString output = levelString+
                      QString("[%1] %2\n")
-                            .arg(QDateTime::currentDateTime().toString(Qt::ISODate))
+                            .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss:zzz"))
                             .arg(message);
 
     // 输出到控制台F
@@ -56,8 +58,7 @@ bool Logger::openLogFile()
     folderPATH += "C:\\Users\\";
     folderPATH += QStandardPaths::writableLocation(QStandardPaths::HomeLocation).section("/",-1,-1);
     folderPATH += "\\AppData\\Local\\NOGO\\";
-    qDebug() << folderPATH;
-    PATH = folderPATH + "log" + token + ".txt";
+    PATH = folderPATH + "syslog" + token + ".txt";
 
     QDir dir;
     if (!dir.exists(folderPATH)) {

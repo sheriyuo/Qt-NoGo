@@ -17,7 +17,7 @@ SettingDialog::SettingDialog(Judge *j, QWidget *parent) :
     ui->setupUi(this);
     WIDTH = WINDOW_WIDTH * 3 / 5, HEIGHT = WINDOW_HEIGHT / 2;
     setFixedSize(WIDTH, HEIGHT);
-    setWindowFlags(Qt::Window|Qt::WindowTitleHint);
+    // setWindowFlags(Qt::Window|Qt::WindowTitleHint);
 
     ui->closeBtn->setStyleSheet(ACCENT_COLOR);
     int H = (double)HEIGHT / 10,

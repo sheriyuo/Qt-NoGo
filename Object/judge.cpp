@@ -30,18 +30,26 @@ Judge::Judge(QObject *parent) :
 \
     QObject::connect(server, &NetworkServer::receive, this, &Judge::recDataFromClient);
     QObject::connect(socket, &NetworkSocket::receive, this, [&](NetworkData d){
-        logger->log(Logger::Level::Info, QString("receives from server"));
+        logger->log(Logger::Level::Info, QString("socket receives"));
         loggingSendReceive(d, IP, 0);
         recData(d);
     });
-    QObject::connect(server, &QTcpServer::newConnection, this, [&](){emit serverConnect();});
-    QObject::connect(socket->base(), &QTcpSocket::connected, this, [&](){emit socketConnect();});
+    QObject::connect(server, &QTcpServer::newConnection, this, [&](){
+        logger->log(Logger::Level::Info, QString("server connected"));
+        emit serverConnect();
+    });
+    QObject::connect(socket->base(), &QTcpSocket::connected, this, [&](){
+        logger->log(Logger::Level::Info, QString("socket connected"));
+        emit socketConnect();
+    });
 
     init();
+    logger->log(Logger::Level::Debug, "database constructed");
 }
 
 Judge::~Judge()
 {
+    logger->log(Logger::Level::Debug, "database destructed");
     delete this;
 }
 
@@ -57,6 +65,7 @@ void Judge::init()
     savedStep.clear();
     blockCnt = 0;
     curPlayer = 0;
+    logger->log(Logger::Level::Debug, "database initialized");
 }
 
 int Judge::GridPoint(int x, int y) {return board[x][y];}
@@ -250,9 +259,9 @@ bool Judge::isConnected()
 {
     return (runMode == 2 && !!lastClient) || (runMode == 3 && socketConnected);
 }
-void Judge::clearLink()
+void Judge::clearLink(bool isPassive)
 {
-    if(isConnected()) send(NetworkData(OPCODE::LEAVE_OP, usrnameOL, ""));
+    if(isConnected() && !isPassive) send(NetworkData(OPCODE::LEAVE_OP, usrnameOL, ""));
     if(runMode == 2)
     {
         if(lastClient != nullptr)
@@ -269,8 +278,11 @@ void Judge::clearLink()
     }
     if(runMode == 3)
     {
-        logger->log(Logger::Level::Info, QString("socket leave"));
-        socket->bye();
+        if(socketConnected)
+        {
+            logger->log(Logger::Level::Info, QString("socket leave"));
+            socket->bye();
+        }
         socketConnected = false;
     }
     oppoOL = "";
@@ -289,12 +301,11 @@ void Judge::connect()
         socket->hello(IP, PORT);
         if(!socket->base()->waitForConnected(5000))
         {
-            logger->log(Logger::Level::Warning, QString("socket connect failed"));
+            logger->log(Logger::Level::Error, QString("socket connect failed"));
             socketConnected = false;
         }
         else
         {
-            logger->log(Logger::Level::Info, QString("socket connect successed"));
             send(NetworkData(OPCODE::CHAT_OP, "", ""));
             socketConnected = true;
         }
@@ -302,7 +313,7 @@ void Judge::connect()
 }
 void Judge::recDataFromClient(QTcpSocket* client, NetworkData d)
 {
-    logger->log(Logger::Level::Info, QString("receives from socket"));
+    logger->log(Logger::Level::Info, QString("server receives"));
     loggingSendReceive(d, (client->peerAddress()).toString(), 0);  // log
     lastClient = client;
     recData(d);
@@ -339,14 +350,14 @@ void Judge::recData(NetworkData d)
         }
         break;
     case OPCODE::GIVEUP_OP:
-        send(NetworkData(OPCODE::GIVEUP_END_OP, usrnameOL, "Sorry you resign"));
+        send(NetworkData(OPCODE::GIVEUP_END_OP, usrnameOL, "sorry you resign"));
         emit GIVEUP_OP();
         break;
     case OPCODE::GIVEUP_END_OP:
-        send(NetworkData(OPCODE::GIVEUP_END_OP, usrnameOL, ""));
+        if(d.data2 != "") send(NetworkData(OPCODE::GIVEUP_END_OP, usrnameOL, ""));
         break;
     case OPCODE::LEAVE_OP:
-        clearLink();
+        clearLink(true);
         emit LEAVE_OP();
         break;
     case OPCODE::SUICIDE_END_OP:
@@ -387,7 +398,7 @@ void Judge::loggingSendReceive(NetworkData d, QString ipAddress, bool seorre)
         case 200007: logop="LEAVE_OP";break;
         case 200008: logop="CHAT_OP";break;
     }
-    QString message = QString("<%1> <%2> steps:%3 {%4, '%5', '%6'}\n")
+    QString message = QString("<%1> <%2> steps:%3 {%4, '%5', '%6'}")
                         .arg(reorsend)
                         .arg(ipAddress)
                         .arg(steps)
