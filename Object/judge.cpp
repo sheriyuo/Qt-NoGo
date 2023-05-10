@@ -289,7 +289,7 @@ void Judge::clearLink(bool isPassive)
 }
 void Judge::connect()
 {
-    clearLink();
+    clearLink(true);
     if(runMode == 2)
     {
         logger->log(Logger::Level::Info, QString("server listen<")+IP+":"+QString::number(PORT)+">");

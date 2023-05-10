@@ -7,6 +7,8 @@
 #include <QColor>
 #include "Object/judge.h"
 
+namespace Ui { class OptionDialog; }
+
 /*
 *   @file: optiondialog.h
 *   @brief: 声明 OptionDialog 类，
@@ -21,8 +23,6 @@
 *   @author: sheriyuo, ce-amtic, duality314
 *   @time: 2023/5/1
 */
-
-namespace Ui { class OptionDialog; }
 
 class OptionDialog : public QDialog
 {

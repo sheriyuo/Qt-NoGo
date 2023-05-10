@@ -68,9 +68,10 @@ bool Logger::openLogFile()
         } else {
             qDebug() << "Failed to create new folder!";
         }
-    } else {
-        qDebug() << "Folder already exists!";
     }
+//    else {
+//        qDebug() << "Folder already exists!";
+//    }
 
     m_logFile.setFileName(PATH);
 

@@ -10,6 +10,8 @@
 #include "Object/judge.h"
 #include "DialogBox/messagebox.h"
 
+namespace Ui { class SettingDialog; }
+
 /*
 *   @file: settingdialog.h
 *   @brief: 声明 SettingDialog 类，
@@ -17,8 +19,6 @@
 *   @author: sheriyuo, ce-amtic, duality314
 *   @time: 2023/5/1
 */
-
-namespace Ui { class SettingDialog; }
 
 class SettingDialog : public QDialog
 {

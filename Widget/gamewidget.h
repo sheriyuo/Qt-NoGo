@@ -15,6 +15,8 @@
 #include "Object/bot.h"
 #include "DialogBox/messagebox.h"
 
+namespace Ui { class GameWidget; }
+
 /*
 *   @file: gamewidget.h
 *   @brief: 声明 GameWidget 类，
@@ -22,8 +24,6 @@
 *   @author: sheriyuo, ce-amtic, duality314
 *   @time: 2023/5/1
 */
-
-namespace Ui { class GameWidget; }
 
 class GameWidget : public QWidget
 {

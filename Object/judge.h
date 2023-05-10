@@ -11,14 +11,6 @@
 #include "Network/networksocket.h"
 #include "Object/logger.h"
 
-/*
-*   @file: judge.h
-*   @brief: 声明 Judge 类，
-*           控制下棋过程中的逻辑，包括进程调度，局面判断
-*   @author: sheriyuo, ce-amtic, duality314
-*   @time: 2023/5/1
-*/
-
 #define PLAYER_TIMEOUT 30  // s
 #define BOT_TIMEOUT 1      // s
 
@@ -45,6 +37,14 @@ typedef std::pair<int, int> Item;
 typedef std::vector<Item> ItemVector;
 typedef std::set<Item> LibertySet;
 #define Point std::make_pair
+
+/*
+*   @file: judge.h
+*   @brief: 声明 Judge 类，
+*           控制下棋过程中的逻辑，包括进程调度，局面判断
+*   @author: sheriyuo, ce-amtic, duality314
+*   @time: 2023/5/1
+*/
 
 class Judge : public QObject
 {

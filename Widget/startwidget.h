@@ -8,6 +8,8 @@
 #include "DialogBox/settingdialog.h"
 #include "DialogBox/optiondialog.h"
 
+namespace Ui { class StartWidget; }
+
 /*
 *   @file: startwidget.h
 *   @brief: 声明 StartWidget 类，
@@ -15,8 +17,6 @@
 *   @author: sheriyuo, ce-amtic, duality314
 *   @time: 2023/5/1
 */
-
-namespace Ui { class StartWidget; }
 
 class StartWidget : public QWidget
 {
