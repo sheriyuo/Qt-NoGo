@@ -19,10 +19,12 @@ HEADERS += \
     DialogBox/settingdialog.h \
     Object/logger.h \
     Widget/gamewidget.h \
+    Widget/gamewidgetol.h \
     Widget/startwidget.h
 
 SOURCES += \
     Object/logger.cpp \
+    Widget/gamewidgetol.cpp \
     main.cpp \
     Object/bot.cpp \
     Object/judge.cpp \
@@ -39,6 +41,7 @@ FORMS += \
     DialogBox/optiondialog.ui \
     DialogBox/settingdialog.ui \
     Widget/gamewidget.ui \
+    Widget/gamewidgetol.ui \
     Widget/startwidget.ui
 
 # Default rules for deployment.

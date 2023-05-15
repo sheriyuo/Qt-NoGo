@@ -9,20 +9,11 @@
 *   @time: 2023/5/1
 */
 
-/* 玩家的计时器
-将 bot 的计时器内置于 class Bot 中 */
-static QTimer *timerForPlayer;
-static QTimer *timerForBar;
-static time_t basetime;
-// static QTimer *timerForBot;
-
-static int deltaY, LOGO_X, LOGO_Y, logoBoardW, logoBoardH;
-
 GameWidget::GameWidget(Judge *j, Bot *b, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::GameWidget),
     judge(j),
-    bot(b)
+    bot(b),
+    ui(new Ui::GameWidget)
 {
     columnX = judge->RIGHT_UP() + (WINDOW_WIDTH - judge->RIGHT_UP()) / 2;
     columnY = (double)WINDOW_HEIGHT / 20 * 9;
@@ -68,37 +59,16 @@ GameWidget::GameWidget(Judge *j, Bot *b, QWidget *parent) :
         TIME_Y = (LOGO_Y + logoBoardH + columnY) / 2 - 15;
     ui->TimeBar->setGeometry(QRect(QPoint(TIME_X, TIME_Y), QSize(200,15)));
 
-    // 设置聊天框 默认隐藏
-    ui->chatHistory->setReadOnly(true);
-    ui->chatHistory->appendPlainText(QString("Feel free to chat..."));
-    ui->sendButton->setStyleSheet(ACCENT_COLOR);
-    ui->chatInput->setStyleSheet("color: rgb(96, 150, 180); background-color: #ecf9ff;"
-                                 "border-width: 1px; border-style: solid;"
-                                 "border-color: #ecf9ff #ecf9ff rgb(96, 150, 180) #ecf9ff;");
-    ui->chatHistory->setStyleSheet("color: rgb(96, 150, 180); background-color: #ecf9ff;"
-                                   "border-style: none;");
-    ui->chatHistory->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
-    ui->chatInput->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
-    ui->sendButton->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
-
     // 链接计时器
     timerForPlayer = new QTimer;
     timerForBar = new QTimer;
 
     connect(this, &GameWidget::mousePress, this, [&](){clickToCloseMB();});
-    connect(timerForPlayer,&QTimer::timeout, this, &GameWidget::playerTimeout_OFFL);
+    connect(timerForPlayer,&QTimer::timeout, this, &GameWidget::playerTimeout);
     connect(timerForBar,&QTimer::timeout,this,&GameWidget::updateBar);
     connect(bot, &Bot::timeout, this, &GameWidget::botTimeout);
-    connect(ui->resignButton, &QPushButton::clicked, this, &GameWidget::on_resignButton_clicked_OFFL);
-    connect(ui->restartButton, &QPushButton::clicked, this, &GameWidget::on_restartButton_clicked_OFFL);
-    connect(ui->chatInput, SIGNAL(returnPressed()), ui->sendButton,SIGNAL(clicked()), Qt::UniqueConnection);
-    connect(judge, &Judge::GIVEUP_OP, this, &GameWidget::remoteResign);
-    connect(judge, &Judge::TIMEOUT_END_OP, this, [&](){gameLose(1);});
-    connect(judge, &Judge::SUICIDE_END_OP, this, [&](){gameWin(1);});
-    connect(judge, &Judge::CHAT_OP, this, [&](NetworkData d){
-        QString s = "<" + judge->oppoOL + "> : \n" + d.data1;
-        ui->chatHistory->appendPlainText(s);
-    });
+    connect(ui->resignButton, &QPushButton::clicked, this, &GameWidget::on_resignButton_clicked);
+    connect(ui->restartButton, &QPushButton::clicked, this, &GameWidget::on_restartButton_clicked);
 }
 GameWidget::~GameWidget()
 {
@@ -110,7 +80,6 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
 {
     emit mousePress();
     if(judge->curPlayer == -1) return; // 判断游戏结束
-    if((judge->runMode == 2 || judge->runMode == 3) && !judge->curPlayer) return; // 判断当前局
 
     double x = event->position().x(), y = event->position().y();
     int row = 0,column = 0;
@@ -137,19 +106,18 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
     // 此处实现轮流下棋
     if(row - 1 < 0 || column - 1 < 0 || row - 1 >= judge->CHESSBOARD_SIZE || column - 1 >= judge->CHESSBOARD_SIZE)
         return;
-    if(judge->CheckVaild(row-1, column-1)){
-        timerForPlayer->stop();
-        timerForBar->stop();
-        judge->PlaceAPiece(row-1, column-1);
-
-        if(!judge->runMode) emit turnForBot();
-        if(judge->runMode == 2 || judge->runMode == 3) // 发送 MOVE_OP 以及处理 recData
-            judge->send(NetworkData(OPCODE::MOVE_OP, QString(QChar('A'+row-1))+QString(QChar('1'+column-1)), ""));
-
-        startTimer();
-    }
+    if(judge->CheckVaild(row-1, column-1)) takeTurn(row-1, column-1);
     else sendMessage(2);
 }
+void GameWidget::takeTurn(int row, int col)
+{
+    timerForPlayer->stop();
+    timerForBar->stop();
+    judge->PlaceAPiece(row, col);
+    if(!judge->runMode) emit turnForBot();
+    startTimer();
+}
+
 void GameWidget::updateCB() {repaint();}
 void GameWidget::clickToCloseMB(bool force){
     if(mess){
@@ -175,16 +143,6 @@ void GameWidget::setColorForBar()
                                    "QProgressBar::chunk{"
                                    "border-radius:5px;"
                                    "background: #7acbf5}");
-        /*if((judge->runMode == 2 || judge->runMode == 3) && !judge->curPlayer)
-        {
-            ui->TimeBar->setStyleSheet("QProgressBar{"
-                                       "background:rgba(186,215,233,85);"
-                                       "color:white;"
-                                       "border-radius:5px;}"
-                                       "QProgressBar::chunk{"
-                                       "border-radius:5px;"
-                                       "background:rgba(122,203,245,75)}");
-        }*/
     }
     else // Black
     {
@@ -195,16 +153,6 @@ void GameWidget::setColorForBar()
                                    "QProgressBar::chunk{"
                                    "border-radius:5px;"
                                    "background: #EAACB8}");
-        /*if((judge->runMode == 2 || judge->runMode == 3) && !judge->curPlayer)
-        {
-            ui->TimeBar->setStyleSheet("QProgressBar{"
-                                       "background:rgba(186,215,233,85);"
-                                       "color:white;"
-                                       "border-radius:5px;}"
-                                       "QProgressBar::chunk{"
-                                       "border-radius:5px;"
-                                       "background:hsl(348, 60%, 88%)}");
-        }*/
     }
 }
 void GameWidget::updateBar()
@@ -225,9 +173,6 @@ void GameWidget::paintEvent(QPaintEvent *event)
     // 绘制 demo
     if(judge->CHESSBOARD_SIZE == 28)
         drawDemo(painter);
-
-
-
 
     // 绘制棋子
     for(int i = 0; i < judge->CHESSBOARD_SIZE; i++)
@@ -451,28 +396,8 @@ void GameWidget::startTimer() {
     }
 }
 void GameWidget::botTimeout() {if(judge->curPlayer >= 0) gameWin(0);}
-void GameWidget::playerTimeout_OFFL() {if(judge->curPlayer >= 0) gameLose(0);}
-void GameWidget::playerTimeout_OL()
-{
-    // 发送 TIMEOUT_END_OP
-    if(!judge->curPlayer) // 当前是等待响应的一方，那么对手超时己方胜利
-    {
-        judge->send(NetworkData(OPCODE::TIMEOUT_END_OP, judge->usrnameOL, "Sorry you lose!"));
-        gameWin(1);
-    }
-}
+void GameWidget::playerTimeout() {if(judge->curPlayer >= 0) gameLose(0);}
 
-/*
- * 弹出消息窗口
- * type=0 : player win (online)
- * type=1 : player lose (online)
- * type=2 : invalid position
- * type=3 : player timeout
- * type=4 : bot timeout
- * type=5 : player resign (online / offline)
- * type=6 : remote player resgin (online)
- * type=7 : cannot restart (online)
-*/
 void GameWidget::sendMessage(int type)
 {
     ItemVector step = judge->getStep();
@@ -516,133 +441,11 @@ void GameWidget::sendMessage(int type)
                 break;
         }
     }
-    if(judge->runMode == 2 || judge->runMode == 3)
-    {
-        switch(type)
-        {
-            case 0:
-                mess = new MessageBox(QString("You WIN!\n\n") + judge->oppoOL + QString("\ntime out."), 0, true, this);
-                break;
-            case 1:
-                mess = new MessageBox(QString("TIME'S UP!\n\n") + judge->oppoOL + QString("\nwins."), 0, true, this);
-                break;
-            case 2:
-                mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, false, this);
-                break;
-            case 5:
-                mess = new MessageBox(QString("You resign!\n\n") + judge->oppoOL + QString("\nwins."), 0, true, this);
-                break;
-            case 6:
-                mess = new MessageBox(QString("You WIN!\n\n") + judge->oppoOL + QString("\nresigns."), 0, true, this);
-                break;
-            case 7:
-                mess = new MessageBox(QString("Please resign before\nrestarting the game."), 2000, false, this);
-                break;
-        }
-    }
     mess->show();
 }
 
-void GameWidget::goOL()
-{
-    disconnect(ui->resignButton, &QPushButton::clicked, this, &GameWidget::on_resignButton_clicked_OFFL);
-    disconnect(ui->restartButton, &QPushButton::clicked, this, &GameWidget::on_restartButton_clicked_OFFL);
-    disconnect(timerForPlayer,&QTimer::timeout, this, &GameWidget::playerTimeout_OFFL);
-    connect(ui->resignButton, &QPushButton::clicked, this, &GameWidget::on_resignButton_clicked_OL);
-    connect(ui->restartButton, &QPushButton::clicked, this, &GameWidget::on_restartButton_clicked_OL);
-    connect(timerForPlayer,&QTimer::timeout, this, &GameWidget::playerTimeout_OL);
-
-    // 布局
-    columnX = judge->RIGHT_UP() + (WINDOW_WIDTH - judge->RIGHT_UP()) / 2;
-    columnY = (double)WINDOW_HEIGHT / 20 * 7.5;
-    buttonH = (double)WINDOW_HEIGHT / 31 * 2;
-    buttonW = (double)WINDOW_HEIGHT / 31 * 6;
-    int hisH = (double)WINDOW_HEIGHT / 31 * 6,
-        hisW = (double)WINDOW_HEIGHT / 31 * 8;
-    int sendH = (double)WINDOW_HEIGHT / 25,
-        sendW = (double)WINDOW_HEIGHT / 31 * 2;
-    int inputH = sendH,
-        inputW = hisW - sendW;
-    int X1 = columnX - hisW / 2,
-        Y1 = WINDOW_HEIGHT - judge->LEFT_UP() - hisH - inputH;
-    ui->chatHistory->setGeometry(QRect(QPoint(X1, Y1), QSize(hisW, hisH)));
-    int X2 = X1,
-        Y2 = Y1 + hisH;
-    ui->chatInput->setGeometry(QRect(QPoint(X2, Y2), QSize(inputW, inputH)));
-        X2 += inputW;
-    ui->sendButton->setGeometry(QRect(QPoint(X2, Y2), QSize(sendW, sendH)));
-    deltaY = (double)(Y1 - columnY - 15) / 2;
-    int X3 = columnX - buttonW / 2,
-        Y3 = columnY;
-    ui->resignButton->setGeometry(QRect(QPoint(X3, Y3), QSize(buttonW, buttonH)));
-    int X4 = X3,
-        Y4 = Y3 + deltaY;
-    ui->restartButton->setGeometry(QRect(QPoint(X4, Y4), QSize(buttonW, buttonH)));
-    LOGO_X = columnX - logoBoardW / 2;
-    LOGO_Y = judge->LEFT_UP();
-    int TIME_X = columnX - 100,
-        TIME_Y = (LOGO_Y + logoBoardH + columnY - 10) / 2;
-    ui->TimeBar->setGeometry(QRect(QPoint(TIME_X, TIME_Y), QSize(200,15)));
-
-    ui->saveButton->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
-    ui->loadButton->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
-}
-void GameWidget::goOFFL()
-{
-    disconnect(ui->resignButton, &QPushButton::clicked, this, &GameWidget::on_resignButton_clicked_OL);
-    disconnect(ui->restartButton, &QPushButton::clicked, this, &GameWidget::on_restartButton_clicked_OL);
-    disconnect(timerForPlayer,&QTimer::timeout, this, &GameWidget::playerTimeout_OL);
-    connect(ui->resignButton, &QPushButton::clicked, this, &GameWidget::on_resignButton_clicked_OFFL);
-    connect(ui->restartButton, &QPushButton::clicked, this, &GameWidget::on_restartButton_clicked_OFFL);
-    connect(timerForPlayer,&QTimer::timeout, this, &GameWidget::playerTimeout_OFFL);
-
-    // 布局
-    columnX = judge->RIGHT_UP() + (WINDOW_WIDTH - judge->RIGHT_UP()) / 2;
-    columnY = (double)WINDOW_HEIGHT / 20 * 9;
-    buttonH = (double)WINDOW_HEIGHT / 31 * 2;
-    buttonW = (double)WINDOW_HEIGHT / 31 * 6;
-    deltaY = (double)(judge->RIGHT_UP() - columnY) / 4;
-    int X1 = columnX - buttonW / 2,
-        Y1 = columnY - buttonH / 2;
-    ui->loadButton->setGeometry(QRect(QPoint(X1, Y1), QSize(buttonW, buttonH)));
-    int X2 = X1,
-        Y2 = Y1 + deltaY;
-    ui->saveButton->setGeometry(QRect(QPoint(X2, Y2), QSize(buttonW, buttonH)));
-    int X3 = X1,
-        Y3 = Y2 + deltaY;
-    ui->resignButton->setGeometry(QRect(QPoint(X3, Y3), QSize(buttonW, buttonH)));
-    int X4 = X1,
-        Y4 = Y3 + deltaY;
-    ui->restartButton->setGeometry(QRect(QPoint(X4, Y4), QSize(buttonW, buttonH)));
-    LOGO_X = columnX - logoBoardW / 2;
-    LOGO_Y = judge->LEFT_UP() + 15;
-    int TIME_X = columnX - 100,
-        TIME_Y = (LOGO_Y + logoBoardH + columnY) / 2 - 15;
-    ui->TimeBar->setGeometry(QRect(QPoint(TIME_X, TIME_Y), QSize(200,15)));
-
-    ui->chatHistory->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
-    ui->chatInput->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
-    ui->sendButton->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
-}
-void GameWidget::remoteResign()
-{
-    sendMessage(6);
-    judge->curPlayerBak = judge->curPlayer;
-    judge->curPlayer = -1;
-    timerForPlayer->stop();
-    timerForBar->stop();
-}
-
 // 定义按钮行为
-void GameWidget::on_sendButton_clicked()
-{
-    QString data = ui->chatInput->text();
-    QString s = "<" + judge->usrnameOL + "> : \n" + data;
-    ui->chatHistory->appendPlainText(s);
-    ui->chatInput->setText("");
-    judge->send(NetworkData(OPCODE::CHAT_OP, data, ""));
-}
-void GameWidget::on_restartButton_clicked_OFFL()
+void GameWidget::on_restartButton_clicked()
 {
     clickToCloseMB(true);
     this->close();
@@ -652,8 +455,9 @@ void GameWidget::on_restartButton_clicked_OFFL()
     emit restartSingal(0);
     judge->init();
 }
-void GameWidget::on_resignButton_clicked_OFFL()
+void GameWidget::on_resignButton_clicked()
 {
+    qDebug() << "OFF resign";
     if(judge->curPlayer == -1) return;
     sendMessage(5);
     judge->curPlayerBak = judge->curPlayer;
@@ -661,25 +465,6 @@ void GameWidget::on_resignButton_clicked_OFFL()
     judge->loadState = 'G';
     timerForPlayer->stop();
     timerForBar->stop();
-}
-void GameWidget::on_restartButton_clicked_OL()
-{
-    // 不发送 LEAVE_OP，返回到主界面，相当于重置
-    if(judge->curPlayer != -1) // 棋局尚在进行
-    {
-        sendMessage(7);
-        return;
-    }
-    ui->chatHistory->clear();
-    ui->chatHistory->appendPlainText(QString("Feel free to chat..."));
-    on_restartButton_clicked_OFFL();
-}
-void GameWidget::on_resignButton_clicked_OL()
-{
-    if(judge->curPlayer == -1) return;
-    // 发送 GIVEUP_OP
-    on_resignButton_clicked_OFFL();
-    judge->send(NetworkData(OPCODE::GIVEUP_OP, judge->usrnameOL, ""));
 }
 
 // 存档读档相关编码
@@ -763,7 +548,7 @@ void GameWidget::on_loadButton_clicked()
         if(judge->loadState == 'L')
             gameLose(judge->runMode);
         if(judge->loadState == 'G')
-            on_resignButton_clicked_OFFL();
+            on_resignButton_clicked();
     }
 
     // 重新开始游戏 judge
