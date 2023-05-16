@@ -46,8 +46,8 @@ StartWidget::StartWidget(Judge *j, QWidget *parent) :
     connect(ui->startAsBlack, &QPushButton::clicked, this, &StartWidget::on_startAsBlack_clicked_OFFL);
     connect(ui->startAsWhite, &QPushButton::clicked, this, &StartWidget::on_startAsWhite_clicked_OFFL);
     connect(confirmD, &OptionDialog::OK, this, [&](){
-        if(oppoRole == 1) {sendStartAsWhite(1); on_startAsWhite_clicked_OFFL();}
-        else {sendStartAsBlack(1); on_startAsBlack_clicked_OFFL();}
+        if(oppoRole == 1) {sendStartAsWhite(); on_startAsWhite_clicked_OFFL();}
+        else {sendStartAsBlack(); on_startAsBlack_clicked_OFFL();}
         confirmD->close();
     });
     connect(confirmD, &OptionDialog::NO, this, [&](){
@@ -121,16 +121,14 @@ void StartWidget::goOFFL()
     connect(ui->startAsBlack, &QPushButton::clicked, this, &StartWidget::on_startAsBlack_clicked_OFFL);
     connect(ui->startAsWhite, &QPushButton::clicked, this, &StartWidget::on_startAsWhite_clicked_OFFL);
 }
-void StartWidget::sendStartAsBlack(bool isFeedback)
+void StartWidget::sendStartAsBlack()
 {
     NetworkData d = NetworkData(OPCODE::READY_OP, judge->usrnameOL, "b");
-    if(isFeedback) d = NetworkData(OPCODE::READY_OP, judge->usrnameOL, "");
     judge->send(d);
 }
-void StartWidget::sendStartAsWhite(bool isFeedback)
+void StartWidget::sendStartAsWhite()
 {
     NetworkData d = NetworkData(OPCODE::READY_OP, judge->usrnameOL, "w");
-    if(isFeedback) d = NetworkData(OPCODE::READY_OP, judge->usrnameOL, "");
     judge->send(d);
 }
 void StartWidget::sendReject() {judge->send(NetworkData(OPCODE::REJECT_OP, judge->usrnameOL, ""));}
@@ -169,7 +167,7 @@ void StartWidget::on_startAsBlack_clicked_OL() // 1->black
         awaitD->show();
 
         inviterRole = 1;
-        sendStartAsBlack(0);
+        sendStartAsBlack();
     }
 }
 void StartWidget::on_startAsWhite_clicked_OL() // -1->white
@@ -188,6 +186,6 @@ void StartWidget::on_startAsWhite_clicked_OL() // -1->white
         awaitD->show();
 
         inviterRole = -1;
-        sendStartAsWhite(0);
+        sendStartAsWhite();
     }
 }

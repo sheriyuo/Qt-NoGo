@@ -226,9 +226,6 @@ void GameWidget::paintEvent(QPaintEvent *event)
     if(judge->CHESSBOARD_SIZE == 28)
         drawDemo(painter);
 
-
-
-
     // 绘制棋子
     for(int i = 0; i < judge->CHESSBOARD_SIZE; i++)
         for(int j = 0; j < judge->CHESSBOARD_SIZE; j++)
@@ -238,7 +235,7 @@ void GameWidget::paintEvent(QPaintEvent *event)
                 //if(xxx==i&&yyy==j)
                 {
                     drawWhite(painter, i, j);
-                    //drawheat(painter,i,j);
+                    //drawHeat(painter,i,j);
 
                 }
                 //else
@@ -249,7 +246,7 @@ void GameWidget::paintEvent(QPaintEvent *event)
                 //if(xxx==i&&yyy==j)
                 {
                     drawBlack(painter, i, j);
-                    //drawheat(painter,i,j);
+                    //drawHeat(painter,i,j);
 
                 }
                 //else
@@ -257,15 +254,10 @@ void GameWidget::paintEvent(QPaintEvent *event)
             }
 
         }
-
-
-
-
 }
 
 void GameWidget :: drawChessboard(QPainter &painter)
 {
-
     int number=judge->CHESSBOARD_SIZE;
     double left_up,L;
     left_up=(WINDOW_HEIGHT-CHESSBOARD_LEN)/2;
@@ -289,7 +281,6 @@ void GameWidget :: drawChessboard(QPainter &painter)
 
 void GameWidget::drawWhite(QPainter &painter, double i, double j)
 {
-
     double Size = judge->SQUARE_LEN() * 0.7, Strength = Size / 4;
 
     double xi = judge->LEFT_UP() + ( j - 0.35 ) * judge->SQUARE_LEN();
@@ -324,7 +315,6 @@ void GameWidget::drawWhite(QPainter &painter, double i, double j)
 
 void GameWidget::drawBlack(QPainter &painter, double i, double j)
 {
-
     double Size = judge->SQUARE_LEN() * 0.7, Strength = Size / 4;
     double xi = judge->LEFT_UP() + ( j - 0.35 ) * judge->SQUARE_LEN();
     double yi = judge->LEFT_UP() + ( i - 0.35 ) * judge->SQUARE_LEN();
@@ -355,9 +345,9 @@ void GameWidget::drawBlack(QPainter &painter, double i, double j)
         painter.drawEllipse(xi, yi, Size, Size);
     }
 }
-void GameWidget::drawheat(QPainter &painter,double i, double j)
-{
 
+void GameWidget::drawHeat(QPainter &painter,double i, double j)
+{
     double Size = judge->SQUARE_LEN() * 0.2, Strength = Size / 4;
     double xi = judge->LEFT_UP() + ( j - 0.1 ) * judge->SQUARE_LEN();
     double yi = judge->LEFT_UP() + ( i - 0.1 ) * judge->SQUARE_LEN();

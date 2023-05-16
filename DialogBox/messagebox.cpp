@@ -27,6 +27,7 @@ MessageBox::MessageBox(QString text, int tim, bool pendingClos, QWidget *parent)
 
 MessageBox::~MessageBox()
 {
+    qDebug() << "MessageBox Deconstruction";
     delete this;
 }
 

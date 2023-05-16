@@ -67,7 +67,7 @@ private:
     void drawChessboard(QPainter &painter);
     void drawBlack(QPainter &painter, double px, double py);
     void drawWhite(QPainter &painer, double px, double py);
-    void drawheat(QPainter &painer, double px, double py);
+    void drawHeat(QPainter &painer, double px, double py);
 
 
     void drawDemo(QPainter &painter);

@@ -65,6 +65,7 @@ void Judge::init()
     savedStep.clear();
     blockCnt = 0;
     curPlayer = 0;
+    hasSentREA = hasSentTIM = hasSentGIV = false;
     logger->log(Logger::Level::Debug, "database initialized");
 }
 
@@ -255,6 +256,27 @@ void Judge::updateStep(int newPlayerRole, int newRunMode, ItemVector newStep, ch
 }
 
 // 网络库相关
+void Judge::send(NetworkData d)
+{
+    if(runMode != 2 && runMode != 3) return;
+    if(runMode == 2)
+    {
+        loggingSendReceive(d, (lastClient->peerAddress()).toString(), 1);
+        server->send(lastClient, d);
+    }
+    else
+    {
+        loggingSendReceive(d, IP, 1);
+        socket->send(d);
+    }
+    hasSentREA = hasSentTIM = hasSentGIV = false;
+    switch(d.op)
+    {
+    case OPCODE::READY_OP: hasSentREA = true; break;
+    case OPCODE::GIVEUP_END_OP: hasSentGIV = true; break;
+    case OPCODE::TIMEOUT_END_OP: hasSentTIM = true; break;
+    }
+}
 bool Judge::isConnected()
 {
     return (runMode == 2 && !!lastClient) || (runMode == 3 && socketConnected);
@@ -285,6 +307,7 @@ void Judge::clearLink(bool isPassive)
         }
         socketConnected = false;
     }
+    hasSentREA = hasSentTIM = hasSentGIV = false;
     oppoOL = "";
 }
 void Judge::connect()
@@ -325,14 +348,18 @@ void Judge::recData(NetworkData d)
     {
     case OPCODE::READY_OP:
         oppoOL = d.data1;
-        if(d.data2 != ""){
+        if(!hasSentREA){
             emit READY_OP(d);
             if(curPlayer == -1) send(NetworkData(OPCODE::REJECT_OP, "", ""));
         }
-        else emit READY_OP_ForInviter();
+        else{
+            emit READY_OP_ForInviter();
+            hasSentREA = false;
+        }
         break;
     case OPCODE::REJECT_OP:
         emit REJECT_OP();
+        hasSentREA = false;
         break;
     case OPCODE::MOVE_OP:
         row = QChar(d.data1[0]).unicode()-'A', col = QChar(d.data1[1]).unicode()-'1';
@@ -343,18 +370,19 @@ void Judge::recData(NetworkData d)
         if(d.data1 != "") emit CHAT_OP(d);
         break;
     case OPCODE::TIMEOUT_END_OP:
-        if(d.data2 != "")
-        {
+        if(!hasSentTIM){
             send(NetworkData(OPCODE::TIMEOUT_END_OP, usrnameOL, ""));
             emit TIMEOUT_END_OP();
         }
+        else hasSentTIM = false;
         break;
     case OPCODE::GIVEUP_OP:
         send(NetworkData(OPCODE::GIVEUP_END_OP, usrnameOL, "sorry you resign"));
         emit GIVEUP_OP();
         break;
     case OPCODE::GIVEUP_END_OP:
-        if(d.data2 != "") send(NetworkData(OPCODE::GIVEUP_END_OP, usrnameOL, ""));
+        if(!hasSentGIV) send(NetworkData(OPCODE::GIVEUP_END_OP, usrnameOL, ""));
+        else hasSentGIV = false;
         break;
     case OPCODE::LEAVE_OP:
         clearLink(true);
@@ -364,20 +392,6 @@ void Judge::recData(NetworkData d)
         send(NetworkData(OPCODE::SUICIDE_END_OP, usrnameOL, ""));
         emit SUICIDE_END_OP();
         break;
-    }
-}
-void Judge::send(NetworkData d)
-{
-    if(runMode != 2 && runMode != 3) return;
-    if(runMode == 2)
-    {
-        loggingSendReceive(d, (lastClient->peerAddress()).toString(), 1);
-        server->send(lastClient, d);
-    }
-    else
-    {
-        loggingSendReceive(d, IP, 1);
-        socket->send(d);
     }
 }
 

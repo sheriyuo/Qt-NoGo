@@ -129,6 +129,7 @@ private:
     QTcpSocket *lastClient = nullptr;
     NetworkSocket *socket;
     bool socketConnected = false;
+    bool hasSentREA = false, hasSentTIM = false, hasSentGIV = false;
 
     // 生成日志
     Logger *logger;

@@ -45,8 +45,8 @@ public slots:
 
 private:
     void paintEvent(QPaintEvent *event) override;
-    void sendStartAsBlack(bool isFeedback); // 联机
-    void sendStartAsWhite(bool isFeedback); // 联机
+    void sendStartAsBlack(); // 联机
+    void sendStartAsWhite(); // 联机
     void sendReject(); // 联机被拒
 
     Ui::StartWidget *ui;
