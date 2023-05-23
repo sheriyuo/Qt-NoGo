@@ -44,8 +44,12 @@ private:
     int curBoard[29][29];
     bool isEmpty[29][29], dfsVis[29][29];
 
-    int finalx, finaly; // 最终决定的落子
+    int finalx, finaly;
+    double finalv; // 最终决定的落子
     std::shared_ptr<Judge> judge;
+
+    int maxDep;
+    ItemVector chooseVec;
 };
 
 #endif // BOT_H
