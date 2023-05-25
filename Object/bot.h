@@ -11,7 +11,7 @@
 *   @brief: 声明 Bot 类，
 *           控制下棋过程中的 AI 逻辑
 *   @author: sheriyuo, ce-amtic
-*   @time: 2023/5/16
+*   @time: 2023/5/25
 */
 
 class Bot : public QThread
@@ -36,20 +36,28 @@ private:
 
     void makeRandomMove();
     double judgeBoard();
-    double alphaBeta(int x, int y, double a, double b, int depth); // MinMax 搜索
+    double alphaBeta(double a, double b, int depth); // MinMax 搜索
+    void readFromJudge();
 
-    const int dx[4] = {0, 1, 0, -1}, dy[4] = {1, 0 ,-1, 0};
+    const int dx[8] = {0, 1, 0, -1}, dy[8] = {1, 0 ,-1, 0};
     bool checkBoard(int x, int y); // 可撤销的判断
     void dfsBoard(int x, int y);
     int curBoard[29][29];
     bool isEmpty[29][29], dfsVis[29][29];
+
+    int CurColor(); // 当前落棋颜色
+    bool IsInBoard(int x, int y);
+    int playerRole; // -1->white 1->black
+    int curPlayer; // 0->bot 1->player -1->game over
+    int CHESSBOARD_SIZE;
+    int pointChecked;
 
     int finalx, finaly;
     double finalv; // 最终决定的落子
     std::shared_ptr<Judge> judge;
 
     int maxDep;
-    ItemVector chooseVec;
+    ItemVector chooseVec, pointVec[5];
 };
 
 #endif // BOT_H
