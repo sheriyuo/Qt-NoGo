@@ -49,6 +49,7 @@ public slots:
     void on_sendButton_clicked(); // 链接 send 按钮的行为
 
     void startTimer();    // 当对局开始时，无论谁先手（机器下第一个棋子认为不需要时间），都打开玩家的计时器
+    void stopTimer();
     void playerTimeout_OFFL(); // 玩家超时的槽函数，用于链接计时器 (offline)
     void playerTimeout_OL();
     void botTimeout();    // bot超时的槽函数，用于链接计时器
@@ -62,14 +63,11 @@ public slots:
     void remoteResign();
 
 private:
-    Ui::GameWidget *ui;
     void paintEvent(QPaintEvent *event) override; // 界面绘制
     void drawChessboard(QPainter &painter);
     void drawBlack(QPainter &painter, double px, double py);
     void drawWhite(QPainter &painer, double px, double py);
     void drawHeat(QPainter &painer, double px, double py);
-
-
     void drawDemo(QPainter &painter);
     void setColorForBar(); // 计时器的颜色与当前执棋颜色一致
 
@@ -93,11 +91,16 @@ private:
     */
     void sendMessage(int type);
 
+    QPixmap logoImg;
+    time_t basetime;
+    QTimer *timerForPlayer;
+    QTimer *timerForBar;
+
     Judge *judge;
     Bot *bot;
-    MessageBox *mess = nullptr;
-    int columnX, columnY, buttonW, buttonH;
-    QPixmap logoImg;
+    MessageBox *mess;
+    Ui::GameWidget *ui;
+    int columnX, columnY, buttonW, buttonH, deltaY, LOGO_X, LOGO_Y, logoBoardW, logoBoardH; // 绘图用
 
     // 存储一个临时的存档
     char strState;

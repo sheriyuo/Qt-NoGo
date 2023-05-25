@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QDebug>
+#include <QThread>
 #include "Object/judge.h"
 
 /*
@@ -13,7 +14,7 @@
 *   @time: 2023/5/16
 */
 
-class Bot : public QObject
+class Bot : public QThread
 {
     Q_OBJECT
 
@@ -21,13 +22,12 @@ public:
     Bot (Judge *j, QObject *parent = nullptr);
     ~Bot();
 
+    void run(); // run 函数是 bot 作为独立线程的入口, 通过 bot->start() 来启动这个独立线程, run 函数本身相当于 makeAMove
+
 signals:
     void timeout();
 
 public slots:
-
-    void makeFirstMove(int player);
-    void makeAMove();
 
 private:
     double alpha = 0.3, beta = 0.7;

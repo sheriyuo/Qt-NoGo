@@ -50,7 +50,7 @@ Judge::Judge(QObject *parent) :
 Judge::~Judge()
 {
     logger->log(Logger::Level::Debug, "database destructed");
-    delete this;
+    // delete this;
 }
 
 void Judge::init()

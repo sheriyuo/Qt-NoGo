@@ -9,7 +9,7 @@
 */
 
 Bot::Bot(Judge *j, QObject *parent) :
-    QObject(parent),
+    QThread(parent),
     judge(j)
 {
     // none
@@ -17,16 +17,7 @@ Bot::Bot(Judge *j, QObject *parent) :
 
 Bot::~Bot()
 {
-    delete this;
-}
-
-void Bot::makeFirstMove(int player)
-{
-    if(player == -1) // bot 先手
-    {
-        if(judge->runMode == 0) makeAMove();
-        if(judge->runMode == 1) judge->curPlayer ^= 1;
-    }
+    // delete this;
 }
 
 void Bot::dfsBoard(int x, int y)
@@ -144,7 +135,7 @@ double Bot::alphaBeta(int x, int y, double a, double b, int depth)
         return a;
     }
 }
-void Bot::makeAMove()
+void Bot::run()
 {
     searchStartTime = clock(); // 计时器
     srand(time(0));

@@ -12,11 +12,19 @@
 *   @brief: 声明 MessageBox 类，
 *           在对局中弹出提示，或结算信息
 *
-*           构造方法
-*           > MessageBox(QString text, int tim, bool pendingClos, QWidget *parent)
-*           > 关闭方法有手动点击消息框和超时关闭
-*           > tim : 超时设置，设置为 0 时， 必须要手动点击消息框才可关闭
-*           > pendingClos : 强制显示 3s 不能被关闭
+*           constructor:
+*           > MessageBox(QWidget *parent = nullptr)
+*
+*           methods:
+*           > void set(QString text, int tim, bool pendingClos)
+*             > text : 显示的文字
+*             > tim : 超时自动关闭，设置为 0 时， 必须要手动点击消息框才可关闭
+*             > pendingClos : 强制 3s 内不能被关闭
+*           > bool clickToClose()
+*             > 模拟鼠标点击关闭，受 pendingClose 影响
+*           > void timeUpClose()
+*             > 超时关闭，不受 pendingClose 影响
+*
 *   @author: sheriyuo, ce-amtic, duality314
 *   @time: 2023/5/1
 *
@@ -28,12 +36,13 @@ class MessageBox : public QLabel
     Q_OBJECT
 
 public:
-    MessageBox (QString text, int tim,  bool pendingClose, QWidget *parent = nullptr);
+    MessageBox (QWidget *parent = nullptr);
     ~MessageBox();
 
 signals:
 
 public slots:
+    void set(QString text, int tim, bool pendingClos);
     bool clickToClose();
     void timeUpClose();
 

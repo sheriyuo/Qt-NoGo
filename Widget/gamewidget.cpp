@@ -9,15 +9,6 @@
 *   @time: 2023/5/1
 */
 
-/* 玩家的计时器
-将 bot 的计时器内置于 class Bot 中 */
-static QTimer *timerForPlayer;
-static QTimer *timerForBar;
-static time_t basetime;
-// static QTimer *timerForBot;
-
-static int deltaY, LOGO_X, LOGO_Y, logoBoardW, logoBoardH;
-
 GameWidget::GameWidget(Judge *j, Bot *b, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::GameWidget),
@@ -82,16 +73,19 @@ GameWidget::GameWidget(Judge *j, Bot *b, QWidget *parent) :
     ui->sendButton->setGeometry(QRect(QPoint(0, 0), QSize(0, 0)));
 
     // 链接计时器
+    mess = new MessageBox(this);
+    mess->close();
     timerForPlayer = new QTimer;
     timerForBar = new QTimer;
 
     connect(this, &GameWidget::mousePress, this, [&](){clickToCloseMB();});
-    connect(timerForPlayer,&QTimer::timeout, this, &GameWidget::playerTimeout_OFFL);
-    connect(timerForBar,&QTimer::timeout,this,&GameWidget::updateBar);
-    connect(bot, &Bot::timeout, this, &GameWidget::botTimeout);
     connect(ui->resignButton, &QPushButton::clicked, this, &GameWidget::on_resignButton_clicked_OFFL);
     connect(ui->restartButton, &QPushButton::clicked, this, &GameWidget::on_restartButton_clicked_OFFL);
     connect(ui->chatInput, SIGNAL(returnPressed()), ui->sendButton,SIGNAL(clicked()), Qt::UniqueConnection);
+    connect(timerForPlayer,&QTimer::timeout, this, &GameWidget::playerTimeout_OFFL);
+    connect(timerForBar,&QTimer::timeout,this,&GameWidget::updateBar);
+    connect(bot, &Bot::timeout, this, &GameWidget::botTimeout);
+    connect(bot, &QThread::finished, this, [&](){startTimer();});
     connect(judge, &Judge::GIVEUP_OP, this, &GameWidget::remoteResign);
     connect(judge, &Judge::TIMEOUT_END_OP, this, [&](){gameLose(1);});
     connect(judge, &Judge::SUICIDE_END_OP, this, [&](){gameWin(1);});
@@ -110,6 +104,7 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
 {
     emit mousePress();
     if(judge->curPlayer == -1) return; // 判断游戏结束
+    if(!judge->runMode && bot->isRunning()) return; // 等待 bot 落子
     if((judge->runMode == 2 || judge->runMode == 3) && !judge->curPlayer) return; // 判断当前局
 
     double x = event->position().x(), y = event->position().y();
@@ -138,8 +133,6 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
     if(row - 1 < 0 || column - 1 < 0 || row - 1 >= judge->CHESSBOARD_SIZE || column - 1 >= judge->CHESSBOARD_SIZE)
         return;
     if(judge->CheckVaild(row-1, column-1)){
-        timerForPlayer->stop();
-        timerForBar->stop();
         judge->PlaceAPiece(row-1, column-1);
 
         if(!judge->runMode) emit turnForBot();
@@ -152,15 +145,8 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
 }
 void GameWidget::updateCB() {repaint();}
 void GameWidget::clickToCloseMB(bool force){
-    if(mess){
-        if(force){
-            mess->timeUpClose();
-            mess = nullptr;
-        }
-        else if(mess->clickToClose()){
-            mess = nullptr;
-        }
-    }
+    if(force) mess->timeUpClose();
+    else mess->clickToClose();
 }
 
 void GameWidget::setColorForBar()
@@ -175,16 +161,6 @@ void GameWidget::setColorForBar()
                                    "QProgressBar::chunk{"
                                    "border-radius:5px;"
                                    "background: #7acbf5}");
-        /*if((judge->runMode == 2 || judge->runMode == 3) && !judge->curPlayer)
-        {
-            ui->TimeBar->setStyleSheet("QProgressBar{"
-                                       "background:rgba(186,215,233,85);"
-                                       "color:white;"
-                                       "border-radius:5px;}"
-                                       "QProgressBar::chunk{"
-                                       "border-radius:5px;"
-                                       "background:rgba(122,203,245,75)}");
-        }*/
     }
     else // Black
     {
@@ -195,23 +171,14 @@ void GameWidget::setColorForBar()
                                    "QProgressBar::chunk{"
                                    "border-radius:5px;"
                                    "background: #EAACB8}");
-        /*if((judge->runMode == 2 || judge->runMode == 3) && !judge->curPlayer)
-        {
-            ui->TimeBar->setStyleSheet("QProgressBar{"
-                                       "background:rgba(186,215,233,85);"
-                                       "color:white;"
-                                       "border-radius:5px;}"
-                                       "QProgressBar::chunk{"
-                                       "border-radius:5px;"
-                                       "background:hsl(348, 60%, 88%)}");
-        }*/
     }
 }
 void GameWidget::updateBar()
 {
     double value;
     value=(clock()-basetime);
-    ui->TimeBar->setValue(1000-value/PLAYER_TIMEOUT);
+    if(!bot->isRunning()) ui->TimeBar->setValue(1000-value/PLAYER_TIMEOUT);
+    else ui->TimeBar->setValue(1000-value/BOT_TIMEOUT);
     repaint();
 }
 
@@ -232,25 +199,11 @@ void GameWidget::paintEvent(QPaintEvent *event)
         {
             if(this->judge->GridPoint(i, j) == -1)
             {
-                //if(xxx==i&&yyy==j)
-                {
-                    drawWhite(painter, i, j);
-                    //drawHeat(painter,i,j);
-
-                }
-                //else
-                    //drawWhite(painter, i, j);
+                drawWhite(painter, i, j);
             }
             if(this->judge->GridPoint(i, j) == 1)
             {
-                //if(xxx==i&&yyy==j)
-                {
-                    drawBlack(painter, i, j);
-                    //drawHeat(painter,i,j);
-
-                }
-                //else
-                   drawBlack(painter, i, j);
+                drawBlack(painter, i, j);
             }
 
         }
@@ -429,10 +382,13 @@ void GameWidget::gameWin(int type)
     judge->curPlayer = -1;
     judge->loadState = 'W';
 }
-void GameWidget::startTimer() {
-    setColorForBar();
+void GameWidget::stopTimer() {
     timerForPlayer->stop();
     timerForBar->stop();
+}
+void GameWidget::startTimer() {
+    setColorForBar();
+    stopTimer();
     if(judge->curPlayer >= 0)
     {
         timerForPlayer->start(PLAYER_TIMEOUT * 1000);
@@ -476,16 +432,16 @@ void GameWidget::sendMessage(int type)
         switch(type)
         {
             case 2:
-                mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, false, this);
+                mess->set(QString("You cannot place a \npiece there!"), 2000, false);
                 break;
             case 3:
-                mess = new MessageBox(QString("TIME'S UP! You LOSE!")+QString("\n\nTotal step : ")+ssteps, 0, true, this);
+                mess->set(QString("TIME'S UP! You LOSE!")+QString("\n\nTotal step : ")+ssteps, 0, true);
                 break;
             case 4:
-                mess = new MessageBox(QString("Bot failed to make\na move.\nYou WIN"), 0, true, this);
+                mess->set(QString("Bot failed to make\na move.\nYou WIN"), 0, true);
                 break;
             case 5:
-                mess = new MessageBox(QString("You Resign!")+QString("\n\nTotal step : ")+ssteps, 0, true, this);
+                mess->set(QString("You Resign!")+QString("\n\nTotal step : ")+ssteps, 0, true);
                 break;
         }
     }
@@ -494,15 +450,15 @@ void GameWidget::sendMessage(int type)
         switch(type)
         {
             case 2:
-                mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, false, this);
+                mess->set(QString("You cannot place a \npiece there!"), 2000, false);
                 break;
             case 3:
-                if(judge->curPlayerBak) mess = new MessageBox(QString("TIME'S UP! Player1 LOSE!>")+QString("\n\nTotal step : "+ssteps), 0, true, this);
-                else mess = new MessageBox(QString("TIME'S UP! Player2 LOSE!")+QString("\n\nTotal step : "+ssteps), 0, true, this);
+                if(judge->curPlayerBak) mess->set(QString("TIME'S UP! Player1 LOSE!>")+QString("\n\nTotal step : "+ssteps), 0, true);
+                else mess->set(QString("TIME'S UP! Player2 LOSE!")+QString("\n\nTotal step : "+ssteps), 0, true);
                 break;
             case 5:
-                if(judge->curPlayerBak) mess = new MessageBox(QString("Player1 Resign!")+QString("\n\nTotal step : "+ssteps), 0, true, this);
-                else mess = new MessageBox(QString("Player2 Resign!")+QString("\n\nTotal step : ")+ssteps, 0, true, this);
+                if(judge->curPlayerBak) mess->set(QString("Player1 Resign!")+QString("\n\nTotal step : "+ssteps), 0, true);
+                else mess->set(QString("Player2 Resign!")+QString("\n\nTotal step : ")+ssteps, 0, true);
                 break;
         }
     }
@@ -511,22 +467,22 @@ void GameWidget::sendMessage(int type)
         switch(type)
         {
             case 0:
-                mess = new MessageBox(QString("You WIN!\n\n") + judge->oppoOL + QString("\ntime out."), 0, true, this);
+                mess->set(QString("You WIN!\n\n") + judge->oppoOL + QString("\ntime out."), 0, true);
                 break;
             case 1:
-                mess = new MessageBox(QString("TIME'S UP!\n\n") + judge->oppoOL + QString("\nwins."), 0, true, this);
+                mess->set(QString("TIME'S UP!\n\n") + judge->oppoOL + QString("\nwins."), 0, true);
                 break;
             case 2:
-                mess = new MessageBox(QString("You cannot place a \npiece there!"), 2000, false, this);
+                mess->set(QString("You cannot place a \npiece there!"), 2000, false);
                 break;
             case 5:
-                mess = new MessageBox(QString("You resign!\n\n") + judge->oppoOL + QString("\nwins."), 0, true, this);
+                mess->set(QString("You resign!\n\n") + judge->oppoOL + QString("\nwins."), 0, true);
                 break;
             case 6:
-                mess = new MessageBox(QString("You WIN!\n\n") + judge->oppoOL + QString("\nresigns."), 0, true, this);
+                mess->set(QString("You WIN!\n\n") + judge->oppoOL + QString("\nresigns."), 0, true);
                 break;
             case 7:
-                mess = new MessageBox(QString("Please resign before\nrestarting the game."), 2000, false, this);
+                mess->set(QString("Please resign before\nrestarting the game."), 2000, false);
                 break;
         }
     }
@@ -619,8 +575,7 @@ void GameWidget::remoteResign()
     sendMessage(6);
     judge->curPlayerBak = judge->curPlayer;
     judge->curPlayer = -1;
-    timerForPlayer->stop();
-    timerForBar->stop();
+    stopTimer();
 }
 
 // 定义按钮行为
@@ -636,9 +591,8 @@ void GameWidget::on_restartButton_clicked_OFFL()
 {
     clickToCloseMB(true);
     this->close();
-
-    timerForPlayer->stop();
-    timerForBar->stop();
+    bot->terminate();
+    stopTimer();
     emit restartSingal(0);
     judge->init();
 }
@@ -649,8 +603,7 @@ void GameWidget::on_resignButton_clicked_OFFL()
     judge->curPlayerBak = judge->curPlayer;
     judge->curPlayer = -1;
     judge->loadState = 'G';
-    timerForPlayer->stop();
-    timerForBar->stop();
+    stopTimer();
 }
 void GameWidget::on_restartButton_clicked_OL()
 {

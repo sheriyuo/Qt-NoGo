@@ -104,7 +104,7 @@ SettingDialog::SettingDialog(Judge *j, QWidget *parent) :
 
 SettingDialog::~SettingDialog()
 {
-    delete this;
+    qDebug() << "SettingDialog Deconstruction";
 }
 
 void SettingDialog::autoFill()

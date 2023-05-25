@@ -9,7 +9,7 @@ Logger::Logger(QObject *parent) :
 }
 Logger::~Logger()
 {
-    delete this;
+    // delete this;
 }
 
 void Logger::log(Level level, const QString &message)

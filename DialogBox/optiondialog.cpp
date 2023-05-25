@@ -34,7 +34,7 @@ OptionDialog::OptionDialog(QString m, int type, QWidget *parent) :
 
 OptionDialog::~OptionDialog()
 {
-    delete this;
+    qDebug() << "OptionDialog Deconstruction";
 }
 
 void OptionDialog::paintEvent(QPaintEvent *event)

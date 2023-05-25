@@ -12,7 +12,7 @@
 #include "Object/logger.h"
 
 #define PLAYER_TIMEOUT 30  // s
-#define BOT_TIMEOUT 3      // s
+#define BOT_TIMEOUT 5      // s
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
@@ -67,7 +67,8 @@ public:
     void updateStep(int newCurPlayer, int newRunMode, ItemVector newStep, char newState); // 更新记录步数并更改棋局
 
     int playerRole; // -1->white 1->black
-    int curPlayer, curPlayerBak; // 0->bot 1->player -1->game over
+    int curPlayer; // 0->bot 1->player -1->game over
+    int curPlayerBak;
     int CHESSBOARD_SIZE; // 外棋盘的边长
     int runMode;  // 0->PVE  1->PVP  2->Server(PVPOL)  3->Client(PVPOL)
     char loadState; // G->Resign W->Win L->Timeout
