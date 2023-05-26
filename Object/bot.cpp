@@ -139,7 +139,7 @@ double Bot::alphaBeta(double a, double b, int depth)
     if((curTime - searchStartTime) / (BOT_TIMEOUT * 1000) > 0.85)
         return depth & 1 ? b : a; // 判断超时
     curPlayer = depth & 1;
-    if(depth == 3 + (chooseVec.size() < 50) + (chooseVec.size() < 30) + (chooseVec.size() < 20) )
+    if(depth == 3 + (chooseVec.size() < 50) + (chooseVec.size() < 35) + (chooseVec.size() < 25) + (chooseVec.size() < 15))
         return judgeBoard();
     if(depth & 1)
     {
@@ -204,7 +204,7 @@ void Bot::run()
     std::random_shuffle(chooseVec.begin(), chooseVec.end());
 
     finalx = finaly = finalv = -1;
-    alphaBeta(0.25, 0.74, 0);
+    alphaBeta(0.32, 0.67, 0);
     curPlayer = 0;
     qDebug() << pointChecked << "<->" << chooseVec.size() << " " << judgeBoard();
     checkBoard(finalx, finaly);
