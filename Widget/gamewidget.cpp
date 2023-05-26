@@ -661,6 +661,8 @@ void GameWidget::on_restartButton_clicked_OFFL()
     autoControl->setToggled(false);
     autoPlayer->terminate();
     bot->terminate();
+    bot->init();
+    autoPlayer->init();
 
     stopTimer();
     emit restartSingal(0);
@@ -673,6 +675,8 @@ void GameWidget::on_resignButton_clicked_OFFL()
     autoControl->setToggled(false);
     autoPlayer->terminate();
     bot->terminate();
+    bot->init();
+    autoPlayer->init();
 
     sendMessage(5);
     judge->curPlayerBak = judge->curPlayer;
@@ -770,6 +774,8 @@ void GameWidget::on_loadButton_clicked()
 
     stringToData();
     judge->updateStep(dataStr[0] - '1', dataStr[2] - '0', dataVec, strState);
+    bot->init();
+    autoPlayer->init();
     // 理论上，没有判断非法 .dat
 
     startTimer(); // 重置计时器
