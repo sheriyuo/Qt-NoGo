@@ -43,14 +43,16 @@ private:
     bool checkBoard(int x, int y); // 可撤销的判断
     void dfsBoard(int x, int y);
     int curBoard[29][29];
-    bool isEmpty[29][29], dfsVis[29][29];
+    unsigned int dfsVis[29][29];
+    bool isEmpty[29][29];
 
     int CurColor(); // 当前落棋颜色
     bool IsInBoard(int x, int y);
     int playerRole; // -1->white 1->black
-    int curPlayer; // 0->bot 1->player -1->game over
+    int curPlayer, curPlayerBak; // 0->bot 1->player -1->game over
     int CHESSBOARD_SIZE;
     int pointChecked;
+    unsigned int dfsBoardTime;
 
     int finalx, finaly;
     double finalv; // 最终决定的落子

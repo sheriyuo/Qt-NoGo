@@ -12,7 +12,6 @@ Bot::Bot(Judge *j, QObject *parent) :
     QThread(parent),
     judge(j)
 {
-    // none
 }
 
 Bot::~Bot()
@@ -27,25 +26,30 @@ bool Bot::IsInBoard(int x, int y)
 
 int Bot::CurColor() // 当前落棋颜色
 {
-    return curPlayer == 1 ? playerRole : -playerRole;
+    return curPlayer == (1 ^ curPlayerBak) ? playerRole : -playerRole;
 }
 
 void Bot::readFromJudge() // 从 judge 类读入数据
 {
+    dfsBoardTime = 0;
     curPlayer = judge->curPlayer;
+    curPlayerBak = curPlayer;
     playerRole = judge->playerRole;
     CHESSBOARD_SIZE = judge->CHESSBOARD_SIZE;
 }
 
 void Bot::dfsBoard(int x, int y)
 {
-    dfsVis[x][y] = 1;
+    dfsVis[x][y] = dfsBoardTime;
     for(int i = 0; i < 4; i++)
     {
         int xx = x + dx[i], yy = y + dy[i]; // 枚举相邻点
-        if(!IsInBoard(xx, yy)) continue; // 判断边界条件
-        if(!curBoard[xx][yy]) isEmpty[xx][yy] = 1;
-        else if(curBoard[xx][yy] == curBoard[x][y] && !dfsVis[xx][yy]) dfsBoard(xx, yy);
+        if(!IsInBoard(xx, yy))
+            continue; // 判断边界条件
+        if(!curBoard[xx][yy])
+            isEmpty[xx][yy] = 1;
+        else if(curBoard[xx][yy] == curBoard[x][y] && dfsVis[xx][yy] != dfsBoardTime)
+            dfsBoard(xx, yy);
     }
 }
 
@@ -53,28 +57,31 @@ bool Bot::checkBoard(int x, int y)
 {
     if(curBoard[x][y]) return false;
     int Allspace = 0;
-    memset(dfsVis, 0, sizeof(dfsVis));
+    dfsBoardTime ++;
     for(int i = 0; i < 4; i++)
     {
         int xx = x + dx[i], yy = y + dy[i]; // 枚举相邻点
-        if(!IsInBoard(xx, yy)) continue; // 判断边界条件
+        if(!IsInBoard(xx, yy))
+            continue; // 判断边界条件
         if(!curBoard[xx][yy])
         {
             Allspace ++;
             continue;
         }
-        else if(!dfsVis[xx][yy])// 同色和异色的连通块
+        else if(dfsVis[xx][yy] != dfsBoardTime)// 同色和异色的连通块
         {
             memset(isEmpty, 0, sizeof(isEmpty));
-            dfsVis[x][y] = 1;
+            dfsVis[x][y] = dfsBoardTime;
             isEmpty[x][y] = 1;
             dfsBoard(xx, yy);
             int space = 0;
             for(int x = 0; x < CHESSBOARD_SIZE; x++)
                 for(int y = 0; y < CHESSBOARD_SIZE; y++)
                     space += isEmpty[x][y];
-            if(curBoard[xx][yy] != CurColor() && space == 1) return 0;
-            if(curBoard[xx][yy] == CurColor()) Allspace += space - 1;
+            if(curBoard[xx][yy] != CurColor() && space == 1)
+                return 0;
+            if(curBoard[xx][yy] == CurColor())
+                Allspace += space - 1;
         }
     }
    //qDebug() << x << "," << y << "->" <<curPlayer << " " << CurColor() <<" " << Allspace <<  "\n";
@@ -101,22 +108,26 @@ double Bot::judgeBoard() // 估价函数判断当前局面
                 {
                     int isEye = 1;
                     for(int i = 0; i < 4; i++)
-                    if(IsInBoard(x + dx[i], y + dy[i])) isEye &= curBoard[x + dx[i]][y + dy[i]] == -CurColor();
+                        if(IsInBoard(x + dx[i], y + dy[i]))
+                            isEye &= curBoard[x + dx[i]][y + dy[i]] == -CurColor();
                     botValid += 1 + isEye;
                 }
                 else
                 {
                     int isEye = 1;
                     for(int i = 0; i < 4; i++)
-                    if(IsInBoard(x + dx[i], y + dy[i])) isEye &= curBoard[x + dx[i]][y + dy[i]] == CurColor();
+                        if(IsInBoard(x + dx[i], y + dy[i]))
+                            isEye &= curBoard[x + dx[i]][y + dy[i]] == CurColor();
                     rivalValid += 1 + isEye;
                 }
             }
         }
     // 计算 bot 能走的格数
 
-    if(!botValid && !rivalValid) return 0.5; // 无法判断的情况
-    if(!rivalValid) return botValid ? 0.5 + 0.5 * allPoint / pow(CHESSBOARD_SIZE, 2) : 0.5;
+    if(!botValid && !rivalValid)
+        return 0.5; // 无法判断的情况
+    if(!rivalValid)
+        return botValid ? 0.5 + 0.5 * allPoint / pow(CHESSBOARD_SIZE, 2) : 0.5;
     // 设 botvalid = x, rivalValid = y, allPoint = z, CHESSBOARD_SIZE = k, 估价为 1-2^(-sqrt(x/y)^(0.5+0.5*z/(k*k)))
     return 1 - pow(2, -1.0 * pow(sqrt(1.0 * botValid / rivalValid), 0.5 + 0.5 * allPoint / pow(CHESSBOARD_SIZE, 2)));
 }
@@ -125,9 +136,10 @@ double Bot::judgeBoard() // 估价函数判断当前局面
 double Bot::alphaBeta(double a, double b, int depth)
 {
     time_t curTime = clock();
-    if((curTime - searchStartTime) / (BOT_TIMEOUT * 1000) > 0.9) return depth & 1 ? b : a; // 判断超时
+    if((curTime - searchStartTime) / (BOT_TIMEOUT * 1000) > 0.85)
+        return depth & 1 ? b : a; // 判断超时
     curPlayer = depth & 1;
-    if(depth == 3 + (chooseVec.size() < 60) + (chooseVec.size() < 45) + (chooseVec.size() < 30))
+    if(depth == 3 + (chooseVec.size() < 50) + (chooseVec.size() < 30) + (chooseVec.size() < 20) )
         return judgeBoard();
     if(depth & 1)
     {
@@ -142,7 +154,8 @@ double Bot::alphaBeta(double a, double b, int depth)
                 curBoard[xx][yy] = 0;
                 if(a >= b) break;
             }
-        if(!op) return judgeBoard(); // 叶子节点返回估价
+        if(!op)
+            return judgeBoard(); // 叶子节点返回估价
         return b;
     }
     else
@@ -160,8 +173,10 @@ double Bot::alphaBeta(double a, double b, int depth)
                 if(depth == 0 && a > finalv)
                 {
                     finalx = xx, finaly = yy, finalv = a;
+                    //qDebug() << xx << "," << yy << " " << a << " " << checkBoard(xx, yy);
                 }
-                else if(depth == 0) qDebug() << xx << "," << yy << " " << finalx << "," << finaly <<" " << a << " " << finalv;
+                else if(depth == 0)
+                   // qDebug() << xx << "," << yy << " " << a << " " << finalv;
                 if(a >= b) break;
             }
         if(!op) return judgeBoard();
@@ -189,7 +204,7 @@ void Bot::run()
     std::random_shuffle(chooseVec.begin(), chooseVec.end());
 
     finalx = finaly = finalv = -1;
-    alphaBeta(0.3, 0.7, 0);
+    alphaBeta(0.25, 0.74, 0);
     curPlayer = 0;
     qDebug() << pointChecked << "<->" << chooseVec.size() << " " << judgeBoard();
     checkBoard(finalx, finaly);
