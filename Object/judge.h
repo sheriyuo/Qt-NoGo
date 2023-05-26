@@ -12,7 +12,7 @@
 #include "Object/logger.h"
 
 #define PLAYER_TIMEOUT 30  // s
-#define BOT_TIMEOUT 5      // s
+#define BOT_TIMEOUT 3      // s
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768

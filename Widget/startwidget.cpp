@@ -11,8 +11,8 @@
 
 StartWidget::StartWidget(Judge *j, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::StartWidget),
-    judge(j)
+    judge(j),
+    ui(new Ui::StartWidget)
 {
     ui->setupUi(this);
     setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT);

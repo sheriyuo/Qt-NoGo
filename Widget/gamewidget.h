@@ -14,6 +14,7 @@
 #include "Object/judge.h"
 #include "Object/bot.h"
 #include "DialogBox/messagebox.h"
+#include "Object/switchcontrol.h"
 
 namespace Ui { class GameWidget; }
 
@@ -30,7 +31,7 @@ class GameWidget : public QWidget
     Q_OBJECT
 
 public:
-    GameWidget(Judge *j, Bot *b, QWidget *parent = nullptr);
+    GameWidget(Judge *j, QWidget *parent = nullptr);
     ~GameWidget();
 
 signals:
@@ -48,6 +49,7 @@ public slots:
     void on_restartButton_clicked_OL();
     void on_sendButton_clicked(); // 链接 send 按钮的行为
 
+    void firstMove(int player);
     void startTimer();    // 当对局开始时，无论谁先手（机器下第一个棋子认为不需要时间），都打开玩家的计时器
     void stopTimer();
     void playerTimeout_OFFL(); // 玩家超时的槽函数，用于链接计时器 (offline)
@@ -99,6 +101,8 @@ private:
     Judge *judge;
     Bot *bot;
     MessageBox *mess;
+    Bot *autoPlayer;
+    SwitchControl* autoControl;
     Ui::GameWidget *ui;
     int columnX, columnY, buttonW, buttonH, deltaY, LOGO_X, LOGO_Y, logoBoardW, logoBoardH; // 绘图用
 

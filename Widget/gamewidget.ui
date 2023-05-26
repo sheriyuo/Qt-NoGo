@@ -96,6 +96,8 @@
    </property>
    <property name="font">
     <font>
+     <family>Segoe UI</family>
+     <pointsize>9</pointsize>
      <bold>false</bold>
     </font>
    </property>
@@ -259,6 +261,26 @@ background-color:rgb(255,192,203);
    </property>
    <property name="flat">
     <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="autoLabel">
+   <property name="geometry">
+    <rect>
+     <x>310</x>
+     <y>240</y>
+     <width>37</width>
+     <height>12</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial Rounded MT Bold</family>
+     <pointsize>12</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Auto</string>
    </property>
   </widget>
  </widget>

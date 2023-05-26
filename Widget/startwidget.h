@@ -4,6 +4,7 @@
 #include <QPushButton>
 #include <QPainter>
 #include <QWidget>
+
 #include "Object/judge.h"
 #include "DialogBox/settingdialog.h"
 #include "DialogBox/optiondialog.h"
@@ -49,8 +50,8 @@ private:
     void sendStartAsWhite(); // 联机
     void sendReject(); // 联机被拒
 
-    Ui::StartWidget *ui;
     Judge* judge;
+    Ui::StartWidget *ui;
 
     // 联机对话框
     int oppoRole, inviterRole;
