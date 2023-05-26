@@ -65,6 +65,7 @@ void Judge::init()
     savedStep.clear();
     blockCnt = 0;
     curPlayer = 0;
+    loadState = 0;
     hasSentREA = hasSentTIM = hasSentGIV = false;
     logger->log(Logger::Level::Debug, "database initialized");
 }

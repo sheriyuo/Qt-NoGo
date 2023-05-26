@@ -10,11 +10,11 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QMessageBox>
-
 #include "Object/judge.h"
 #include "Object/bot.h"
 #include "DialogBox/messagebox.h"
 #include "Object/switchcontrol.h"
+#include "DialogBox/reviewdialog.h"
 
 namespace Ui { class GameWidget; }
 
@@ -101,6 +101,8 @@ private:
     Judge *judge;
     Bot *bot;
     MessageBox *mess;
+    ReviewDialog *reviewDialog;
+
     Bot *autoPlayer;
     SwitchControl* autoControl;
     Ui::GameWidget *ui;

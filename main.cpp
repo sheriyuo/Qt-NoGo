@@ -6,6 +6,7 @@
 #include "Object/judge.h"
 #include "DialogBox/optiondialog.h"
 
+
 int main(int argc, char *argv[])
 {
      QApplication a(argc, argv);
@@ -19,6 +20,7 @@ int main(int argc, char *argv[])
     StartWidget *startWidget = new StartWidget(judge);
     QStackedLayout *stackLayout = new QStackedLayout(w);
     QVBoxLayout *mainLayout = new QVBoxLayout;
+//    ReviewWidget *reviewWidget = new ReviewWidget(gameWidget);
 
     // 信号槽
     QObject::connect(startWidget, &StartWidget::switchLayer, stackLayout, &QStackedLayout::setCurrentIndex);

@@ -16,9 +16,12 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
 {
     mess = new MessageBox(this);
     mess->close();
+    reviewDialog = new ReviewDialog(this);
     bot = new Bot(judge);
     autoPlayer = new Bot(judge);
     autoControl = new SwitchControl(this);
+
+
 
     columnX = judge->RIGHT_UP() + (WINDOW_WIDTH - judge->RIGHT_UP()) / 2;
     columnY = (double)WINDOW_HEIGHT / 20 * 9;
@@ -427,6 +430,7 @@ void GameWidget::gameLose(int type)
     if(type) sendMessage(1);
     else sendMessage(3);
     judge->curPlayer = -1;
+        //qDebug()<<"buglose";
     judge->loadState = 'L';
 }
 void GameWidget::gameWin(int type)
@@ -435,6 +439,7 @@ void GameWidget::gameWin(int type)
     if(type) sendMessage(0);
     else sendMessage(4);
     judge->curPlayer = -1;
+    qDebug()<<"bugwin";
     judge->loadState = 'W';
 }
 void GameWidget::stopTimer() {
@@ -771,12 +776,13 @@ void GameWidget::on_loadButton_clicked()
 
     if(judge->loadState) // 是否为终局
     {
-        if(judge->loadState == 'W')
-            gameWin(judge->runMode);
-        if(judge->loadState == 'L')
-            gameLose(judge->runMode);
-        if(judge->loadState == 'G')
-            on_resignButton_clicked_OFFL();
+//        if(judge->loadState == 'W')
+//            gameWin(judge->runMode);
+//        if(judge->loadState == 'L')
+//            gameLose(judge->runMode);
+//        if(judge->loadState == 'G')
+//            on_resignButton_clicked_OFFL();
+          reviewDialog->show();
     }
 
     // 重新开始游戏 judge

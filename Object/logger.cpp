@@ -1,5 +1,14 @@
 #include "Object/logger.h"
 
+/*
+*   @file: logger.cpp
+*   @brief: 声明 Logger 类，
+*           实现联机中的日志输出
+*   @author: duality314, ce-amtic
+*   @time: 2023/5/1
+*/
+
+
 Logger::Logger(QObject *parent) :
     QObject(parent)
 {

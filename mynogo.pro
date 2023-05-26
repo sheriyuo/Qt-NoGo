@@ -9,6 +9,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 HEADERS += \
+    DialogBox/reviewdialog.h \
     Object/bot.h \
     Object/judge.h \
     Network/networkdata.h \
@@ -23,6 +24,7 @@ HEADERS += \
     Widget/startwidget.h
 
 SOURCES += \
+    DialogBox/reviewdialog.cpp \
     Object/logger.cpp \
     Object/switchcontrol.cpp \
     main.cpp \
@@ -39,6 +41,7 @@ SOURCES += \
 
 FORMS += \
     DialogBox/optiondialog.ui \
+    DialogBox/reviewdialog.ui \
     DialogBox/settingdialog.ui \
     Widget/gamewidget.ui \
     Widget/startwidget.ui
