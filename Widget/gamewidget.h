@@ -34,6 +34,9 @@ public:
     GameWidget(Judge *j, QWidget *parent = nullptr);
     ~GameWidget();
 
+    void turn_on_review();
+    void turn_off_review();
+
 signals:
     void restartSingal(int index);   // 用于发送信号，使得 judge 得以重置
     void resignSingal(int index);   // 用于发送信号，使得 judge 得以重置
@@ -112,6 +115,8 @@ private:
     char strState;
     char dataStr[28 * 28 * 3 + 5];
     ItemVector dataVec;
+
+    bool onreview=0;
 };
 
 #endif // GAMEWIDGET_H

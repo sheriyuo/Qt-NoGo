@@ -26,13 +26,42 @@ class ReviewDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ReviewDialog(QWidget *parent = nullptr);
+    explicit ReviewDialog(Judge *pjudge,QWidget *parent = nullptr);
     ~ReviewDialog();
+    void set_review_data(char state,char data[],ItemVector v);
+    void init();
+public slots:
+    void display();
+
+private slots:
+    void on_start_clicked();
+
+    void on_pause_clicked();
+
+    void on_previous_clicked();
+
+    void on_next_clicked();
+
+    void on_tryButton_clicked();
+
+    void on_quit_try_clicked();
+
+    void on_input_entered();
+
 
 private:
     void paintEvent(QPaintEvent *event) override;
     Ui::ReviewDialog *ui;
+
     int WIDTH=687, HEIGHT=204;
+    MessageBox *messagebox;
+    Judge *judge;
+    char strState;
+    char dataStr[28 * 28 * 3 + 5];
+    ItemVector dataVec;
+    int sum_steps;
+    QTimer *tim;
+    int now_step = 0;
 };
 
 #endif // REVIEWDIALOG_H

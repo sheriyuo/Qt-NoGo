@@ -16,7 +16,7 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
 {
     mess = new MessageBox(this);
     mess->close();
-    reviewDialog = new ReviewDialog(this);
+    reviewDialog = new ReviewDialog(j,this);
     bot = new Bot(judge);
     autoPlayer = new Bot(judge);
     autoControl = new SwitchControl(this);
@@ -133,7 +133,15 @@ GameWidget::~GameWidget()
 {
     delete ui;
 }
+void GameWidget::turn_on_review()
+{
+    onreview = 1;
+}
 
+void GameWidget::turn_off_review()
+{
+    onreview = 0;
+}
 // 监听鼠标点击实现落子
 void GameWidget::mousePressEvent(QMouseEvent *event)
 {
@@ -655,6 +663,13 @@ void GameWidget::on_sendButton_clicked()
 }
 void GameWidget::on_restartButton_clicked_OFFL()
 {
+    if(onreview){
+        qDebug()<<"init";
+        turn_off_review();
+        reviewDialog->init();
+        reviewDialog->close();
+    }
+
     clickToCloseMB(true);
     this->close();
 
@@ -778,9 +793,7 @@ void GameWidget::on_loadButton_clicked()
     autoPlayer->init();
     // 理论上，没有判断非法 .dat
 
-    startTimer(); // 重置计时器
-
-    if(judge->loadState) // 是否为终局
+    if(strState) // 是否为终局
     {
 //        if(judge->loadState == 'W')
 //            gameWin(judge->runMode);
@@ -788,7 +801,17 @@ void GameWidget::on_loadButton_clicked()
 //            gameLose(judge->runMode);
 //        if(judge->loadState == 'G')
 //            on_resignButton_clicked_OFFL();
+          judge->curPlayer=-1;
+          judge->init();
+          turn_on_review();
+          reviewDialog->set_review_data(strState,dataStr,dataVec);
           reviewDialog->show();
+          stopTimer();
+    }
+    else{
+        judge->updateStep(dataStr[0] - '1', dataStr[2] - '0', dataVec, strState);
+        // 理论上，没有判断非法 .dat
+        startTimer(); // 重置计时器
     }
 
     // 重新开始游戏 judge
