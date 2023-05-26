@@ -4,14 +4,15 @@
 
 SwitchControl::SwitchControl(QWidget *parent)
     :QWidget(parent),
-    m_nHeight(18),
     m_bChecked(false),
-    m_radius(19.0),
-    m_nMargin(4),
-    m_checkedColor(QColor(96, 150, 180)),
-    m_thumbColor(QColor(211,211,211)),
+    m_background(QColor(186,215,233)),
+    m_background_cked(QColor(240, 213, 219)),
+    m_checkedColor(QColor(234,172,184)),
     m_disabledColor(QColor(242,242,242)),
-    m_background(QColor(242,242,242))
+    m_thumbColor(QColor(96,150,180)),
+    m_radius(8.5),
+    m_nHeight(18),
+    m_nMargin(4)
 {
     //鼠标滑过光标形状-手型
     setCursor(Qt::PointingHandCursor);
@@ -34,9 +35,9 @@ void SwitchControl::paintEvent(QPaintEvent *event)
     qreal dOpacity;
     if(isEnabled()){    //可用状态
         if(m_bChecked){    //打开状态
-            background = m_background;
+            background = m_background_cked;
             thumbColor = m_checkedColor;
-            dOpacity = 0.600;
+            dOpacity = 0.666;
         }else{      //关闭状态
             background = m_background;
             thumbColor = m_thumbColor;
@@ -51,12 +52,12 @@ void SwitchControl::paintEvent(QPaintEvent *event)
     painter.setBrush(background);
     painter.setOpacity(dOpacity);
     path.addRoundedRect(QRectF(m_nMargin, m_nMargin, width() - 2 * m_nMargin, height() - 2 * m_nMargin), m_radius, m_radius);
-    painter.drawPath(path.simplified());
+    painter.drawPath(path);
 
     //绘制小椭圆
     painter.setBrush(thumbColor);
     painter.setOpacity(1.0);
-    painter.drawEllipse(QRectF(m_nX - (m_nHeight / 5), m_nY - (m_nHeight / 3.3), height() / 1.5, height() / 1.5));
+    painter.drawEllipse(QRectF(m_nX - (m_nHeight / 5), m_nY - (m_nHeight / 4), height() / 1.7, height() / 1.7));
 }
 
 //鼠标按下事件
@@ -137,7 +138,7 @@ void SwitchControl::setToggled(bool checked)
 //设置背景颜色
 void SwitchControl::setBackgroundColor(QColor color)
 {
-    m_background = color;
+    m_background_cked = color;
 }
 
 //设置选中颜色

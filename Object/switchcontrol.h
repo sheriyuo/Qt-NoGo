@@ -55,6 +55,7 @@ private slots:
 private:
     bool m_bChecked;            //是否选中
     QColor m_background;        //背景颜色
+    QColor m_background_cked;
     QColor m_checkedColor;      //选中颜色
     QColor m_disabledColor;     //不可用颜色
     QColor m_thumbColor;        //拇指颜色

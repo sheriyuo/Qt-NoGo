@@ -26,6 +26,10 @@
 
 #define CUS_BLACK 0xEAACB8 // RED -> BLACK
 #define CUS_WHITE 0x7ACBF5 // BLUE -> WHITE
+#define CUS_BLACK_PRIMARY "color: rgb(234, 172, 184)"
+//#define CUS_BLACK_LIGHTEN "color: rgb(240, 213, 219)"
+#define CUS_WHITE_PRIMARY "color: rgb(122, 203, 245)"
+//#define CUS_WHITE_LIGHTEN "color: rgb(186, 215, 233)"
 
 #define BTOL (double)0.8
     //(外边框与小正方形变长的比例

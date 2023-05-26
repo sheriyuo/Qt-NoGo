@@ -3,6 +3,9 @@
 MessageBox::MessageBox(QWidget *parent):
     QLabel("", parent)
 {
+    timer = new QTimer(this);
+    timer->setSingleShot(true);
+    connect(timer, &QTimer::timeout, this, &MessageBox::timeUpClose);
     this->setAlignment(Qt::AlignCenter);
     this->setWindowFlag(Qt::FramelessWindowHint);
     this->setGeometry(WINDOW_WIDTH / 2 - WINDOW_HEIGHT / 5, WINDOW_HEIGHT / 2 - WINDOW_HEIGHT / 10,
@@ -20,15 +23,10 @@ MessageBox::~MessageBox()
 }
 
 void MessageBox::set(QString text, int tim, bool pendingClos) {
+    timer->stop();
     this->setText(text);
     pendingClose = pendingClos;
-    if(tim > 0){
-        timer = new QTimer(this);
-        timer->start(tim); // ms
-        timer->setSingleShot(true);
-        connect(timer, &QTimer::timeout, this, &MessageBox::timeUpClose);
-    }
-
+    if(tim > 0) timer->start(tim); // ms
     baseTime = clock();
 }
 

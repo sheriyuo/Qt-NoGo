@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>399</height>
+    <width>1024</width>
+    <height>768</height>
    </rect>
   </property>
   <property name="font">
@@ -30,8 +30,8 @@
   <widget class="QPushButton" name="restartButton">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>310</y>
+     <x>630</x>
+     <y>400</y>
      <width>81</width>
      <height>30</height>
     </rect>
@@ -53,8 +53,8 @@
   <widget class="QPushButton" name="resignButton">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>260</y>
+     <x>630</x>
+     <y>330</y>
      <width>80</width>
      <height>30</height>
     </rect>
@@ -88,9 +88,9 @@
   <widget class="QProgressBar" name="TimeBar">
    <property name="geometry">
     <rect>
-     <x>70</x>
+     <x>600</x>
      <y>80</y>
-     <width>120</width>
+     <width>91</width>
      <height>20</height>
     </rect>
    </property>
@@ -127,8 +127,8 @@ background-color:rgb(255,192,203);
   <widget class="QPushButton" name="loadButton">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>200</y>
+     <x>630</x>
+     <y>260</y>
      <width>80</width>
      <height>30</height>
     </rect>
@@ -162,8 +162,8 @@ background-color:rgb(255,192,203);
   <widget class="QPushButton" name="saveButton">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>150</y>
+     <x>630</x>
+     <y>190</y>
      <width>80</width>
      <height>30</height>
     </rect>
@@ -197,8 +197,8 @@ background-color:rgb(255,192,203);
   <widget class="QPlainTextEdit" name="chatHistory">
    <property name="geometry">
     <rect>
-     <x>430</x>
-     <y>100</y>
+     <x>330</x>
+     <y>400</y>
      <width>141</width>
      <height>101</height>
     </rect>
@@ -214,8 +214,8 @@ background-color:rgb(255,192,203);
   <widget class="QLineEdit" name="chatInput">
    <property name="geometry">
     <rect>
-     <x>430</x>
-     <y>220</y>
+     <x>330</x>
+     <y>510</y>
      <width>101</width>
      <height>20</height>
     </rect>
@@ -231,8 +231,8 @@ background-color:rgb(255,192,203);
   <widget class="QPushButton" name="sendButton">
    <property name="geometry">
     <rect>
-     <x>540</x>
-     <y>220</y>
+     <x>440</x>
+     <y>510</y>
      <width>31</width>
      <height>21</height>
     </rect>
@@ -266,8 +266,8 @@ background-color:rgb(255,192,203);
   <widget class="QLabel" name="autoLabel">
    <property name="geometry">
     <rect>
-     <x>310</x>
-     <y>240</y>
+     <x>640</x>
+     <y>140</y>
      <width>37</width>
      <height>12</height>
     </rect>
@@ -281,6 +281,29 @@ background-color:rgb(255,192,203);
    </property>
    <property name="text">
     <string>Auto</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="stepLabel">
+   <property name="geometry">
+    <rect>
+     <x>710</x>
+     <y>80</y>
+     <width>20</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial Rounded MT Bold</family>
+     <pointsize>9</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>0</string>
    </property>
   </widget>
  </widget>

@@ -62,9 +62,10 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
     //设置 timebar 的位置
     int TIME_X = columnX - 100,
         TIME_Y = (LOGO_Y + logoBoardH + columnY) / 2 - 15;
-    ui->TimeBar->setGeometry(QRect(QPoint(TIME_X, TIME_Y - 15), QSize(200,15)));
+    ui->TimeBar->setGeometry(QRect(QPoint(TIME_X, TIME_Y-15), QSize(175,15)));
+    ui->stepLabel->setAlignment(Qt::AlignCenter);
+    ui->stepLabel->setGeometry(QRect(QPoint(TIME_X+180, TIME_Y-15), QSize(20, 15)));
     autoControl->move(columnX-47, TIME_Y+15);
-    ui->autoLabel->setStyleSheet(ACCENT_COLOR);
     ui->autoLabel->setAlignment(Qt::AlignCenter);
     ui->autoLabel->setGeometry(QRect(QPoint(columnX+3, TIME_Y+18), QSize(40, 18)));
 
@@ -114,8 +115,15 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
     });
     connect(autoPlayer, &QThread::finished, this, [&](){
         if(!autoControl->isToggled()) return;
+        if(judge->curPlayer == 1) return;
         startTimer();
         if(!judge->runMode) emit turnForBot();
+    });
+    connect(autoPlayer, &Bot::timeout, this, [&](){
+        if(autoControl->isToggled()){
+            autoControl->setToggled(false);
+            autoPlayer->terminate();
+        }
     });
 }
 GameWidget::~GameWidget()
@@ -174,7 +182,10 @@ void GameWidget::firstMove(int player){
     }
 }
 
-void GameWidget::updateCB() {repaint();}
+void GameWidget::updateCB(){
+    ui->stepLabel->setText(QString::number(judge->getStep().size()));
+    repaint();
+}
 void GameWidget::clickToCloseMB(bool force){
     if(force) mess->timeUpClose();
     else mess->clickToClose();
@@ -186,22 +197,24 @@ void GameWidget::setColorForBar()
     if(judge->CurColor() == -1) // White
     {
         ui->TimeBar->setStyleSheet("QProgressBar{"
-                                   "background:rgb(186,215,233);"
+                                   "background:rgba(186, 215, 233, 0.8);"
                                    "color:white;"
                                    "border-radius:5px;}"
                                    "QProgressBar::chunk{"
                                    "border-radius:5px;"
                                    "background: #7acbf5}");
+        ui->stepLabel->setStyleSheet(CUS_WHITE_PRIMARY);
     }
     else // Black
     {
         ui->TimeBar->setStyleSheet("QProgressBar{"
-                                   "background:rgb(186,215,233);"
+                                   "background:rgba(240, 213, 219, 0.666);"
                                    "color:white;"
                                    "border-radius:5px;}"
                                    "QProgressBar::chunk{"
                                    "border-radius:5px;"
                                    "background: #EAACB8}");
+        ui->stepLabel->setStyleSheet(CUS_BLACK_PRIMARY);
     }
 }
 void GameWidget::updateBar()
@@ -217,13 +230,11 @@ void GameWidget::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true); // 抗锯齿
-
     drawChessboard(painter);
     painter.drawPixmap(LOGO_X, LOGO_Y, logoBoardW, logoBoardH, logoImg);
     // 绘制 demo
     if(judge->CHESSBOARD_SIZE == 28)
         drawDemo(painter);
-
     // 绘制棋子
     for(int i = 0; i < judge->CHESSBOARD_SIZE; i++)
         for(int j = 0; j < judge->CHESSBOARD_SIZE; j++)
@@ -236,8 +247,21 @@ void GameWidget::paintEvent(QPaintEvent *event)
             {
                 drawBlack(painter, i, j);
             }
-
         }
+    // 设置 autoLabel 的颜色
+    if(autoControl->isToggled()){
+        if(judge->playerRole == 1){ // black
+            ui->autoLabel->setStyleSheet("color: rgb(234, 172, 184)"); // CUS_BLACK_PRIMARY
+            autoControl->setCheckedColor(QColor(234, 172, 184));
+            autoControl->setBackgroundColor(QColor(240, 213, 219));
+        }
+        else{ // white
+            ui->autoLabel->setStyleSheet("color: rgb(122, 203, 245)");
+            autoControl->setCheckedColor(QColor(122, 203, 245));
+            autoControl->setBackgroundColor(QColor(174, 221, 245));
+        }
+    }
+    else ui->autoLabel->setStyleSheet(ACCENT_COLOR);
 }
 
 void GameWidget :: drawChessboard(QPainter &painter)
@@ -559,7 +583,8 @@ void GameWidget::goOL()
     LOGO_Y = judge->LEFT_UP();
     int TIME_X = columnX - 100,
         TIME_Y = (LOGO_Y + logoBoardH + columnY - 10) / 2;
-    ui->TimeBar->setGeometry(QRect(QPoint(TIME_X, TIME_Y - 15), QSize(200,15)));
+    ui->TimeBar->setGeometry(QRect(QPoint(TIME_X, TIME_Y-15), QSize(175,15)));
+    ui->stepLabel->setGeometry(QRect(QPoint(TIME_X+180, TIME_Y-15), QSize(20, 15)));
     autoControl->move(columnX-47, TIME_Y+15);
     ui->autoLabel->setGeometry(QRect(QPoint(columnX+3, TIME_Y+18), QSize(40, 18)));
 
@@ -597,7 +622,8 @@ void GameWidget::goOFFL()
     LOGO_Y = judge->LEFT_UP() + 15;
     int TIME_X = columnX - 100,
         TIME_Y = (LOGO_Y + logoBoardH + columnY) / 2 - 15;
-    ui->TimeBar->setGeometry(QRect(QPoint(TIME_X, TIME_Y - 15), QSize(200,15)));
+    ui->TimeBar->setGeometry(QRect(QPoint(TIME_X, TIME_Y-15), QSize(175,15)));
+    ui->stepLabel->setGeometry(QRect(QPoint(TIME_X+180, TIME_Y-15), QSize(20, 15)));
     autoControl->move(columnX-47, TIME_Y+15);
     ui->autoLabel->setGeometry(QRect(QPoint(columnX+3, TIME_Y+18), QSize(40, 18)));
 

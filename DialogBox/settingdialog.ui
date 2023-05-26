@@ -21,7 +21,7 @@
    <string>NoGo Settings</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="Resource.qrc">
+   <iconset resource="../Resource.qrc">
     <normaloff>:/img/icon.ico</normaloff>:/img/icon.ico</iconset>
   </property>
   <widget class="QPushButton" name="closeBtn">
@@ -358,7 +358,7 @@
   </widget>
  </widget>
  <resources>
-  <include location="Resource.qrc"/>
+  <include location="../Resource.qrc"/>
  </resources>
  <connections/>
 </ui>
