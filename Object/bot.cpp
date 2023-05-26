@@ -12,6 +12,7 @@ Bot::Bot(Judge *j, QObject *parent) :
     QThread(parent),
     judge(j)
 {
+    // none
 }
 
 Bot::~Bot()
@@ -129,17 +130,19 @@ double Bot::judgeBoard() // 估价函数判断当前局面
     if(!rivalValid)
         return botValid ? 0.5 + 0.5 * allPoint / pow(CHESSBOARD_SIZE, 2) : 0.5;
     // 设 botvalid = x, rivalValid = y, allPoint = z, CHESSBOARD_SIZE = k, 估价为 1-2^(-sqrt(x/y)^(0.5+0.5*z/(k*k)))
-    return 1 - pow(2, -1.0 * pow(sqrt(1.0 * botValid / rivalValid), 0.5 + 0.5 * allPoint / pow(CHESSBOARD_SIZE, 2)));
+    return 1 - pow(2, -1.0 * pow(sqrt(1.0 * botValid / rivalValid),
+                                   0.5 + 0.5 * allPoint / pow(CHESSBOARD_SIZE, 2)));
 }
 
 // minimax 搜索
 double Bot::alphaBeta(double a, double b, int depth)
 {
     time_t curTime = clock();
-    if((curTime - searchStartTime) / (BOT_TIMEOUT * 1000) > 0.85)
+    if((curTime - searchStartTime) / (BOT_TIMEOUT * 1000) > 0.9)
         return depth & 1 ? b : a; // 判断超时
     curPlayer = depth & 1;
-    if(depth == 4 + (chooseVec.size() < 30) + 2 * (chooseVec.size() < 23) + 2 * (chooseVec.size() < 18))
+    if(depth == 4 + (chooseVec.size() < 30) + 2 * (chooseVec.size() < 23)
+                  + 2 * (chooseVec.size() < 18))
         return judgeBoard();
     if(depth & 1)
     {
@@ -204,9 +207,8 @@ void Bot::run()
     std::random_shuffle(chooseVec.begin(), chooseVec.end());
 
     finalx = finaly = finalv = -1;
-    alphaBeta(0.34, 0.63, 0);
+    alphaBeta(alpha, beta, 0);
     curPlayer = 0;
-    qDebug() << pointChecked << "<->" << chooseVec.size() << " " << judgeBoard();
     checkBoard(finalx, finaly);
     if(!judge->CheckVaild(finalx, finaly))
     {
@@ -217,6 +219,15 @@ void Bot::run()
     judge->PlaceAPiece(finalx, finaly);
     if(judge->runMode == 2 || judge->runMode == 3) // 发送 MOVE_OP 以及处理 recData
         judge->send(NetworkData(OPCODE::MOVE_OP, QString(QChar('A'+finalx))+QString(QChar('1'+finaly)), ""));
+    double curRatio = judgeBoard();
+    if(curRatio < 0.5)
+    {
+        // 对面太强了，退火一下
+        alpha += (0.5 - alpha) * eps;
+        beta -= (beta - 0.5) * eps;
+        eps *= delta;
+    }
+    qDebug() << pointChecked << "<->" << chooseVec.size() << " " << curRatio << " " << alpha << " " << beta;
 
 }
 void Bot::makeRandomMove()

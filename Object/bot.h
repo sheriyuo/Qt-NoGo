@@ -30,7 +30,8 @@ signals:
 public slots:
 
 private:
-    double alpha = 0.3, beta = 0.7;
+    double eps = 0.03, alpha = 0.37, beta = 0.63;
+    const double delta = 0.9;
     time_t searchStartTime;
     bool alphaBeta(); // Alpha-Beta 剪枝
 
@@ -52,7 +53,7 @@ private:
     int curPlayer, curPlayerBak; // 0->bot 1->player -1->game over
     int CHESSBOARD_SIZE;
     int pointChecked;
-    unsigned int dfsBoardTime;
+    unsigned int dfsBoardTime = 0;
 
     int finalx, finaly;
     double finalv; // 最终决定的落子
