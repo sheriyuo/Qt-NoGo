@@ -12,12 +12,20 @@ Bot::Bot(Judge *j, QObject *parent) :
     QThread(parent),
     judge(j)
 {
-    // none
+    // 初始化
 }
 
 Bot::~Bot()
 {
     // delete this;
+}
+
+void Bot::init()
+{
+    dfsBoardTime = 0;
+    eps = 0.03;
+    alpha = 0.39;
+    beta = 0.61;
 }
 
 bool Bot::IsInBoard(int x, int y)
@@ -32,7 +40,6 @@ int Bot::CurColor() // 当前落棋颜色
 
 void Bot::readFromJudge() // 从 judge 类读入数据
 {
-    dfsBoardTime = 0;
     curPlayer = judge->curPlayer;
     curPlayerBak = curPlayer;
     playerRole = judge->playerRole;

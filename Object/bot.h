@@ -21,7 +21,7 @@ class Bot : public QThread
 public:
     Bot (Judge *j, QObject *parent = nullptr);
     ~Bot();
-
+    void init();
     void run(); // run 函数是 bot 作为独立线程的入口, 通过 bot->start() 来启动这个独立线程, run 函数本身相当于 makeAMove
 
 signals:
@@ -30,8 +30,8 @@ signals:
 public slots:
 
 private:
-    double eps = 0.03, alpha = 0.37, beta = 0.63;
-    const double delta = 0.9;
+    double eps = 0.03, alpha = 0.39, beta = 0.61;
+    const double delta = 0.93;
     time_t searchStartTime;
     bool alphaBeta(); // Alpha-Beta 剪枝
 
