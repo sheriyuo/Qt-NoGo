@@ -64,7 +64,7 @@ public:
     bool CheckVaild(int x, int y); // 判断(x,y)是否可以下棋
     int CurColor(); // 当前落棋颜色
     int GridPoint(int x, int y); // 访问 board 数组， 返回 (x, y) 的状态 ：0/-1/1
-    void PlaceAPiece(int x, int y); // 编辑 board 数组，在 (x, y) 下 CurColor() 颜色的棋
+    void PlaceAPiece(int x, int y, int isLoad = 0); // 编辑 board 数组，在 (x, y) 下 CurColor() 颜色的棋
     void SaveStep(int x,int y); // 记录当前在 (x, y) 下棋
 
     ItemVector getStep(); // 读取记录步数

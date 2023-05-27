@@ -77,13 +77,13 @@ void Judge::SaveStep(int x,int y) // 存下当前步数
     savedStep.push_back(Point(x,y));
 }
 
-void Judge::PlaceAPiece(int x, int y)
+void Judge::PlaceAPiece(int x, int y, int isLoad)
 {
     board[x][y] = CurColor();
     UpdateCurStep(x, y);
     SaveStep(x, y);
     curPlayer ^= 1;
-    emit modifiedCB();
+    if(!isLoad) emit modifiedCB();
 }
 
 bool Judge::IsEmpty(int x, int y)
@@ -248,10 +248,11 @@ void Judge::updateStep(int newPlayerRole, int newRunMode, ItemVector newStep, ch
 
     for(Item cur : newStep)
     {
-        Judge::PlaceAPiece(cur.first, cur.second); // 重新绘制棋盘并处理状态
+        Judge::PlaceAPiece(cur.first, cur.second, 1); // 重新绘制棋盘并处理状态
     }
 
     loadState = newState;
+    emit modifiedCB();
     // timerForPlayer 在 gamewidget 里面，要在外面 init。
     // loadState 也要在 gamewidget 里面判断是否终局。
 }

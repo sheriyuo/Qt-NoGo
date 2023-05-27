@@ -69,7 +69,6 @@ void ReviewDialog::on_previous_clicked()
     on_pause_clicked();
     qDebug()<<now_step;
     judge->init();
-    emit judge->modifiedCB();
     if(now_step<=0){
         return;
     }
@@ -78,9 +77,10 @@ void ReviewDialog::on_previous_clicked()
         qDebug()<<now_step;
         for(int i=0;i<now_step;i++){
             Item cur=dataVec[i];
-            judge->PlaceAPiece(cur.first, cur.second);
+            judge->PlaceAPiece(cur.first, cur.second, 1);
         }
     }
+    emit judge->modifiedCB();
 }
 
 
