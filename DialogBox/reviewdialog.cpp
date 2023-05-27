@@ -16,6 +16,15 @@ ReviewDialog::ReviewDialog(Judge *pjudge,QWidget *parent) :
     QValidator *validator = new QRegularExpressionValidator(regx, ui->stepnum);
     ui->stepnum->setValidator(validator);
     connect(ui->stepnum, &QLineEdit::returnPressed, this,  &ReviewDialog::on_input_entered);
+
+
+    //禁用enter默认
+    ui->start->setAutoDefault(false);
+    ui->pause->setAutoDefault(false);
+    ui->next->setAutoDefault(false);
+    ui->previous->setAutoDefault(false);
+    ui->tryButton->setAutoDefault(false);
+    ui->quit_try->setAutoDefault(false);
 }
 
 ReviewDialog::~ReviewDialog()
@@ -67,7 +76,7 @@ void ReviewDialog::on_pause_clicked()
 void ReviewDialog::on_previous_clicked()
 {
     on_pause_clicked();
-    qDebug()<<now_step;
+//    qDebug()<<now_step;
     judge->init();
     if(now_step<=0){
         return;
@@ -92,20 +101,34 @@ void ReviewDialog::on_next_clicked()
     }
     else
     {
-        qDebug()<<now_step;
+//        qDebug()<<now_step;
         Item cur=dataVec[now_step];
 //        qDebug()<<cur.first<<" "<<cur.second;
         judge->PlaceAPiece(cur.first, cur.second);
         now_step++;
-        qDebug()<<now_step;
+//        qDebug()<<now_step;
     }
 }
 
 void ReviewDialog::on_input_entered(){
+    on_pause_clicked();
 
-
+    QString step = ui->stepnum->text();
+    int stepnum=step.toInt();
+    if(stepnum<0||stepnum>sum_steps){
+        return ;
+    }
+    else{
+        judge->init();
+        now_step=stepnum;
+        for(int i=0;i<now_step;i++){
+            Item cur=dataVec[i];
+            judge->PlaceAPiece(cur.first, cur.second, 1);
+        }
+    }
+    on_pause_clicked();
+    emit judge->modifiedCB();
 }
-
 void ReviewDialog::on_tryButton_clicked()
 {
 
@@ -130,5 +153,3 @@ void ReviewDialog::init()
     now_step = 0;
 
 }
-
-

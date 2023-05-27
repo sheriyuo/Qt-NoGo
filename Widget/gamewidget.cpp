@@ -99,6 +99,7 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
     connect(bot, &Bot::timeout, this, &GameWidget::botTimeout);
     connect(bot, &QThread::finished, this, [&](){ // 保证只在 judge->runMode==0 时才会被调用
         if(judge->curPlayer == 0) return;
+        qDebug()<<"1";
         startTimer();
         if(autoControl->isToggled()) autoPlayer->start();
     });
@@ -119,6 +120,7 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
     connect(autoPlayer, &QThread::finished, this, [&](){
         if(!autoControl->isToggled()) return;
         if(judge->curPlayer == 1) return;
+        qDebug()<<"2";
         startTimer();
         if(!judge->runMode) emit turnForBot();
     });
@@ -146,6 +148,7 @@ void GameWidget::turn_off_review()
 // 监听鼠标点击实现落子
 void GameWidget::mousePressEvent(QMouseEvent *event)
 {
+
     emit mousePress();
     if(judge->curPlayer == -1) return; // 判断游戏结束
     if(!judge->runMode && bot->isRunning()) return; // 等待 bot 落子
@@ -181,7 +184,7 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
         if(!judge->runMode) emit turnForBot();
         if(judge->runMode == 2 || judge->runMode == 3) // 发送 MOVE_OP 以及处理 recData
             judge->send(NetworkData(OPCODE::MOVE_OP, QString(QChar('A'+row-1))+QString(QChar('1'+column-1)), ""));
-
+        qDebug()<<"3";
         startTimer();
     }
     else sendMessage(2);
@@ -192,6 +195,7 @@ void GameWidget::startGame(int player){
     if(judge->runMode == 2 || judge->runMode == 3) goOL();
     else goOFFL();
     firstMove(player);
+    qDebug()<<"4";
     startTimer();
     updateCB();
 }
@@ -463,6 +467,7 @@ void GameWidget::gameWin(int type)
 void GameWidget::stopTimer() {
     timerForPlayer->stop();
     timerForBar->stop();
+
 }
 void GameWidget::startTimer() {
     setColorForBar();
@@ -810,8 +815,7 @@ void GameWidget::on_loadButton_clicked()
 //        if(judge->loadState == 'L')
 //            gameLose(judge->runMode);
 //        if(judge->loadState == 'G')
-//            on_resignButton_clicked_OFFL();
-          judge->curPlayer=-1;
+//            on_resignButton_clicked_OFFL();    
           judge->init();
           turn_on_review();
           reviewDialog->set_review_data(strState,dataStr,dataVec);
@@ -821,6 +825,7 @@ void GameWidget::on_loadButton_clicked()
     else{
         judge->updateStep(dataStr[0] - '1', dataStr[2] - '0', dataVec, strState);
         // 理论上，没有判断非法 .dat
+        qDebug()<<"5";
         startTimer(); // 重置计时器
     }
 
