@@ -30,26 +30,26 @@ Judge::Judge(QObject *parent) :
 \
     QObject::connect(server, &NetworkServer::receive, this, &Judge::recDataFromClient);
     QObject::connect(socket, &NetworkSocket::receive, this, [&](NetworkData d){
-        logger->log(Logger::Level::Info, QString("socket receives"));
+        log(Logger::Level::Info, QString("socket receives"));
         loggingSendReceive(d, IP, 0);
         recData(d);
     });
     QObject::connect(server, &QTcpServer::newConnection, this, [&](){
-        logger->log(Logger::Level::Info, QString("server connected"));
+        log(Logger::Level::Info, QString("server connected"));
         emit serverConnect();
     });
     QObject::connect(socket->base(), &QTcpSocket::connected, this, [&](){
-        logger->log(Logger::Level::Info, QString("socket connected"));
+        log(Logger::Level::Info, QString("socket connected"));
         emit socketConnect();
     });
 
     init();
-    logger->log(Logger::Level::Debug, "database constructed");
+    log(Logger::Level::Debug, "database constructed");
 }
 
 Judge::~Judge()
 {
-    logger->log(Logger::Level::Debug, "database destructed");
+    log(Logger::Level::Debug, "database destructed");
     // delete this;
 }
 
@@ -67,7 +67,7 @@ void Judge::init()
     curPlayer = 0;
     loadState = 0;
     hasSentREA = hasSentTIM = hasSentGIV = false;
-    logger->log(Logger::Level::Debug, "database initialized");
+    log(Logger::Level::Debug, "database initialized");
 }
 
 int Judge::GridPoint(int x, int y) {return board[x][y];}
@@ -290,12 +290,12 @@ void Judge::clearLink(bool isPassive)
     {
         if(lastClient != nullptr)
         {
-            logger->log(Logger::Level::Info, QString("server leave"));
+            log(Logger::Level::Info, QString("server leave"));
             server->leave(lastClient);
         }
         if(server->isListening())
         {
-            logger->log(Logger::Level::Info, QString("server stopped"));
+            log(Logger::Level::Info, QString("server stopped"));
             server->close();
         }
         lastClient = nullptr;
@@ -304,7 +304,7 @@ void Judge::clearLink(bool isPassive)
     {
         if(socketConnected)
         {
-            logger->log(Logger::Level::Info, QString("socket leave"));
+            log(Logger::Level::Info, QString("socket leave"));
             socket->bye();
         }
         socketConnected = false;
@@ -317,16 +317,16 @@ void Judge::connect()
     clearLink(true);
     if(runMode == 2)
     {
-        logger->log(Logger::Level::Info, QString("server listen<")+IP+":"+QString::number(PORT)+">");
+        log(Logger::Level::Info, QString("server listen<")+IP+":"+QString::number(PORT)+">");
         server->listen(QHostAddress(IP), PORT);
     }
     else
     {
-        logger->log(Logger::Level::Info, QString("socket connectToHost<")+IP+":"+QString::number(PORT)+">");
+        log(Logger::Level::Info, QString("socket connectToHost<")+IP+":"+QString::number(PORT)+">");
         socket->hello(IP, PORT);
         if(!socket->base()->waitForConnected(5000))
         {
-            logger->log(Logger::Level::Error, QString("socket connect failed"));
+            log(Logger::Level::Error, QString("socket connect failed"));
             socketConnected = false;
         }
         else
@@ -338,7 +338,7 @@ void Judge::connect()
 }
 void Judge::recDataFromClient(QTcpSocket* client, NetworkData d)
 {
-    logger->log(Logger::Level::Info, QString("server receives"));
+    log(Logger::Level::Info, QString("server receives"));
     loggingSendReceive(d, (client->peerAddress()).toString(), 0);  // log
     lastClient = client;
     recData(d);
@@ -398,6 +398,7 @@ void Judge::recData(NetworkData d)
 }
 
 //log
+void Judge::log(Logger::Level level, QString message) {logger->log(level, message);}
 void Judge::loggingSendReceive(NetworkData d, QString ipAddress, bool seorre)
 {
     QString reorsend = seorre ? "send":"receive";
@@ -421,5 +422,5 @@ void Judge::loggingSendReceive(NetworkData d, QString ipAddress, bool seorre)
                         .arg(logop)
                         .arg(d.data1)
                         .arg(d.data2);
-    logger->log(Logger::Level::Debug, message);
+    log(Logger::Level::Debug, message);
 }

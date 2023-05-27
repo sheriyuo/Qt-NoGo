@@ -184,7 +184,6 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
         if(!judge->runMode) emit turnForBot();
         if(judge->runMode == 2 || judge->runMode == 3) // 发送 MOVE_OP 以及处理 recData
             judge->send(NetworkData(OPCODE::MOVE_OP, QString(QChar('A'+row-1))+QString(QChar('1'+column-1)), ""));
-        qDebug()<<"3";
         startTimer();
     }
     else sendMessage(2);
@@ -192,10 +191,9 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
 void GameWidget::startGame(int player){
     if(judge->runMode == 1) autoControl->setDisabled(true);
     else autoControl->setDisabled(false);
-    if(judge->runMode == 2 || judge->runMode == 3) goOL();
-    else goOFFL();
+//    if(judge->runMode == 2 || judge->runMode == 3) goOL();
+//    else goOFFL();
     firstMove(player);
-    qDebug()<<"4";
     startTimer();
     updateCB();
 }
@@ -679,7 +677,6 @@ void GameWidget::on_sendButton_clicked()
 void GameWidget::on_restartButton_clicked_OFFL()
 {
     if(onreview){
-        qDebug()<<"init";
         turn_off_review();
         reviewDialog->init();
         reviewDialog->close();
@@ -781,6 +778,8 @@ void GameWidget::stringToData()
 // 读档按钮信号
 void GameWidget::on_loadButton_clicked()
 {
+    autoControl->setDisabled(true);
+
     QString fileName = QFileDialog::getOpenFileName(nullptr, tr("Load Data"), "", tr("DATA (*.dat)"));
     // QFileDialog 读取文件 fileName
 
@@ -815,11 +814,12 @@ void GameWidget::on_loadButton_clicked()
 //        if(judge->loadState == 'L')
 //            gameLose(judge->runMode);
 //        if(judge->loadState == 'G')
-//            on_resignButton_clicked_OFFL();    
+//            on_resignButton_clicked_OFFL();
           judge->init();
           turn_on_review();
           reviewDialog->set_review_data(strState,dataStr,dataVec);
           reviewDialog->show();
+          reviewDialog->move(QPoint(WINDOW_WIDTH / 2, WINDOW_HEIGHT));
           stopTimer();
     }
     else{

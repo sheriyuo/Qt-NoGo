@@ -4,8 +4,6 @@
 #include "Widget/gamewidget.h"
 #include "Widget/startwidget.h"
 #include "Object/judge.h"
-#include "DialogBox/optiondialog.h"
-
 
 int main(int argc, char *argv[])
 {
@@ -26,8 +24,8 @@ int main(int argc, char *argv[])
     QObject::connect(startWidget, &StartWidget::switchLayer, stackLayout, &QStackedLayout::setCurrentIndex);
     QObject::connect(startWidget, &StartWidget::startAs, judge, &Judge::setPlayerRole);
     QObject::connect(startWidget, &StartWidget::startAs, gameWidget, &GameWidget::startGame);
-//    QObject::connect(startWidget->settingDialog, &SettingDialog::goOL, gameWidget, &GameWidget::goOL);
-//    QObject::connect(startWidget->settingDialog, &SettingDialog::goOFFL, gameWidget, &GameWidget::goOFFL);
+    QObject::connect(startWidget->settingDialog, &SettingDialog::goOL, gameWidget, &GameWidget::goOL);
+    QObject::connect(startWidget->settingDialog, &SettingDialog::goOFFL, gameWidget, &GameWidget::goOFFL);
     QObject::connect(gameWidget, &GameWidget::restartSingal, stackLayout, &QStackedLayout::setCurrentIndex);
     QObject::connect(gameWidget, &GameWidget::resignSingal, stackLayout, &QStackedLayout::setCurrentIndex);
     QObject::connect(judge, &Judge::modifiedCB, gameWidget, &GameWidget::updateCB);

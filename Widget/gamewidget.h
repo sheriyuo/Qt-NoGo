@@ -102,6 +102,7 @@ private:
     QTimer *timerForPlayer;
     QTimer *timerForBar;
 
+    Logger *logger;
     Judge *judge;
     Bot *bot;
     MessageBox *mess;

@@ -66,6 +66,7 @@ public:
     int GridPoint(int x, int y); // 访问 board 数组， 返回 (x, y) 的状态 ：0/-1/1
     void PlaceAPiece(int x, int y, int isLoad = 0); // 编辑 board 数组，在 (x, y) 下 CurColor() 颜色的棋
     void SaveStep(int x,int y); // 记录当前在 (x, y) 下棋
+    void log(Logger::Level level, QString message); // 使用 logger 生成日志
 
     ItemVector getStep(); // 读取记录步数
     void updateStep(int newCurPlayer, int newRunMode, ItemVector newStep, char newState); // 更新记录步数并更改棋局

@@ -1,13 +1,14 @@
 #include "reviewdialog.h"
 #include "ui_reviewdialog.h"
 
-ReviewDialog::ReviewDialog(Judge *pjudge,QWidget *parent) :
+ReviewDialog::ReviewDialog(Judge *_judge, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::ReviewDialog),judge(pjudge)
+    ui(new Ui::ReviewDialog),
+    judge(_judge)
 {
     messagebox = new MessageBox(this);
     tim = new QTimer();
-    tim->setInterval(1500);
+    tim->setInterval(500);
     connect(tim,&QTimer::timeout,this,&ReviewDialog::display);
     ui->setupUi(this);
 
@@ -61,9 +62,7 @@ void ReviewDialog::on_start_clicked()
 {
 //    judge->init();
 //    judge->runMode = 1;
-    qDebug()<<" click ";
     tim->start(1500);
-
 }
 
 
@@ -149,7 +148,7 @@ void ReviewDialog::set_review_data(char state,char data[],ItemVector v){
 
 void ReviewDialog::init()
 {
+    judge->log(Logger::Level::Debug, "review dialog initialized");
     tim->stop();
     now_step = 0;
-
 }
