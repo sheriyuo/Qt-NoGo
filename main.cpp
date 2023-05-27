@@ -25,10 +25,9 @@ int main(int argc, char *argv[])
     // 信号槽
     QObject::connect(startWidget, &StartWidget::switchLayer, stackLayout, &QStackedLayout::setCurrentIndex);
     QObject::connect(startWidget, &StartWidget::startAs, judge, &Judge::setPlayerRole);
-    QObject::connect(startWidget, &StartWidget::startAs, gameWidget, &GameWidget::firstMove);
-    QObject::connect(startWidget, &StartWidget::startAs, gameWidget, &GameWidget::startTimer);
-    QObject::connect(startWidget->settingDialog, &SettingDialog::goOL, gameWidget, &GameWidget::goOL);
-    QObject::connect(startWidget->settingDialog, &SettingDialog::goOFFL, gameWidget, &GameWidget::goOFFL);
+    QObject::connect(startWidget, &StartWidget::startAs, gameWidget, &GameWidget::startGame);
+//    QObject::connect(startWidget->settingDialog, &SettingDialog::goOL, gameWidget, &GameWidget::goOL);
+//    QObject::connect(startWidget->settingDialog, &SettingDialog::goOFFL, gameWidget, &GameWidget::goOFFL);
     QObject::connect(gameWidget, &GameWidget::restartSingal, stackLayout, &QStackedLayout::setCurrentIndex);
     QObject::connect(gameWidget, &GameWidget::resignSingal, stackLayout, &QStackedLayout::setCurrentIndex);
     QObject::connect(judge, &Judge::modifiedCB, gameWidget, &GameWidget::updateCB);

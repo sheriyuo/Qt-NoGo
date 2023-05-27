@@ -52,6 +52,7 @@ public slots:
     void on_restartButton_clicked_OL();
     void on_sendButton_clicked(); // 链接 send 按钮的行为
 
+    void startGame(int player); // 进入 gameWidget 时首先调用 startGame
     void firstMove(int player);
     void startTimer();    // 当对局开始时，无论谁先手（机器下第一个棋子认为不需要时间），都打开玩家的计时器
     void stopTimer();

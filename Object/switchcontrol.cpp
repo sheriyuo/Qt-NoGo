@@ -8,7 +8,7 @@ SwitchControl::SwitchControl(QWidget *parent)
     m_background(QColor(186,215,233)),
     m_background_cked(QColor(240, 213, 219)),
     m_checkedColor(QColor(234,172,184)),
-    m_disabledColor(QColor(242,242,242)),
+    m_disabledColor(QColor(212,212,212)),
     m_thumbColor(QColor(96,150,180)),
     m_radius(8.5),
     m_nHeight(18),

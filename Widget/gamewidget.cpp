@@ -98,6 +98,7 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
     connect(timerForBar,&QTimer::timeout,this,&GameWidget::updateBar);
     connect(bot, &Bot::timeout, this, &GameWidget::botTimeout);
     connect(bot, &QThread::finished, this, [&](){ // 保证只在 judge->runMode==0 时才会被调用
+        if(judge->curPlayer == 0) return;
         startTimer();
         if(autoControl->isToggled()) autoPlayer->start();
     });
@@ -112,7 +113,6 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
         if(autoControl->isToggled()) autoPlayer->start();
     });
     connect(autoControl, &SwitchControl::toggled, this, [&](bool checked){
-        if(judge->runMode == 1) return; // PVP 不允许 AI 介入
         if(checked && judge->curPlayer == 1) autoPlayer->start();
         if(!checked) autoPlayer->terminate();
     });
@@ -124,6 +124,7 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
     });
     connect(autoPlayer, &Bot::timeout, this, [&](){
         if(autoControl->isToggled()){
+            autoControl->setDisabled(true);
             autoControl->setToggled(false);
             autoPlayer->terminate();
         }
@@ -184,6 +185,15 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
         startTimer();
     }
     else sendMessage(2);
+}
+void GameWidget::startGame(int player){
+    if(judge->runMode == 1) autoControl->setDisabled(true);
+    else autoControl->setDisabled(false);
+    if(judge->runMode == 2 || judge->runMode == 3) goOL();
+    else goOFFL();
+    firstMove(player);
+    startTimer();
+    updateCB();
 }
 void GameWidget::firstMove(int player){
     if(player == -1) // bot 先手
