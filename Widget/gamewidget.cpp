@@ -105,7 +105,11 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
     });
     connect(judge, &Judge::GIVEUP_OP, this, &GameWidget::remoteResign);
     connect(judge, &Judge::TIMEOUT_END_OP, this, [&](){gameLose(1);});
-    connect(judge, &Judge::SUICIDE_END_OP, this, [&](){gameWin(1);});
+    connect(judge, &Judge::SUICIDE_END_OP, this, [&](){
+        gameWin(1);
+        clickToCloseMB(true);
+        sendMessage(3);
+    });
     connect(judge, &Judge::CHAT_OP, this, [&](NetworkData d){
         QString s = "<" + judge->oppoOL + "> : \n" + d.data1;
         ui->chatHistory->appendPlainText(s);
@@ -450,8 +454,11 @@ void GameWidget::gameLose(int type)
     if(type) sendMessage(1);
     else sendMessage(3);
     judge->curPlayer = -1;
-        //qDebug()<<"buglose";
+    // qDebug()<<"buglose";
     judge->loadState = 'T';
+
+    dataToString();
+    judge->log(Level::Info, "game lose: "+QString(dataStr));
 }
 void GameWidget::gameWin(int type)
 {
@@ -459,13 +466,15 @@ void GameWidget::gameWin(int type)
     if(type) sendMessage(0);
     else sendMessage(4);
     judge->curPlayer = -1;
-    qDebug()<<"bugwin";
+    // qDebug()<<"bugwin";
     judge->loadState = 'W';
+
+    dataToString();
+    judge->log(Level::Info, "game win: "+QString(dataStr));
 }
 void GameWidget::stopTimer() {
     timerForPlayer->stop();
     timerForBar->stop();
-
 }
 void GameWidget::startTimer() {
     setColorForBar();
@@ -502,49 +511,45 @@ void GameWidget::playerTimeout_OL()
 */
 void GameWidget::sendMessage(int type)
 {
-    ItemVector step = judge->getStep();
-    int steps=step.size();
-    if(judge->loadState=='G')
-            steps++;
-    QString ssteps = QString::number(steps);
+    QString steps = QString::number(judge->getStep().size());
     clickToCloseMB(true);
-    if(judge->runMode == 0)
+    switch(judge->runMode)
     {
+    case 0:
         switch(type)
         {
             case 2:
                 mess->set(QString("You cannot place a \npiece there!"), 2000, false);
                 break;
             case 3:
-                mess->set(QString("TIME'S UP! You LOSE!")+QString("\n\nTotal step : ")+ssteps, 0, true);
+                mess->set(QString("TIME'S UP! You LOSE!")+QString("\n\nTotal step : ")+steps, 0, true);
                 break;
             case 4:
                 mess->set(QString("Bot failed to make\na move.\nYou WIN"), 0, true);
                 break;
             case 5:
-                mess->set(QString("You Resign!")+QString("\n\nTotal step : ")+ssteps, 0, true);
+                mess->set(QString("You Resign!")+QString("\n\nTotal step : ")+steps, 0, true);
                 break;
         }
-    }
-    if(judge->runMode == 1)
-    {
+        break;
+    case 1:
         switch(type)
         {
             case 2:
                 mess->set(QString("You cannot place a \npiece there!"), 2000, false);
                 break;
             case 3:
-                if(judge->curPlayerBak) mess->set(QString("TIME'S UP! Player1 LOSE!>")+QString("\n\nTotal step : "+ssteps), 0, true);
-                else mess->set(QString("TIME'S UP! Player2 LOSE!")+QString("\n\nTotal step : "+ssteps), 0, true);
+                if(judge->curPlayerBak) mess->set(QString("TIME'S UP! Player1 LOSE!>")+QString("\n\nTotal step : "+steps), 0, true);
+                else mess->set(QString("TIME'S UP! Player2 LOSE!")+QString("\n\nTotal step : "+steps), 0, true);
                 break;
             case 5:
-                if(judge->curPlayerBak) mess->set(QString("Player1 Resign!")+QString("\n\nTotal step : "+ssteps), 0, true);
-                else mess->set(QString("Player2 Resign!")+QString("\n\nTotal step : ")+ssteps, 0, true);
+                if(judge->curPlayerBak) mess->set(QString("Player1 Resign!")+QString("\n\nTotal step : "+steps), 0, true);
+                else mess->set(QString("Player2 Resign!")+QString("\n\nTotal step : ")+steps, 0, true);
                 break;
         }
-    }
-    if(judge->runMode == 2 || judge->runMode == 3)
-    {
+        break;
+    case 2:
+    case 3:
         switch(type)
         {
             case 0:
@@ -556,6 +561,9 @@ void GameWidget::sendMessage(int type)
             case 2:
                 mess->set(QString("You cannot place a \npiece there!"), 2000, false);
                 break;
+            case 3:
+                mess->set(QString("You WIN!\n\n") + judge->oppoOL + QString("\nsuicide."), 0, true);
+                break;
             case 5:
                 mess->set(QString("You resign!\n\n") + judge->oppoOL + QString("\nwins."), 0, true);
                 break;
@@ -566,6 +574,7 @@ void GameWidget::sendMessage(int type)
                 mess->set(QString("Please resign before\nrestarting the game."), 2000, false);
                 break;
         }
+        break;
     }
     mess->show();
 }
@@ -663,6 +672,9 @@ void GameWidget::remoteResign()
     judge->curPlayerBak = judge->curPlayer;
     judge->curPlayer = -1;
     stopTimer();
+
+    dataToString();
+    judge->log(Level::Info, "game win: "+QString(dataStr));
 }
 
 // 定义按钮行为
@@ -710,6 +722,9 @@ void GameWidget::on_resignButton_clicked_OFFL()
     judge->curPlayer = -1;
     judge->loadState = 'G';
     stopTimer();
+
+    dataToString();
+    judge->log(Level::Info, "game lose: "+QString(dataStr));
 }
 void GameWidget::on_restartButton_clicked_OL()
 {

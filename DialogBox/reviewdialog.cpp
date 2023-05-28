@@ -148,7 +148,7 @@ void ReviewDialog::set_review_data(char state,char data[],ItemVector v){
 
 void ReviewDialog::init()
 {
-    judge->log(Logger::Level::Debug, "review dialog initialized");
+    judge->log(Level::Debug, "review dialog initialized");
     tim->stop();
     now_step = 0;
 }

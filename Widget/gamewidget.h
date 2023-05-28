@@ -44,6 +44,15 @@ signals:
     void turnForBot();              // 有请 Bot 表演
 
 public slots:
+    void startGame(int player); // 进入 gameWidget 时首先调用 startGame
+    void firstMove(int player);
+    void startTimer();    // 当对局开始时，无论谁先手（机器下第一个棋子认为不需要时间），都打开玩家的计时器
+    void stopTimer();
+    void updateCB();      // 更新棋盘
+    void goOL();          // go online
+    void goOFFL();        // go offline
+
+private slots:
     void on_loadButton_clicked(); // 链接 load 按钮的行为
     void on_saveButton_clicked(); // 链接 save 按钮的行为
     void on_resignButton_clicked_OFFL(); // 链接 resign 按钮的行为 (offline)
@@ -52,21 +61,13 @@ public slots:
     void on_restartButton_clicked_OL();
     void on_sendButton_clicked(); // 链接 send 按钮的行为
 
-    void startGame(int player); // 进入 gameWidget 时首先调用 startGame
-    void firstMove(int player);
-    void startTimer();    // 当对局开始时，无论谁先手（机器下第一个棋子认为不需要时间），都打开玩家的计时器
-    void stopTimer();
     void playerTimeout_OFFL(); // 玩家超时的槽函数，用于链接计时器 (offline)
     void playerTimeout_OL();
     void botTimeout();    // bot超时的槽函数，用于链接计时器
     void clickToCloseMB(bool force = false); // 再次点击棋盘时关闭消息弹窗
-    void updateCB();      // 更新棋盘
     void updateBar();     // 更新倒计时进度条
 
-    // 联机相关
-    void goOL();
-    void goOFFL();
-    void remoteResign();
+    void remoteResign();  // 联机认输
 
 private:
     void paintEvent(QPaintEvent *event) override; // 界面绘制

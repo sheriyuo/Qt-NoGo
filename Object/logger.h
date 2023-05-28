@@ -25,18 +25,18 @@
 *   @time: 2023/5/1
 */
 
+enum class Level {
+    Debug = 1000,
+    Info,
+    Warning,
+    Error
+};
+
 class Logger : public QObject
 {
     Q_OBJECT
 
 public:
-    enum class Level {
-        Debug = 1000,
-        Info,
-        Warning,
-        Error
-    };
-
     Logger(QObject* parent = nullptr);
     ~Logger();
 

@@ -21,7 +21,7 @@ Judge::Judge(QObject *parent) :
             IP = address.toString();
         }
     }
-    PORT = 1919;
+    PORT = 16677;
     server = new NetworkServer(this);
     socket = new NetworkSocket(new QTcpSocket(), this);
     srand(time(0) + clock());
@@ -30,26 +30,26 @@ Judge::Judge(QObject *parent) :
 \
     QObject::connect(server, &NetworkServer::receive, this, &Judge::recDataFromClient);
     QObject::connect(socket, &NetworkSocket::receive, this, [&](NetworkData d){
-        log(Logger::Level::Info, QString("socket receives"));
+        log(Level::Info, QString("socket receives"));
         loggingSendReceive(d, IP, 0);
         recData(d);
     });
     QObject::connect(server, &QTcpServer::newConnection, this, [&](){
-        log(Logger::Level::Info, QString("server connected"));
+        log(Level::Info, QString("server connected"));
         emit serverConnect();
     });
     QObject::connect(socket->base(), &QTcpSocket::connected, this, [&](){
-        log(Logger::Level::Info, QString("socket connected"));
+        log(Level::Info, QString("socket connected"));
         emit socketConnect();
     });
 
     init();
-    log(Logger::Level::Debug, "database constructed");
+    log(Level::Debug, "database constructed");
 }
 
 Judge::~Judge()
 {
-    log(Logger::Level::Debug, "database destructed");
+    log(Level::Debug, "database destructed");
     // delete this;
 }
 
@@ -66,8 +66,8 @@ void Judge::init()
     blockCnt = 0;
     curPlayer = 0;
     loadState = 0;
-    hasSentREA = hasSentTIM = hasSentGIV = false;
-    log(Logger::Level::Debug, "database initialized");
+    hasSentREA = hasSentTIM = hasSentGIV = hasSentSUI = false;
+    log(Level::Debug, "database initialized");
 }
 
 int Judge::GridPoint(int x, int y) {return board[x][y];}
@@ -271,12 +271,13 @@ void Judge::send(NetworkData d)
         loggingSendReceive(d, IP, 1);
         socket->send(d);
     }
-    hasSentREA = hasSentTIM = hasSentGIV = false;
+    hasSentREA = hasSentTIM = hasSentGIV = hasSentSUI = false;
     switch(d.op)
     {
     case OPCODE::READY_OP: hasSentREA = true; break;
     case OPCODE::GIVEUP_END_OP: hasSentGIV = true; break;
     case OPCODE::TIMEOUT_END_OP: hasSentTIM = true; break;
+    case OPCODE::SUICIDE_END_OP: hasSentSUI = true; break;
     }
 }
 bool Judge::isConnected()
@@ -290,12 +291,12 @@ void Judge::clearLink(bool isPassive)
     {
         if(lastClient != nullptr)
         {
-            log(Logger::Level::Info, QString("server leave"));
+            log(Level::Info, QString("server leave"));
             server->leave(lastClient);
         }
         if(server->isListening())
         {
-            log(Logger::Level::Info, QString("server stopped"));
+            log(Level::Info, QString("server stopped"));
             server->close();
         }
         lastClient = nullptr;
@@ -304,12 +305,12 @@ void Judge::clearLink(bool isPassive)
     {
         if(socketConnected)
         {
-            log(Logger::Level::Info, QString("socket leave"));
+            log(Level::Info, QString("socket leave"));
             socket->bye();
         }
         socketConnected = false;
     }
-    hasSentREA = hasSentTIM = hasSentGIV = false;
+    hasSentREA = hasSentTIM = hasSentGIV = hasSentSUI = false;
     oppoOL = "";
 }
 void Judge::connect()
@@ -317,16 +318,16 @@ void Judge::connect()
     clearLink(true);
     if(runMode == 2)
     {
-        log(Logger::Level::Info, QString("server listen<")+IP+":"+QString::number(PORT)+">");
+        log(Level::Info, QString("server listen<")+IP+":"+QString::number(PORT)+">");
         server->listen(QHostAddress(IP), PORT);
     }
     else
     {
-        log(Logger::Level::Info, QString("socket connectToHost<")+IP+":"+QString::number(PORT)+">");
+        log(Level::Info, QString("socket connectToHost<")+IP+":"+QString::number(PORT)+">");
         socket->hello(IP, PORT);
         if(!socket->base()->waitForConnected(5000))
         {
-            log(Logger::Level::Error, QString("socket connect failed"));
+            log(Level::Error, QString("socket connect failed"));
             socketConnected = false;
         }
         else
@@ -338,7 +339,7 @@ void Judge::connect()
 }
 void Judge::recDataFromClient(QTcpSocket* client, NetworkData d)
 {
-    log(Logger::Level::Info, QString("server receives"));
+    log(Level::Info, QString("server receives"));
     loggingSendReceive(d, (client->peerAddress()).toString(), 0);  // log
     lastClient = client;
     recData(d);
@@ -365,8 +366,17 @@ void Judge::recData(NetworkData d)
         break;
     case OPCODE::MOVE_OP:
         row = QChar(d.data1[0]).unicode()-'A', col = QChar(d.data1[1]).unicode()-'1';
-        PlaceAPiece(row, col);
-        emit MOVE_OP();
+        if(!CheckVaild(row, col)){
+            if(!hasSentSUI){
+                send(NetworkData(OPCODE::SUICIDE_END_OP, usrnameOL, "sorry you suicide"));
+                emit SUICIDE_END_OP();
+            }
+            else log(Level::Error, "SUICIDE_END_OP not repied, opponent suicide again");
+        }
+        else{
+            PlaceAPiece(row, col);
+            emit MOVE_OP();
+        }
         break;
     case OPCODE::CHAT_OP:
         if(d.data1 != "") emit CHAT_OP(d);
@@ -390,15 +400,16 @@ void Judge::recData(NetworkData d)
         clearLink(true);
         emit LEAVE_OP();
         break;
-    case OPCODE::SUICIDE_END_OP:
-        send(NetworkData(OPCODE::SUICIDE_END_OP, usrnameOL, ""));
-        emit SUICIDE_END_OP();
+    case OPCODE::SUICIDE_END_OP: // 只会收到回信
+        if(!hasSentSUI) log(Level::Error, "opponent send SUICIDE_END_OP but local player cannot suicide");
+        else hasSentSUI = false;
+        // emit SUICIDE_END_OP();
         break;
     }
 }
 
 //log
-void Judge::log(Logger::Level level, QString message) {logger->log(level, message);}
+void Judge::log(Level level, QString message) {logger->log(level, message);}
 void Judge::loggingSendReceive(NetworkData d, QString ipAddress, bool seorre)
 {
     QString reorsend = seorre ? "send":"receive";
@@ -422,5 +433,5 @@ void Judge::loggingSendReceive(NetworkData d, QString ipAddress, bool seorre)
                         .arg(logop)
                         .arg(d.data1)
                         .arg(d.data2);
-    log(Logger::Level::Debug, message);
+    log(Level::Debug, message);
 }
