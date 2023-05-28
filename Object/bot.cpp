@@ -149,7 +149,7 @@ double Bot::alphaBeta(double a, double b, int depth)
         return depth & 1 ? b : a; // 判断超时
     curPlayer = depth & 1;
     if(depth == 4 + (chooseVec.size() < 30) + 2 * (chooseVec.size() < 23)
-                  + 2 * (chooseVec.size() < 18))
+                  + 2 * (chooseVec.size() < 18) - (pointChecked * 4 < (int)chooseVec.size()))
         return judgeBoard();
     if(depth & 1)
     {
@@ -183,12 +183,13 @@ double Bot::alphaBeta(double a, double b, int depth)
                 if(depth == 0 && a > finalv)
                 {
                     finalx = xx, finaly = yy, finalv = a;
-                    //qDebug() << xx << "," << yy << " " << a << " " << checkBoard(xx, yy);
+                    qDebug() << xx << "," << yy << " " << a << " " << checkBoard(xx, yy);
                 }
                 else if(depth == 0)
-                   // qDebug() << xx << "," << yy << " " << a << " " << finalv;
+                    qDebug() << xx << "," << yy << " " << a << " " << finalv;
                 if(a >= b) break;
             }
+            else if(depth == 0) qDebug() << xx << "," << yy <<"???";
         if(!op) return judgeBoard();
         return a;
     }
@@ -207,7 +208,10 @@ void Bot::run()
         {
             curBoard[x][y] = judge->GridPoint(x, y);
             if(!curBoard[x][y])
+            {
                 chooseVec.push_back(Point(x, y));
+                qDebug() << x <<"," <<y<<" choosed";
+            }
         }
 
     srand(time(0));
@@ -216,6 +220,7 @@ void Bot::run()
     finalx = finaly = finalv = -1;
     alphaBeta(alpha, beta, 0);
     curPlayer = 0;
+    qDebug() << finalx <<"," <<finaly;
     checkBoard(finalx, finaly);
     if(!judge->CheckVaild(finalx, finaly))
     {
