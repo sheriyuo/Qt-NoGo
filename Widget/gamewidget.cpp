@@ -451,7 +451,7 @@ void GameWidget::gameLose(int type)
     else sendMessage(3);
     judge->curPlayer = -1;
         //qDebug()<<"buglose";
-    judge->loadState = 'L';
+    judge->loadState = 'T';
 }
 void GameWidget::gameWin(int type)
 {

@@ -183,13 +183,13 @@ double Bot::alphaBeta(double a, double b, int depth)
                 if(depth == 0 && a > finalv)
                 {
                     finalx = xx, finaly = yy, finalv = a;
-                    qDebug() << xx << "," << yy << " " << a << " " << checkBoard(xx, yy);
+                    //qDebug() << xx << "," << yy << " " << a << " " << checkBoard(xx, yy);
                 }
                 else if(depth == 0)
-                    qDebug() << xx << "," << yy << " " << a << " " << finalv;
+                   // qDebug() << xx << "," << yy << " " << a << " " << finalv;
                 if(a >= b) break;
             }
-            else if(depth == 0) qDebug() << xx << "," << yy <<"???";
+            //else if(depth == 0) qDebug() << xx << "," << yy <<"???";
         if(!op) return judgeBoard();
         return a;
     }
@@ -210,7 +210,7 @@ void Bot::run()
             if(!curBoard[x][y])
             {
                 chooseVec.push_back(Point(x, y));
-                qDebug() << x <<"," <<y<<" choosed";
+                //qDebug() << x <<"," <<y<<" choosed";
             }
         }
 
@@ -220,7 +220,7 @@ void Bot::run()
     finalx = finaly = finalv = -1;
     alphaBeta(alpha, beta, 0);
     curPlayer = 0;
-    qDebug() << finalx <<"," <<finaly;
+   // qDebug() << finalx <<"," <<finaly;
     checkBoard(finalx, finaly);
     if(!judge->CheckVaild(finalx, finaly))
     {
