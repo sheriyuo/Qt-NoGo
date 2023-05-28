@@ -21,8 +21,6 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
     autoPlayer = new Bot(judge);
     autoControl = new SwitchControl(this);
 
-
-
     columnX = judge->RIGHT_UP() + (WINDOW_WIDTH - judge->RIGHT_UP()) / 2;
     columnY = (double)WINDOW_HEIGHT / 20 * 9;
     // 右边侧栏位置中线
@@ -195,8 +193,6 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
 void GameWidget::startGame(int player){
     if(judge->runMode == 1) autoControl->setDisabled(true);
     else autoControl->setDisabled(false);
-//    if(judge->runMode == 2 || judge->runMode == 3) goOL();
-//    else goOFFL();
     firstMove(player);
     startTimer();
     updateCB();

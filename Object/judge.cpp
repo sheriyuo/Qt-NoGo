@@ -401,7 +401,10 @@ void Judge::recData(NetworkData d)
         emit LEAVE_OP();
         break;
     case OPCODE::SUICIDE_END_OP: // 只会收到回信
-        if(!hasSentSUI) log(Level::Error, "opponent send SUICIDE_END_OP but local player cannot suicide");
+        if(!hasSentSUI){
+            send(NetworkData(OPCODE::SUICIDE_END_OP, usrnameOL, "sorry you suicide"));
+            log(Level::Error, "opponent send SUICIDE_END_OP but local player cannot suicide");
+        }
         else hasSentSUI = false;
         // emit SUICIDE_END_OP();
         break;
