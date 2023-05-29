@@ -706,7 +706,8 @@ void GameWidget::on_restartButton_clicked_OFFL()
         reviewDialog->init();
         reviewDialog->close();
     }
-
+    ui->saveButton->setEnabled(1);
+    mouse_disabled = 0;
     clickToCloseMB(true);
     this->close();
 
