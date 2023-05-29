@@ -69,6 +69,9 @@ private slots:
 
     void remoteResign();  // 联机认输
 
+    void on_mouse();
+    void off_mouse();
+
 private:
     void paintEvent(QPaintEvent *event) override; // 界面绘制
     void drawChessboard(QPainter &painter);
@@ -120,6 +123,7 @@ private:
     ItemVector dataVec;
 
     bool onreview=0;
+    bool mouse_disabled=0;
 };
 
 #endif // GAMEWIDGET_H

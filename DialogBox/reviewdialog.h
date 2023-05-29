@@ -30,9 +30,14 @@ public:
     ~ReviewDialog();
     void set_review_data(char state,char data[],ItemVector v);
     void init();
-public slots:
-    void display();
 
+signals:
+    void trybutton();
+    void quit_try();
+
+
+public slots:
+    void display();    
 private slots:
     void on_start_clicked();
 

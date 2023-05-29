@@ -130,13 +130,30 @@ void ReviewDialog::on_input_entered(){
 }
 void ReviewDialog::on_tryButton_clicked()
 {
-
+    on_pause_clicked();
+    emit trybutton();
 }
 
 
 void ReviewDialog::on_quit_try_clicked()
 {
+    emit quit_try();
 
+    on_pause_clicked();
+    int stepnum=now_step;
+    if(stepnum<0||stepnum>sum_steps){
+        return ;
+    }
+    else{
+        judge->init();
+        now_step=stepnum;
+        for(int i=0;i<now_step;i++){
+            Item cur=dataVec[i];
+            judge->PlaceAPiece(cur.first, cur.second, 1);
+        }
+    }
+    on_pause_clicked();
+    emit judge->modifiedCB();
 }
 
 void ReviewDialog::set_review_data(char state,char data[],ItemVector v){

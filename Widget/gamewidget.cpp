@@ -86,7 +86,6 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
     // 链接计时器
     timerForPlayer = new QTimer;
     timerForBar = new QTimer;
-
     connect(this, &GameWidget::mousePress, this, [&](){clickToCloseMB();});
     connect(this, &GameWidget::turnForBot, bot, [&]{bot->start();});
     connect(ui->resignButton, &QPushButton::clicked, this, &GameWidget::on_resignButton_clicked_OFFL);
@@ -97,7 +96,6 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
     connect(bot, &Bot::timeout, this, &GameWidget::botTimeout);
     connect(bot, &QThread::finished, this, [&](){ // 保证只在 judge->runMode==0 时才会被调用
         if(judge->curPlayer == 0) return;
-        qDebug()<<"1";
         startTimer();
         if(autoControl->isToggled()) autoPlayer->start();
     });
@@ -133,6 +131,12 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
             autoPlayer->terminate();
         }
     });
+
+    //链接reviewdialog
+    connect(reviewDialog, &ReviewDialog::trybutton, this, &GameWidget::on_mouse);
+    connect(reviewDialog, &ReviewDialog::quit_try, this, &GameWidget::off_mouse);
+    connect(reviewDialog, &ReviewDialog::quit_try, this, &GameWidget::stopTimer);
+
 }
 GameWidget::~GameWidget()
 {
@@ -150,6 +154,10 @@ void GameWidget::turn_off_review()
 // 监听鼠标点击实现落子
 void GameWidget::mousePressEvent(QMouseEvent *event)
 {
+    if(mouse_disabled){
+        return ;
+    }
+
 
     emit mousePress();
     if(judge->curPlayer == -1) return; // 判断游戏结束
@@ -673,6 +681,15 @@ void GameWidget::remoteResign()
     judge->log(Level::Info, "game win: "+QString(dataStr));
 }
 
+void GameWidget::on_mouse()
+{
+    mouse_disabled=0;
+}
+void GameWidget::off_mouse()
+{
+    mouse_disabled=1;
+}
+
 // 定义按钮行为
 void GameWidget::on_sendButton_clicked()
 {
@@ -828,6 +845,7 @@ void GameWidget::on_loadButton_clicked()
 //            on_resignButton_clicked_OFFL();
           judge->init();
           turn_on_review();
+          mouse_disabled=1;
           reviewDialog->set_review_data(strState,dataStr,dataVec);
           reviewDialog->show();
           reviewDialog->move(QPoint(WINDOW_WIDTH / 2, WINDOW_HEIGHT));
@@ -848,7 +866,6 @@ void GameWidget::on_saveButton_clicked()
     dataToString();
     QString fileName = QFileDialog::getSaveFileName(nullptr, tr("Save Data"), "", tr("DATA (*.dat)"));
     // QFileDialog 读取文件 fileName
-
     if (fileName.isEmpty())
         return;
     else
