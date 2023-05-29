@@ -69,8 +69,8 @@ private slots:
 
     void remoteResign();  // 联机认输
 
-    void on_mouse();
-    void off_mouse();
+    void on_try();
+    void off_try();
 
 private:
     void paintEvent(QPaintEvent *event) override; // 界面绘制

@@ -133,8 +133,8 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
     });
 
     //链接reviewdialog
-    connect(reviewDialog, &ReviewDialog::trybutton, this, &GameWidget::on_mouse);
-    connect(reviewDialog, &ReviewDialog::quit_try, this, &GameWidget::off_mouse);
+    connect(reviewDialog, &ReviewDialog::trybutton, this, &GameWidget::on_try);
+    connect(reviewDialog, &ReviewDialog::quit_try, this, &GameWidget::off_try);
     connect(reviewDialog, &ReviewDialog::quit_try, this, &GameWidget::stopTimer);
 
 }
@@ -681,11 +681,11 @@ void GameWidget::remoteResign()
     judge->log(Level::Info, "game win: "+QString(dataStr));
 }
 
-void GameWidget::on_mouse()
+void GameWidget::on_try()
 {
     mouse_disabled=0;
 }
-void GameWidget::off_mouse()
+void GameWidget::off_try()
 {
     mouse_disabled=1;
 }
@@ -844,6 +844,7 @@ void GameWidget::on_loadButton_clicked()
 //        if(judge->loadState == 'G')
 //            on_resignButton_clicked_OFFL();
           judge->init();
+          ui->saveButton->setEnabled(0);
           turn_on_review();
           mouse_disabled=1;
           reviewDialog->set_review_data(strState,dataStr,dataVec);

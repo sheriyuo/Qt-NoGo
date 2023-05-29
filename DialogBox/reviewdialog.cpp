@@ -132,13 +132,22 @@ void ReviewDialog::on_tryButton_clicked()
 {
     on_pause_clicked();
     emit trybutton();
+    ui->next->setEnabled(0);
+    ui->previous->setEnabled(0);
+    ui->start->setEnabled(0);
+    ui->pause->setEnabled(0);
+    ui->stepnum->setReadOnly(1);
 }
 
 
 void ReviewDialog::on_quit_try_clicked()
 {
     emit quit_try();
-
+    ui->next->setEnabled(1);
+    ui->previous->setEnabled(1);
+    ui->start->setEnabled(1);
+    ui->pause->setEnabled(1);
+    ui->stepnum->setReadOnly(0);
     on_pause_clicked();
     int stepnum=now_step;
     if(stepnum<0||stepnum>sum_steps){
