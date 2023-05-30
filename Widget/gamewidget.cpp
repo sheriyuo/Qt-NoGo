@@ -198,30 +198,58 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
     }
     else sendMessage(2);
 }
-void GameWidget::startGame(int player){
+void GameWidget::startGame(int player)
+{
     if(judge->runMode == 1) autoControl->setDisabled(true);
     else autoControl->setDisabled(false);
     firstMove(player);
     startTimer();
     updateCB();
 }
-void GameWidget::firstMove(int player){
+void GameWidget::firstMove(int player)
+{
     if(player == -1) // bot 先手
     {
         if(judge->runMode == 0) bot->start();
         if(judge->runMode == 1) judge->curPlayer ^= 1;
     }
 }
+void GameWidget::closeEvent(QCloseEvent* event)
+{
+    stopTimer();
+    clickToCloseMB(true);
+    dataToString();
+    judge->log(Level::Info, "GameWidget closed: "+QString(dataStr));
 
-void GameWidget::updateCB(){
-    ui->stepLabel->setText(QString::number(judge->getStep().size()));
-    repaint();
+    ui->saveButton->setEnabled(1);
+    mouse_disabled = 0;
+
+    autoControl->setToggled(false);
+    autoPlayer->terminate();
+    bot->terminate();
+    bot->init();
+    autoPlayer->init();
+    judge->init();
 }
-void GameWidget::clickToCloseMB(bool force){
+
+void GameWidget::clickToCloseMB(bool force)
+{
     if(force) mess->timeUpClose();
     else mess->clickToClose();
 }
-
+void GameWidget::updateCB()
+{
+    ui->stepLabel->setText(QString::number(judge->getStep().size()));
+    repaint();
+}
+void GameWidget::updateBar()
+{
+    double value;
+    value=(clock()-basetime);
+    if(!bot->isRunning()) ui->TimeBar->setValue(1000-value/PLAYER_TIMEOUT);
+    else ui->TimeBar->setValue(1000-value/BOT_TIMEOUT);
+    repaint();
+}
 void GameWidget::setColorForBar()
 {
     if(judge->curPlayer == -1) return;
@@ -247,14 +275,6 @@ void GameWidget::setColorForBar()
                                    "background: #EAACB8}");
         ui->stepLabel->setStyleSheet(CUS_BLACK_PRIMARY);
     }
-}
-void GameWidget::updateBar()
-{
-    double value;
-    value=(clock()-basetime);
-    if(!bot->isRunning()) ui->TimeBar->setValue(1000-value/PLAYER_TIMEOUT);
-    else ui->TimeBar->setValue(1000-value/BOT_TIMEOUT);
-    repaint();
 }
 
 void GameWidget::paintEvent(QPaintEvent *event)
@@ -409,7 +429,6 @@ void GameWidget::drawDemo(QPainter &painter) // 绘画 FYH
         {
             if(judge->GridPoint(i, j)) return;
         }
-    srand(time(0));
 
     int fyhBoard[50][50] = {};
     int Len = (judge->CHESSBOARD_SIZE - 1) / 2;
@@ -454,27 +473,31 @@ void GameWidget::drawDemo(QPainter &painter) // 绘画 FYH
 // 判胜负与计时器相关
 void GameWidget::gameLose(int type)
 {
-    judge->curPlayerBak = judge->curPlayer;
+    stopTimer();
     if(type) sendMessage(1);
     else sendMessage(3);
-    judge->curPlayer = -1;
-    // qDebug()<<"buglose";
-    judge->loadState = 'T';
 
-    dataToString();
-    judge->log(Level::Info, "game lose: "+QString(dataStr));
+    autoControl->setToggled(false);
+    autoPlayer->terminate();
+    bot->terminate();
+
+    judge->curPlayerBak = judge->curPlayer;
+    judge->curPlayer = -1;
+    judge->loadState = 'T';
 }
 void GameWidget::gameWin(int type)
 {
-    judge->curPlayerBak = judge->curPlayer;
+    stopTimer();
     if(type) sendMessage(0);
     else sendMessage(4);
-    judge->curPlayer = -1;
-    // qDebug()<<"bugwin";
-    judge->loadState = 'W';
 
-    dataToString();
-    judge->log(Level::Info, "game win: "+QString(dataStr));
+    autoControl->setToggled(false);
+    autoPlayer->terminate();
+    bot->terminate();
+
+    judge->curPlayerBak = judge->curPlayer;
+    judge->curPlayer = -1;
+    judge->loadState = 'W';
 }
 void GameWidget::stopTimer() {
     timerForPlayer->stop();
@@ -672,13 +695,16 @@ void GameWidget::goOFFL()
 }
 void GameWidget::remoteResign()
 {
+    stopTimer();
     sendMessage(6);
+
+    autoControl->setToggled(false);
+    autoPlayer->terminate();
+    bot->terminate();
+
     judge->curPlayerBak = judge->curPlayer;
     judge->curPlayer = -1;
-    stopTimer();
-
-    dataToString();
-    judge->log(Level::Info, "game win: "+QString(dataStr));
+    judge->loadState = 'W';
 }
 
 void GameWidget::on_try()
@@ -694,6 +720,7 @@ void GameWidget::off_try()
 void GameWidget::on_sendButton_clicked()
 {
     QString data = ui->chatInput->text();
+    if(data == "") return;
     QString s = "<" + judge->usrnameOL + "> : \n" + data;
     ui->chatHistory->appendPlainText(s);
     ui->chatInput->setText("");
@@ -706,39 +733,23 @@ void GameWidget::on_restartButton_clicked_OFFL()
         reviewDialog->init();
         reviewDialog->close();
     }
-    ui->saveButton->setEnabled(1);
-    mouse_disabled = 0;
-    clickToCloseMB(true);
     this->close();
-
-    autoControl->setToggled(false);
-    autoPlayer->terminate();
-    bot->terminate();
-    bot->init();
-    autoPlayer->init();
-
-    stopTimer();
     emit restartSingal(0);
-    judge->init();
 }
 void GameWidget::on_resignButton_clicked_OFFL()
 {
     if(judge->curPlayer == -1) return;
 
+    stopTimer();
+    sendMessage(5);
+
     autoControl->setToggled(false);
     autoPlayer->terminate();
     bot->terminate();
-    bot->init();
-    autoPlayer->init();
 
-    sendMessage(5);
     judge->curPlayerBak = judge->curPlayer;
     judge->curPlayer = -1;
     judge->loadState = 'G';
-    stopTimer();
-
-    dataToString();
-    judge->log(Level::Info, "game lose: "+QString(dataStr));
 }
 void GameWidget::on_restartButton_clicked_OL()
 {

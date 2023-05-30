@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QDebug>
 #include <QThread>
+#include <QRandomGenerator>
 #include "Object/judge.h"
 
 /*
@@ -61,6 +62,8 @@ private:
 
     int maxDep;
     ItemVector chooseVec, pointVec[5];
+
+    quint16 token;
 };
 
 #endif // BOT_H

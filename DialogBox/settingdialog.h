@@ -43,6 +43,7 @@ public slots:
 
 private:
     void paintEvent(QPaintEvent *event) override;
+    void closeEvent(QCloseEvent* event) override;
 
     Ui::SettingDialog *ui;
     int WIDTH, HEIGHT;

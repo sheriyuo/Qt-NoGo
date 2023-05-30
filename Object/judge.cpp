@@ -24,9 +24,9 @@ Judge::Judge(QObject *parent) :
     PORT = 16677;
     server = new NetworkServer(this);
     socket = new NetworkSocket(new QTcpSocket(), this);
-    srand(time(0) + clock());
-    // usrnameOL = QString("OnlinePlayer") + QString::number(QRandomGenerator::global()->bounded(89999) + 10000);
+    static QRegularExpression regx("[^0-9a-zA-Z_]");
     usrnameOL = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).section("/",-1,-1);
+    usrnameOL.replace(regx, "_");
 \
     QObject::connect(server, &NetworkServer::receive, this, &Judge::recDataFromClient);
     QObject::connect(socket, &NetworkSocket::receive, this, [&](NetworkData d){
@@ -44,12 +44,11 @@ Judge::Judge(QObject *parent) :
     });
 
     init();
-    log(Level::Debug, "database constructed");
 }
 
 Judge::~Judge()
 {
-    log(Level::Debug, "database destructed");
+    log(Level::Debug, "Judge destructed");
     // delete this;
 }
 
@@ -67,7 +66,7 @@ void Judge::init()
     curPlayer = 0;
     loadState = 0;
     hasSentREA = hasSentTIM = hasSentGIV = hasSentSUI = false;
-    log(Level::Debug, "database initialized");
+    log(Level::Debug, "Judge initialized");
 }
 
 int Judge::GridPoint(int x, int y) {return board[x][y];}
@@ -278,6 +277,7 @@ void Judge::send(NetworkData d)
     case OPCODE::GIVEUP_END_OP: hasSentGIV = true; break;
     case OPCODE::TIMEOUT_END_OP: hasSentTIM = true; break;
     case OPCODE::SUICIDE_END_OP: hasSentSUI = true; break;
+    default: break;
     }
 }
 bool Judge::isConnected()

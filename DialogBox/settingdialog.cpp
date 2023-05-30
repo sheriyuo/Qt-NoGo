@@ -88,10 +88,9 @@ SettingDialog::SettingDialog(Judge *j, QWidget *parent) :
     ui->switchBtn->setDisabled(true);
     ui->usrnameInput->setDisabled(true);
 
-    QRegularExpression regx("^[0-9a-zA-Z_]{1,}$");
+    QRegularExpression regx("[0-9a-zA-Z_]{1,18}$");
     QValidator *validator = new QRegularExpressionValidator(regx, ui->usrnameInput);
     ui->usrnameInput->setValidator(validator);
-    ui->usrnameInput->setMaxLength(18);
 
     connect(ui->gamemodeCB, &QComboBox::activated, this, &SettingDialog::getRunMode);
     connect(ui->chessbdCB, &QComboBox::activated, this, &SettingDialog::getChessBd);
@@ -124,10 +123,16 @@ void SettingDialog::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true); // 抗锯齿
-
-    // painter.setPen(QPen(QColor(0xf9f8ef), Strength, Qt::SolidLine));
     painter.setBrush(QColor(BG_COLOR));
     painter.drawRect(0, 0, WIDTH, HEIGHT);
+}
+void SettingDialog::closeEvent(QCloseEvent *event)
+{
+    judge->IP = ui->IPinput->text();
+    judge->PORT = ui->PORTinput->text().toInt();
+    if(ui->usrnameInput->text() != "") judge->usrnameOL = ui->usrnameInput->text();
+    else ui->usrnameInput->setText(judge->usrnameOL);
+    getChessBd(ui->chessbdCB->currentIndex());
 }
 
 void SettingDialog::getRunMode(int mode)
@@ -151,10 +156,6 @@ void SettingDialog::getChessBd(int size)
 // 按钮行为
 void SettingDialog::on_closeBtn_clicked()
 {
-    judge->IP = ui->IPinput->text();
-    judge->PORT = ui->PORTinput->text().toInt();
-    judge->usrnameOL = ui->usrnameInput->text();
-    getChessBd(ui->chessbdCB->currentIndex());
     this->close();
 }
 void SettingDialog::on_restartBtn_clicked()

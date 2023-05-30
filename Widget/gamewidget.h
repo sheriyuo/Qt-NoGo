@@ -74,6 +74,7 @@ private slots:
 
 private:
     void paintEvent(QPaintEvent *event) override; // 界面绘制
+    void closeEvent(QCloseEvent *event) override; // 关闭事件
     void drawChessboard(QPainter &painter);
     void drawBlack(QPainter &painter, double px, double py);
     void drawWhite(QPainter &painer, double px, double py);
@@ -85,7 +86,7 @@ private:
     void gameLose(int type = 0); // 输掉游戏（0->PVE 1->PVP）
     void gameWin(int type = 0);  // 赢了游戏（0->PVE 1->PVP）
 
-    void dataToString(); // 编码
+    void dataToString(); // 编码 (playerRole:0->w/2->b) (runMode:0->PVE/PVP/server/client)
     void stringToData(); // 解码
 
     /*

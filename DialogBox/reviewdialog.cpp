@@ -13,7 +13,7 @@ ReviewDialog::ReviewDialog(Judge *_judge, QWidget *parent) :
     ui->setupUi(this);
 
 
-    QRegularExpression regx("^[0-9]{1,}$");
+    QRegularExpression regx("[0-9]{1,3}$");
     QValidator *validator = new QRegularExpressionValidator(regx, ui->stepnum);
     ui->stepnum->setValidator(validator);
     connect(ui->stepnum, &QLineEdit::returnPressed, this,  &ReviewDialog::on_input_entered);

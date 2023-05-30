@@ -12,11 +12,12 @@ Bot::Bot(Judge *j, QObject *parent) :
     QThread(parent),
     judge(j)
 {
-    // 初始化
+    token = QRandomGenerator::global()->bounded(1<<16);
 }
 
 Bot::~Bot()
 {
+    judge->log(Level::Debug, "Bot"+QString::number(token)+" destructed");
     // delete this;
 }
 
@@ -26,6 +27,7 @@ void Bot::init()
     eps = 0.03;
     alpha = 0.39;
     beta = 0.61;
+    judge->log(Level::Debug, "Bot"+QString::number(token)+" initialized");
 }
 
 bool Bot::IsInBoard(int x, int y)
@@ -196,12 +198,13 @@ double Bot::alphaBeta(double a, double b, int depth)
 }
 void Bot::run()
 {
-    if(judge->CHESSBOARD_SIZE != 9) return makeRandomMove();
+    readFromJudge();
     searchStartTime = clock(); // 计时器
     srand(time(0));
     chooseVec.clear();
-    readFromJudge();
     pointChecked = 0;
+
+    if(CHESSBOARD_SIZE != 9) return makeRandomMove();
 
     for(int x = 0; x < CHESSBOARD_SIZE; x++)
         for(int y = 0; y < CHESSBOARD_SIZE; y++)
@@ -257,6 +260,7 @@ void Bot::makeRandomMove()
         }
         x = rand() % CHESSBOARD_SIZE;
         y = rand() % CHESSBOARD_SIZE;
+        qDebug() << x << ' ' << y;
     }
     while(!judge->CheckVaild(x, y));
     judge->PlaceAPiece(x, y);
