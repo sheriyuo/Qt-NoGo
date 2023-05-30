@@ -30,14 +30,13 @@
 	
 	\subsection{小组分工}
 	
-	笔者负责了项目 UI 的主要设计、棋盘逻辑的维护、文件部分的编写和报告的撰写。
+	笔者负责了项目 UI 的主要设计、棋盘逻辑的维护、文件部分的编写、AI 的设计与调试和报告的撰写。
 	
-	冯友和同学负责了项目框架的建构、初始 bot 的设计、联机部分的编写和项目的美化。
+	冯友和同学负责了项目框架的建构、联机部分的编写、项目的美化与调试和 AI 托管的实现。
 	
-	赵培宇同学负责了棋盘的生成、按钮的部分实现和状态的显示。
+	赵培宇同学负责了棋盘的生成、按钮的部分实现、状态的显示和对局回放的实现。
 	
 	\section{Qt 图形界面应用设计}
-	
 	
 	\subsection{UI 设计}
 	
@@ -165,6 +164,8 @@
 		\caption{状态判断}
 	\end{figure}
 	
+	但是在后期 AI 的实现过程中，笔者发现该算法实现回退搜索树（可持久化数组）的时空代价太大。所以在 AI 计算时，我们单独从 \verb|judge| 中取出状态数组进行 dfs 判断，非本地 AI 操作和终局回放仍使用原逻辑，这样实现的耦合度也较低。
+	
 	\subsection{设置}
 	
 	设置部分基于 \verb|optiondialog| 类，使用 Qt 自带的文本选择框和按钮对 \verb|gamewidget| 传入棋盘大小、游戏模式和联机部分的信息，将在线与离线、PVP 与 PVE 利用有限的空间优秀地集成为一体，用按钮切换在线模式与离线模式。
@@ -179,11 +180,13 @@
 		}
 	\end{figure}
 	
-	\subsection{计时器}
+	\subsection{计时器和状态显示}
 	
 	计时器基于 \verb|QProgressBar| 自带的 \verb|TimeBar|，用 CSS 设置美化后用于本项目的计时器设计。计时器采用从右向左线性读条的方法计时，进度条结束后判定为超时。
 	
-	在终局（胜利、失败、认输）后，计时器会与棋盘本体一起冻结，读取终局存档依然保持冻结。
+	状态显示位于计时器右侧，可以显示当前总步数。
+	
+	在终局（胜利、失败、认输）后，计时器会与棋盘本体一起冻结，读取终局存档和查看回放时依然保持冻结。
 	
 	\subsection{读档和存档}
 	
@@ -216,7 +219,7 @@
 	}
 	\end{lstlisting}
 	
-	读档后，程序重新初始化棋盘，强制传入存档内的设置参数，顺序模拟所有下棋操作。操作完成后得到的便是 Save 时的游戏状态，读档后 TimeBar 重置为初始时间，如果不是终局仍可以继续下棋，并随时可以执行新的 Save 和 Load。
+	读档后，程序重新初始化棋盘，强制传入存档内的设置参数，顺序模拟所有下棋操作。操作完成后得到的便是 Save 时的游戏状态，读档后 \verb|TimeBar| 重置为初始时间，如果不是终局仍可以继续下棋，并随时可以执行新的 Save 和 Load。
 	
 	对于终局情况的 \verb|DATA|，目前只能复现出终局。
 	
@@ -308,19 +311,123 @@
     当联机对战结束时，对局双方可以分别选择是否返回开始界面。当双方都返回开始界面后，此时程序视作重置到了第一步完成后的状态，可以选择重新开始联机或单人对局。
     
 
-	
 	\section{AI 算法设计}
 	
-	由于现在还是第二阶段，所以我们依然采用了非常粗犷的 bot 写法：随机下棋。
+	由于助教在 \verb|/guidance| 中建议不要卷 AI 的强度，所以本项目 AI 采用推荐的 Minimax 搜索算法。
 	
-	对于没有围棋基础的人来说，随机下棋的 bot 分布较好，bot 有获胜的可能。但是对于有基本围棋知识的人来说，只要斜着下棋、构造活眼就可以几乎 $100\%$ 战胜这个随机下棋 bot。
+	同时，对于用 MCTS 爆杀本项目 AI 的隔壁队伍表示强烈的谴责。
 	
-	\subsection{min-max 搜索和 $\alpha-\beta$ 剪枝}
+	\subsection{Minimax 搜索和 Alpha-Beta 剪枝}
 	
-	别卷了，还没写，你家程设就 $2$ 分。
+	Minimax 算法又叫极小化极大算法，是一种找出失败的最大可能性中的最小值的算法。
 	
-	有没有可能程设半期已经寄了。
+	Minimax 算法的整个过程，会从上到下遍历搜索树，回溯时利用子树信息更新答案，最后得到根节点的值，意义就是我方在双方都采取最优策略下能获得的最大分数\footnote{摘选自：https://oi-wiki.org/search/alpha-beta/}。
 	
+	Alpha-Beta 剪枝为每一个节点确定分数区间 $[\alpha, \beta]$，当 $\alpha \geq \beta$ 时停止搜索。
+	
+	代码框架如下：
+	
+	\begin{lstlisting}
+
+// minimax 搜索
+double Bot::alphaBeta(double a, double b, int depth)
+{
+	time_t curTime = clock();
+	if((curTime - searchStartTime) / (BOT_TIMEOUT * 1000) > 0.9)
+		return depth & 1 ? b : a; // 判断超时
+	if(depth == Max_Dep)
+		return judgeBoard(); // 叶子节点返回估价
+	if(depth & 1)
+	{
+		int op = 0;
+		for(auto [xx, yy] : chooseVec)
+			if(checkBoard(xx, yy)) // 枚举搜索节点 (xx, yy)
+			{
+				op = 1;
+				/* 更新状态 */
+				b = std::min(b, alphaBeta(a, b, depth + 1));
+				/* 回溯状态 */
+				if(a >= b) 
+					break;
+			}
+		if(!op)
+			return judgeBoard(); // 叶子节点返回估价
+		return b;
+	}
+	else
+	{
+		int op = 0;
+		for(auto [xx, yy] : chooseVec)
+			if(checkBoard(xx, yy)) // 枚举搜索节点 (xx, yy)
+			{
+				op = 1;
+				/* 更新状态 */
+				a = std::max(a, alphaBeta(a, b, depth + 1));
+				/* 回溯状态 */
+				if(depth == 0 && /* 更优 */ )
+				{
+					/* 更新状态 */
+				}
+				if(a >= b) 
+					break;
+			}
+		if(!op) 
+			return judgeBoard(); // 叶子节点返回估价
+		return a;
+	}
+}
+	\end{lstlisting}
+	
+	其中，\verb|chooseVec| 为随机排序的存储空位的 \verb|vector|，\verb|judgeBoard()| 为对当前状态的估价函数。
+
+	\subsection{估价函数}
+	
+	由于笔者比较懒，没有翻阅相关论文资料，所有的函数和调参都由笔者自行设计。
+	
+	在 Alpha-Beta 剪枝的代码框架中，节点分数 $v \in [0, 1]$，需要用一个函数将棋盘状态估价。
+	
+	借鉴围棋中对「目」的定义，定义一方的权值为棋盘上有且仅有本方能下的位置数。同时，对于一个「眼」，它的权值是空位的双倍。
+	
+	设 AI 的权值为 $x$，对手的权值为 $y$，当前的步数为 $z$，棋盘行列数为 $k$，得到了两个比值 $\frac xy$ 和 $\frac z{k^2}$。第一个比值与目前 AI 的胜率相关，第二个比值与棋局进行状态相关，同时它们的值域为 $(0,+\infty)$ 和 $(0,1)$，所以估价函数中需要一个合适的 $(0, +\infty) \to (0, 1)$ 的映射关系。
+	
+	笔者设计的估价函数为
+	
+	\begin{displaymath}
+		f(x, y, z, k) = 1 - 2 ^ {-(\frac xy) ^ {\frac 14 \left(1+\frac{z}{k^2}\right)}} 
+	\end{displaymath}
+
+	可以发现，对于相同的 $\frac xy$，棋局运行越后，估价函数越不趋近于 $\frac 12$。
+	
+	一开始估价函数以 $e$ 为底数，而大量测试表明，趋近于 $\frac 12$ 而不是 $\frac 1e$ 会更为理想。
+		
+	\subsection{AI 调参}
+	
+	在 Alpha-Beta 剪枝的过程中，需要传入 $\alpha, \beta$ 的初值。对于理想的 AI 对局来说，$\alpha, \beta$ 都应该趋近于 $\frac 12$。
+	
+	同样在大量的对局测试和 AI 自迭代优化后，笔者取 $\alpha = 0.39,\beta = 0.61$。
+	
+	此外，笔者对于 Alpha-Beta 剪枝的操作空间做出了一定的优化。AI 对于每一次落子后的估价函数进行模拟退火，若估价函数小于 $\frac 12$，对 $\alpha, \beta$ 带来 $\varepsilon$ 的扰动，$\varepsilon$ 随次数增多而逐渐趋于 $0$。
+	
+	实际测试表明，对于较弱的对手，没有必要进行扰动。代码实现如下：
+	
+	\begin{lstlisting}
+/* --- bot.h --- */
+double eps = 0.03, alpha = 0.39, beta = 0.61;
+const double delta = 0.93;
+
+alphaBeta(alpha, beta, 0); // 得到最终落子 (finalx, finaly)
+judge->PlaceAPiece(finalx, finaly);   // 更新落子
+/* 若为联机模式，更新对局 */
+double curRatio = judgeBoard();
+if(curRatio < 0.5)
+{
+	// 对面太强了，退火一下
+	alpha += (0.5 - alpha) * eps;
+	beta -= (beta - 0.5) * eps;
+	eps *= delta;
+}
+	\end{lstlisting}
+		
 	\section{感谢}
 	
 	感谢孙亚辉老师、潘俊达助教在学习生活上的指导和关心。
@@ -329,8 +436,14 @@
 	
 	感谢冯友和、赵培宇同学组成的团队。
 	
-	感谢彭文博、李知非同学于 2023/3/2 军理课后请本队吃的 KFC 疯狂星期四，并日常交流四人立直麻将。
+	感谢彭文博、李知非同学于 2023/3/2 军理课后请本队吃的 KFC 疯狂星期四，并日常交流立直麻将。
 	
-	感谢北京大学 ghastlcon 同学提供的帮助。
+	感谢 rvalue 同学对冯友和同学提供的指导。
+	
+	感谢北京大学 glc 同学提供的帮助。
+	
+	感谢北京大学 Pecuria 同学提供的帮助。
+	
+	感谢北京大学 botzone 平台\footnote{https://en.botzone.org.cn/}提供的 AI 对战支持。
 	
 \end{document}

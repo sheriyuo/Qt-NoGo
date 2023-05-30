@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2023.2.22)  5 MAY 2023 23:47
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2023.2.22)  30 MAY 2023 20:01
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -885,7 +885,7 @@ Package xeCJK Warning: Unknown CJK family `\CJKttdefault' is being ignored.
 (xeCJK)                
 (xeCJK)                Try to use `\setCJKmonofont[...]{...}' to define it.
 
-[2]
+[2] [3]
 
 Package fontspec Info: Font family 'Consolas(0)' created for font 'Consolas'
 (fontspec)             with options [].
@@ -927,7 +927,6 @@ Package fontspec Info: Font family 'ConsolasBold(0)' created for font
 (fontspec)             Bold/BI/OT:script=latn;language=dflt;"
 (fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.: 
 
- [3]
 
 Package fontspec Info: Font family 'ConsolasItalic(0)' created for font
 (fontspec)             'Consolas Italic' with options [].
@@ -960,19 +959,20 @@ File: img/TLE.png Graphic file (type bmp)
 File: img/web1.png Graphic file (type bmp)
 <img/web1.png>
  [5] [6]
-Overfull \hbox (26.3576pt too wide) in paragraph at lines 247--248
+Overfull \hbox (26.3576pt too wide) in paragraph at lines 250--251
 []\TU/SimSun(0)/m/n/10.53937 联 机 功 能 使 用 基 于 [][]\TU/lmtt/m/n/10.53937 QTcpServ
 er, QTcpSocket []\TU/SimSun(0)/m/n/10.53937 二 次 封 装 的 [][]\TU/lmtt/m/n/10.53937
  NetworkServer, NetworkSocket
  []
 
 [7]
-Overfull \hbox (9.971pt too wide) in paragraph at lines 279--280
+Overfull \hbox (9.971pt too wide) in paragraph at lines 282--283
 []\TU/SimSun(0)/m/n/10.53937 此 时，|  提 出 邀 请 发 发 送 [][]\TU/lmtt/m/n/10.53937 REA
 DY_OP []\TU/SimSun(0)/m/n/10.53937 型 数 据，|  接 收 方 识 别 该 数 据，|  并 弹 出 同 样 的 [][]
 \TU/lmtt/m/n/10.53937 OptionDialog
  []
 
+[8]
 File: img/web4.png Graphic file (type bmp)
 <img/web4.png>
 File: img/web5.png Graphic file (type bmp)
@@ -981,37 +981,17 @@ File: img/web2.png Graphic file (type bmp)
 <img/web2.png>
 File: img/web3.png Graphic file (type bmp)
 <img/web3.png>
-[8]
-LaTeX Font Info:    Calculating math sizes for size <13.04874> on input line 31
-8.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 318.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\alpha' on input line 318.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\beta' on input line 318.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 318.
-
-[9] [10] (./report.aux)
+ [9] [10] [11] [12] (./report.aux)
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 0C895F3847CB14AF6682FBB50F6B2DA0;2143.
+(rerunfilecheck)             Checksum: 918CA9B4EAE491251405F3D896AC6627;2410.
  ) 
 Here is how much of TeX's memory you used:
- 18456 strings out of 476179
- 377655 string characters out of 5813072
- 1042560 words of memory out of 5000000
- 38808 multiletter control sequences out of 15000+600000
- 487315 words of font info for 147 fonts, out of 8000000 for 9000
+ 18502 strings out of 476179
+ 379641 string characters out of 5813072
+ 1044560 words of memory out of 5000000
+ 38869 multiletter control sequences out of 15000+600000
+ 479889 words of font info for 118 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 88i,15n,91p,315b,1241s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 88i,15n,91p,315b,1188s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on report.pdf (12 pages).
+Output written on report.pdf (14 pages).

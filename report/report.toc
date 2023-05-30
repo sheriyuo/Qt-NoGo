@@ -4,9 +4,9 @@
 \contentsline {section}{\numberline {2}Qt 图形界面应用设计}{1}{section.2}%
 \contentsline {subsection}{\numberline {2.1}UI 设计}{1}{subsection.2.1}%
 \contentsline {subsection}{\numberline {2.2}基本逻辑}{2}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}棋盘逻辑和结局判断}{3}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.3}棋盘逻辑和结局判断}{4}{subsection.2.3}%
 \contentsline {subsection}{\numberline {2.4}设置}{5}{subsection.2.4}%
-\contentsline {subsection}{\numberline {2.5}计时器}{6}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.5}计时器和状态显示}{5}{subsection.2.5}%
 \contentsline {subsection}{\numberline {2.6}读档和存档}{6}{subsection.2.6}%
 \contentsline {subsection}{\numberline {2.7}信息窗口}{7}{subsection.2.7}%
 \contentsline {subsection}{\numberline {2.8}更多功能}{7}{subsection.2.8}%
@@ -15,7 +15,9 @@
 \contentsline {subsection}{\numberline {3.2}联机对战逻辑}{8}{subsection.3.2}%
 \contentsline {subsubsection}{\numberline {3.2.1}双方建立连接}{8}{subsubsection.3.2.1}%
 \contentsline {subsubsection}{\numberline {3.2.2}一方发起对局，另一方确认对局}{8}{subsubsection.3.2.2}%
-\contentsline {subsubsection}{\numberline {3.2.3}完成对局并确认胜负}{8}{subsubsection.3.2.3}%
-\contentsline {section}{\numberline {4}AI 算法设计}{9}{section.4}%
-\contentsline {subsection}{\numberline {4.1}min-max 搜索和 $\alpha -\beta $ 剪枝}{9}{subsection.4.1}%
-\contentsline {section}{\numberline {5}感谢}{10}{section.5}%
+\contentsline {subsubsection}{\numberline {3.2.3}完成对局并确认胜负}{9}{subsubsection.3.2.3}%
+\contentsline {section}{\numberline {4}AI 算法设计}{10}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Minimax 搜索和 Alpha-Beta 剪枝}{10}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}估价函数}{11}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}AI 调参}{12}{subsection.4.3}%
+\contentsline {section}{\numberline {5}感谢}{12}{section.5}%
