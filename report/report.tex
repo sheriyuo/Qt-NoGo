@@ -221,8 +221,6 @@
 	
 	读档后，程序重新初始化棋盘，强制传入存档内的设置参数，顺序模拟所有下棋操作。操作完成后得到的便是 Save 时的游戏状态，读档后 \verb|TimeBar| 重置为初始时间，如果不是终局仍可以继续下棋，并随时可以执行新的 Save 和 Load。
 	
-	对于终局情况的 \verb|DATA|，目前只能复现出终局。
-	
 	\subsection{信息窗口}
 	
 	\verb|messagebox| 类实现了页面内的弹出信息，下棋界面内的信息包括自杀的濒死检测和游戏终局的判断。
@@ -265,7 +263,7 @@
 
     \subsection{联机对战逻辑}
     
-    进行一场联机对战可以抽象为一下三个步骤：1.双方建立连接；2.一方发起对局，另一方确认对局；3.完成对局并确认胜负，返回第一步结束后的状态。
+    进行一场联机对战可以抽象为以下三个步骤：1.双方建立连接；2.一方发起对局，另一方确认对局；3.完成对局并确认胜负，返回第一步结束后的状态。
 	
 	\subsubsection{双方建立连接}
 	
@@ -304,7 +302,7 @@
     
     由于在判断落子成立时禁止了棋手自杀，因此对局结束的条件只有超时和认输两种。
     
-    当一方认输，即点击 Resign 按钮后，认输方发送 \verb|GIVE_UP_OP|，胜方在收到该信息后回复 \verb|GIVE_UO_END_OP| 表示请求以“一方认输”为理由结束对局。认输方收到 \verb|GIVE_UO_END_OP| 回复同样的信息以确认。此时联机对战结束，棋盘不能被操作。
+    当一方认输，即点击 Resign 按钮后，认输方发送 \verb|GIVEUP_OP|，胜方在收到该信息后回复 \verb|GIVEUP_END_OP| 表示请求以“一方认输”为理由结束对局。认输方收到 \verb|GIVEUP_END_OP| 回复同样的信息以确认。此时联机对战结束，棋盘不能被操作。
     
     当一方超时，胜方的计时器会调用 \verb|GameWidget::playerTimeout_OL()| 槽函数，发送 \verb|TIMEOUT_END_OP| 表示请求以“一方超时”为理由结束对局，负方回复同样的信息以确认。此时联机对战结束，棋盘不能被操作。
     
@@ -400,7 +398,7 @@ double Bot::alphaBeta(double a, double b, int depth)
 	
 	一开始估价函数以 $e$ 为底数，而大量测试表明，趋近于 $\frac 12$ 而不是 $\frac 1e$ 会更为理想。
 		
-	\subsection{AI 调参}
+	\subsection{参数调整}
 	
 	在 Alpha-Beta 剪枝的过程中，需要传入 $\alpha, \beta$ 的初值。对于理想的 AI 对局来说，$\alpha, \beta$ 都应该趋近于 $\frac 12$。
 	
@@ -427,6 +425,26 @@ if(curRatio < 0.5)
 	eps *= delta;
 }
 	\end{lstlisting}
+
+	\subsection{AI 对战强度}
+	
+	在 botzone\footnote{https://en.botzone.org.cn/} 平台的测试中，本 AI 对战 NoGo 排行榜排名 $100\sim 200$ 的部分 AI 胜率尚可，对战排名更后的 AI 胜率较高，具有不错的强度。
+	
+	在实际测试中，由于笔者想给 AI 完整的一生\sout{（懒）}，于是本 AI 并没有写任何的棋局特判，先手下棋可能具有相对较低的胜率，对战写了特判的 AI 可能会被围眼而负。
+	
+	\begin{figure}[!htb]
+		\centering
+		
+		\includegraphics[width=6cm]{img/teammate.png}
+		\includegraphics[width=6cm]{img/pk.png}
+		
+		\counterwithin{figure}{subsection}
+		\caption{测试过程}
+	\end{figure}
+	
+	同时由于 Minimax 搜索算法本身就不够优秀，所以与隔壁组的 MCTS 对战结果是打不过，合情合理。
+	
+	对于固定策略的 AI，对战结果可能与先后手相关性较强，该测试样本量较小，所以具体情况尚不明。理论上是因为固定策略会让估价函数有较大幅度的波动，对于调参造成了一定困难。
 		
 	\section{感谢}
 	
@@ -444,6 +462,8 @@ if(curRatio < 0.5)
 	
 	感谢北京大学 Pecuria 同学提供的帮助。
 	
-	感谢北京大学 botzone 平台\footnote{https://en.botzone.org.cn/}提供的 AI 对战支持。
+	感谢北京大学 botzone 平台提供的 AI 对战支持。
+	
+	感谢雀魂麻将牌谱的设计参考。
 	
 \end{document}

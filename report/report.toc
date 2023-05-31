@@ -19,5 +19,6 @@
 \contentsline {section}{\numberline {4}AI 算法设计}{10}{section.4}%
 \contentsline {subsection}{\numberline {4.1}Minimax 搜索和 Alpha-Beta 剪枝}{10}{subsection.4.1}%
 \contentsline {subsection}{\numberline {4.2}估价函数}{11}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}AI 调参}{12}{subsection.4.3}%
-\contentsline {section}{\numberline {5}感谢}{12}{section.5}%
+\contentsline {subsection}{\numberline {4.3}参数调整}{12}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}AI 对战强度}{12}{subsection.4.4}%
+\contentsline {section}{\numberline {5}感谢}{13}{section.5}%

@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2023.2.22)  30 MAY 2023 20:01
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2023.2.22)  31 MAY 2023 19:10
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -959,14 +959,14 @@ File: img/TLE.png Graphic file (type bmp)
 File: img/web1.png Graphic file (type bmp)
 <img/web1.png>
  [5] [6]
-Overfull \hbox (26.3576pt too wide) in paragraph at lines 250--251
+Overfull \hbox (26.3576pt too wide) in paragraph at lines 248--249
 []\TU/SimSun(0)/m/n/10.53937 联 机 功 能 使 用 基 于 [][]\TU/lmtt/m/n/10.53937 QTcpServ
 er, QTcpSocket []\TU/SimSun(0)/m/n/10.53937 二 次 封 装 的 [][]\TU/lmtt/m/n/10.53937
  NetworkServer, NetworkSocket
  []
 
 [7]
-Overfull \hbox (9.971pt too wide) in paragraph at lines 282--283
+Overfull \hbox (9.971pt too wide) in paragraph at lines 280--281
 []\TU/SimSun(0)/m/n/10.53937 此 时，|  提 出 邀 请 发 发 送 [][]\TU/lmtt/m/n/10.53937 REA
 DY_OP []\TU/SimSun(0)/m/n/10.53937 型 数 据，|  接 收 方 识 别 该 数 据，|  并 弹 出 同 样 的 [][]
 \TU/lmtt/m/n/10.53937 OptionDialog
@@ -981,17 +981,22 @@ File: img/web2.png Graphic file (type bmp)
 <img/web2.png>
 File: img/web3.png Graphic file (type bmp)
 <img/web3.png>
- [9] [10] [11] [12] (./report.aux)
+ [9] [10] [11]
+File: img/teammate.png Graphic file (type bmp)
+<img/teammate.png>
+File: img/pk.png Graphic file (type bmp)
+<img/pk.png>
+ [12] [13] (./report.aux)
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 918CA9B4EAE491251405F3D896AC6627;2410.
+(rerunfilecheck)             Checksum: 44234470933D4ED92D4D053394170DF0;2516.
  ) 
 Here is how much of TeX's memory you used:
- 18502 strings out of 476179
- 379641 string characters out of 5813072
+ 18518 strings out of 476179
+ 379911 string characters out of 5813072
  1044560 words of memory out of 5000000
- 38869 multiletter control sequences out of 15000+600000
+ 38883 multiletter control sequences out of 15000+600000
  479889 words of font info for 118 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,15n,91p,315b,1188s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on report.pdf (14 pages).
+Output written on report.pdf (15 pages).
