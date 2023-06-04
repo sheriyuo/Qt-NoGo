@@ -58,15 +58,15 @@ private:
     void paintEvent(QPaintEvent *event) override;
     Ui::ReviewDialog *ui;
 
-    int WIDTH=687, HEIGHT=204;
+    int WIDTH=687, HEIGHT=204;  //dialog 大小
     MessageBox *messagebox;
     Judge *judge;
     char strState;
     char dataStr[28 * 28 * 3 + 5];
     ItemVector dataVec;
-    int sum_steps;
-    QTimer *tim;
-    int now_step = 0;
+    int sum_steps;  //总共有多少步
+    QTimer *tim;    //自动播放的计时器
+    int now_step = 0;   //当前进行到哪一步
 };
 
 #endif // REVIEWDIALOG_H

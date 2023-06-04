@@ -75,6 +75,9 @@
     |   |-- settingdialog.cpp
     |   |-- settingdialog.h    // 实现图形化更改游戏选项
     |   |-- settingdialog.ui
+    |   |-- reviewdialog.cpp
+    |   |-- reviewdialog.h	   // 实现复盘功能
+    |   |-- reviewdialog.ui
     |-- Object
     |   |-- bot.cpp
     |   |-- bot.h              // 随机下棋 bot
@@ -228,19 +231,91 @@
 	信息窗口会一直显示到检测鼠标单击，而对于终局显示的信息窗口，至少显示 $3s$ 后才能关闭。
 	
 	\subsection{更多功能}
+
+	\subsubsection{附加任务1，2实现}
+	本部分功能由赵培宇实现及撰写报告。	
+	\\
 	
-	有没有可能原来大作业的要求越来越低了，所以我们还没有写更多功能。
+	附加任务：
+	
+	1. 在重现对局中实现 播放,暂停,上一步,下一步,到第 步 等功能。
+	
+	2. 重播对局时可以随时介入进行不一样的尝试，尝试后也可以还原并继续播放。
+	\\	
+	
+	这两个附加功能，主要通过 reviewdialog.cpp 实现。当使用者在使用 load 功能时，如果 load 的文件显示保存的对局是已经结束的完整对局，我们便会弹出 reviewdialog 窗口，进入复盘模式。
+    在复盘模式下我们可以通过按钮点击的方式，实现对局自动播放、暂停、上一步、下一步、介入尝试、退出尝试功能，通过输入数字的方式实现跳转到指定步数功能。
+    \\
+    
+    \newpage
+    
+    接下来笔者将逐一介绍各个功能的实现。
+    
+    1. reviewdialog类设计：
+    \begin{lstlisting}
+    	// 存档按钮信号
+	class ReviewDialog : public QDialog
+	{
+		Q_OBJECT
+		public:
+			explicit ReviewDialog(Judge *pjudge,QWidget *parent = nullptr);
+			~ReviewDialog();
+			void set_review_data(char state,char data[],ItemVector v);
+			void init();
+		signals:
+			void trybutton(); 
+			void quit_try();
+		public slots:
+			void display();    
+			private slots:
+			void on_start_clicked();	
+			void on_pause_clicked();
+			void on_previous_clicked();
+			void on_next_clicked();
+			void on_tryButton_clicked();
+			void on_quit_try_clicked();
+			void on_input_entered();
+		private:
+			void paintEvent(QPaintEvent *event) override;
+			Ui::ReviewDialog *ui;
+			int WIDTH=687, HEIGHT=204;  //dialog 大小
+			MessageBox *messagebox;
+			Judge *judge;
+			char strState; 
+			char dataStr[28 * 28 * 3 + 5];
+			ItemVector dataVec;		//储存对局信息的vector
+			int sum_steps;  //总共有多少步
+			QTimer *tim;    //自动播放的计时器
+			int now_step = 0;   //当前进行到哪一步
+	};
+    \end{lstlisting}
+    
+    
+    2. 播放，暂停：
+    
+    我们使用Qtimer来控制自动播放，当按下播放按钮时，Qtimer开始运行，每隔0.5s进行一步，通过变量now\verb|_|step的实时更新读取datavec[now\verb|_|step]数据，实现自动播放。当按下暂停按钮时，使Qtimer暂停，从而实现暂停播放。
+    
+	3. 下一步，上一步:
+	
+	当按下上一步或下一步按钮时，首先执行暂停操作，之后变量now\verb|_|step会相应的加一或减一，从而实现上下步的变换。
+
+	4. 到第\verb|_|步：
+	
+	通过Qlineedit读取到用户输入的文本，执行暂停操作后，将读取到的数字赋值给now\verb|_|step，从而实现跳转指定步数。
+	
+	5. 介入尝试与退出尝试：
+	
+	当用户点击try按钮时，原本被锁定的棋盘解锁，同时其他按钮除退出尝试外均被禁用，用户可以通过鼠标点击实现落子，同时会根据load的data中的信息来判断是PVP对局还是PVE对局。
+	
+	当用户点击quit\verb|_|try按钮时，棋盘会锁定，其他按钮被启用，同时通过之前储存的now\verb|_|step跳转到try之前的局面。
+	\\
+	
 	
 	没有写更多功能是怎么回事呢？大作业相信大家很熟悉，但是没有写更多功能是怎么回事呢？笔者也不是很清楚，大家也可能感到很惊讶，没有写更多功能是怎么回事呢？但事实就是这样，可以前往 \href{https://ce-amtic.github.io/}{ce-amtic 的博客} 看博客。
 	
-	理论上我们实现了半个附加功能。
+	\sout{哦，应该是 duality314 比较摆烂没写，记得去 push。}
 	
-	哦，应该是 duality314 比较摆烂没写，记得去 push。
-	
-	\sout{这是什么？更多功能，写一下。这是什么？更多功能，写一下。这是什么？更多功能，\newline 写一下。}
-	
-	反正第三阶段都要写，不如再去看一下隔壁队伍写的前后端分离。
-	
+	duality314 写完了 该push ce-amtic了。
 	\section{联机对战设计}
 	
 	\subsection{通信协议}
