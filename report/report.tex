@@ -34,7 +34,7 @@
 	
 	冯友和同学负责了项目框架的建构、联机部分的编写、项目的美化与调试和 AI 托管的实现。
 	
-	赵培宇同学负责了棋盘的生成、按钮的部分实现、状态的显示和对局回放的实现。
+	赵培宇同学负责了棋盘的生成、按钮的部分实现、状态的显示和对局重现的实现。
 	
 	\section{Qt 图形界面应用设计}
 	
@@ -76,7 +76,7 @@
     |   |-- settingdialog.h    // 实现图形化更改游戏选项
     |   |-- settingdialog.ui
     |   |-- reviewdialog.cpp
-    |   |-- reviewdialog.h	   // 实现复盘功能
+    |   |-- reviewdialog.h     // 实现复盘功能
     |   |-- reviewdialog.ui
     |-- Object
     |   |-- bot.cpp
@@ -189,7 +189,7 @@
 	
 	状态显示位于计时器右侧，可以显示当前总步数。
 	
-	在终局（胜利、失败、认输）后，计时器会与棋盘本体一起冻结，读取终局存档和查看回放时依然保持冻结。
+	在终局（胜利、失败、认输）后，计时器会与棋盘本体一起冻结，在对局重现时会随着 Try 的介入而重新启用。
 	
 	\subsection{读档和存档}
 	
@@ -232,30 +232,24 @@
 	
 	\subsection{更多功能}
 
-	\subsubsection{附加任务1，2实现}
-	本部分功能由赵培宇实现及撰写报告。	
-	\\
+	\subsubsection{附加任务 1,2 实现}
 	
 	附加任务：
 	
-	1. 在重现对局中实现 播放,暂停,上一步,下一步,到第 步 等功能。
+	1. 在重现对局中实现播放，暂停，上一步，下一步，到第\_步 等功能。
 	
 	2. 重播对局时可以随时介入进行不一样的尝试，尝试后也可以还原并继续播放。
-	\\	
 	
-	这两个附加功能，主要通过 reviewdialog.cpp 实现。当使用者在使用 load 功能时，如果 load 的文件显示保存的对局是已经结束的完整对局，我们便会弹出 reviewdialog 窗口，进入复盘模式。
+	这两个附加功能主要通过 \verb|reviewdialog| 实现。当使用者在使用 Load 功能时，如果 Load 的文件显示保存的对局是已经结束的完整对局，我们便会弹出 \verb|reviewdialog| 窗口，进入复盘模式。
     在复盘模式下我们可以通过按钮点击的方式，实现对局自动播放、暂停、上一步、下一步、介入尝试、退出尝试功能，通过输入数字的方式实现跳转到指定步数功能。
-    \\
+  
+    接下来将逐一介绍各个功能的实现。
     
-    \newpage
+    \verb|reviewdialog| \textbf{类设计}
     
-    接下来笔者将逐一介绍各个功能的实现。
-    
-    1. reviewdialog类设计：
     \begin{lstlisting}
     	// 存档按钮信号
-	class ReviewDialog : public QDialog
-	{
+	class ReviewDialog : public QDialog {
 		Q_OBJECT
 		public:
 			explicit ReviewDialog(Judge *pjudge,QWidget *parent = nullptr);
@@ -290,32 +284,44 @@
 	};
     \end{lstlisting}
     
+    \textbf{播放与暂停}
     
-    2. 播放，暂停：
+    我们使用 \verb|Qtimer| 来控制自动播放，当按下播放按钮时，\verb|Qtimer| 开始运行，每隔 $0.5s$ 进行一步，通过变量 \verb|now_step| 的实时更新读取 \verb|datavec[now_step]| 数据，实现自动播放。当按下暂停按钮时，使 \verb|Qtimer| 暂停，从而实现暂停播放。
     
-    我们使用Qtimer来控制自动播放，当按下播放按钮时，Qtimer开始运行，每隔0.5s进行一步，通过变量now\verb|_|step的实时更新读取datavec[now\verb|_|step]数据，实现自动播放。当按下暂停按钮时，使Qtimer暂停，从而实现暂停播放。
-    
-	3. 下一步，上一步:
+	\textbf{上一步/下一步}
 	
-	当按下上一步或下一步按钮时，首先执行暂停操作，之后变量now\verb|_|step会相应的加一或减一，从而实现上下步的变换。
+	当按下上一步或下一步按钮时，首先执行暂停操作，之后变量 \verb|now_step| 会相应的加一或减一，从而实现上下步的变换。
 
-	4. 到第\verb|_|步：
+	\textbf{跳转到第\_步}
 	
-	通过Qlineedit读取到用户输入的文本，执行暂停操作后，将读取到的数字赋值给now\verb|_|step，从而实现跳转指定步数。
+	通过 \verb|Qlineedit| 读取到用户输入的文本，执行暂停操作后，将读取到的数字赋值给 \verb|now_step|，从而实现跳转指定步数。
 	
-	5. 介入尝试与退出尝试：
+	\textbf{介入尝试与退出尝试}
 	
-	当用户点击try按钮时，原本被锁定的棋盘解锁，同时其他按钮除退出尝试外均被禁用，用户可以通过鼠标点击实现落子，同时会根据load的data中的信息来判断是PVP对局还是PVE对局。
+	当用户点击 Try 按钮时，原本被锁定的棋盘解锁，同时其他按钮除退出尝试外均被禁用。
 	
-	当用户点击quit\verb|_|try按钮时，棋盘会锁定，其他按钮被启用，同时通过之前储存的now\verb|_|step跳转到try之前的局面。
-	\\
+	用户可以通过鼠标点击实现落子，不可再打开 Auto 模式，同时会根据 Load 的 \verb|data| 来判断对局是 PVP 还是 PVE。
 	
+	当用户点击 Quit Try 按钮时，棋盘会锁定，其他按钮被启用，同时通过之前储存的 \verb|now_step| 跳转到 Try 之前的局面。
+	
+	\begin{figure}[htbp]
+		\centering
+		
+		\includegraphics[width=5.5cm]{img/review1.png}	
+		\includegraphics[width=5.5cm]{img/review2.png}
+		
+		\counterwithin{figure}{subsection}
+		\caption{对局重现}
+	\end{figure}
+
+	\subsubsection{其他功能}
 	
 	没有写更多功能是怎么回事呢？大作业相信大家很熟悉，但是没有写更多功能是怎么回事呢？笔者也不是很清楚，大家也可能感到很惊讶，没有写更多功能是怎么回事呢？但事实就是这样，可以前往 \href{https://ce-amtic.github.io/}{ce-amtic 的博客} 看博客。
 	
 	\sout{哦，应该是 duality314 比较摆烂没写，记得去 push。}
 	
-	duality314 写完了 该push ce-amtic了。
+	duality314 写完了该 push ce-amtic 了。
+	
 	\section{联机对战设计}
 	
 	\subsection{通信协议}
