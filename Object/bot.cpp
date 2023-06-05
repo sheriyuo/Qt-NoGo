@@ -260,7 +260,7 @@ void Bot::makeRandomMove()
         }
         x = rand() % CHESSBOARD_SIZE;
         y = rand() % CHESSBOARD_SIZE;
-        qDebug() << x << ' ' << y;
+        // qDebug() << x << ' ' << y;
     }
     while(!judge->CheckVaild(x, y));
     judge->PlaceAPiece(x, y);

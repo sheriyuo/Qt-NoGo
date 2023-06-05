@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2023.2.22)  5 JUN 2023 13:39
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2023.1.16)  5 JUN 2023 19:51
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -964,19 +964,20 @@ File: img/review1.png Graphic file (type bmp)
 File: img/review2.png Graphic file (type bmp)
 <img/review2.png>
  [8]
-Overfull \hbox (26.3576pt too wide) in paragraph at lines 329--330
+Overfull \hbox (26.3576pt too wide) in paragraph at lines 339--340
 []\TU/SimSun(0)/m/n/10.53937 联 机 功 能 使 用 基 于 [][]\TU/lmtt/m/n/10.53937 QTcpServ
 er, QTcpSocket []\TU/SimSun(0)/m/n/10.53937 二 次 封 装 的 [][]\TU/lmtt/m/n/10.53937
  NetworkServer, NetworkSocket
  []
 
 [9]
-Overfull \hbox (9.971pt too wide) in paragraph at lines 361--362
+Overfull \hbox (9.971pt too wide) in paragraph at lines 371--372
 []\TU/SimSun(0)/m/n/10.53937 此 时，|  提 出 邀 请 发 发 送 [][]\TU/lmtt/m/n/10.53937 REA
 DY_OP []\TU/SimSun(0)/m/n/10.53937 型 数 据，|  接 收 方 识 别 该 数 据，|  并 弹 出 同 样 的 [][]
 \TU/lmtt/m/n/10.53937 OptionDialog
  []
 
+[10]
 File: img/web4.png Graphic file (type bmp)
 <img/web4.png>
 File: img/web5.png Graphic file (type bmp)
@@ -985,22 +986,28 @@ File: img/web2.png Graphic file (type bmp)
 <img/web2.png>
 File: img/web3.png Graphic file (type bmp)
 <img/web3.png>
-[10] [11] [12] [13]
+ [11] [12] [13]
 File: img/teammate.png Graphic file (type bmp)
 <img/teammate.png>
 File: img/pk.png Graphic file (type bmp)
 <img/pk.png>
  [14] [15] (./report.aux)
-Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 159A39B97E987257127AD834BE5B40C8;2763.
+
+Package rerunfilecheck Warning: File `report.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `report.out':
+(rerunfilecheck)             Before: 159A39B97E987257127AD834BE5B40C8;2763
+(rerunfilecheck)             After:  BDB544BA3688DE2207613BCB8DA1CECB;2900.
  ) 
 Here is how much of TeX's memory you used:
- 18620 strings out of 476179
- 381384 string characters out of 5813072
- 1045560 words of memory out of 5000000
- 38983 multiletter control sequences out of 15000+600000
+ 18620 strings out of 477146
+ 381384 string characters out of 5829170
+ 1041330 words of memory out of 5000000
+ 38927 multiletter control sequences out of 15000+600000
  479889 words of font info for 118 fonts, out of 8000000 for 9000
- 1348 hyphenation exceptions out of 8191
+ 622 hyphenation exceptions out of 8191
  88i,15n,91p,315b,1188s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 Output written on report.pdf (17 pages).

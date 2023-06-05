@@ -314,6 +314,16 @@
 		\caption{对局重现}
 	\end{figure}
 
+    \subsection{附加任务 5,6 实现}
+    
+    \textbf{AI 独立线程}
+    
+    将 AI 类继承自 Qt 内建的 \verb|QThread| 类，使用 \verb|void QThread::run()| 作为 AI 线程的入口即可。
+    
+    \textbf{AI 进度条}
+    
+    因为 AI 线程独立，所以仿照上例画一下进度条就好了。
+
 	\subsubsection{其他功能}
 	
 	没有写更多功能是怎么回事呢？大作业相信大家很熟悉，但是没有写更多功能是怎么回事呢？笔者也不是很清楚，大家也可能感到很惊讶，没有写更多功能是怎么回事呢？但事实就是这样，可以前往 \href{https://ce-amtic.github.io/}{ce-amtic 的博客} 看博客。

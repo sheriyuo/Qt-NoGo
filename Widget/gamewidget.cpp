@@ -93,12 +93,6 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
     connect(ui->chatInput, SIGNAL(returnPressed()), ui->sendButton,SIGNAL(clicked()), Qt::UniqueConnection);
     connect(timerForPlayer,&QTimer::timeout, this, &GameWidget::playerTimeout_OFFL);
     connect(timerForBar,&QTimer::timeout,this,&GameWidget::updateBar);
-    connect(bot, &Bot::timeout, this, &GameWidget::botTimeout);
-    connect(bot, &QThread::finished, this, [&](){ // 保证只在 judge->runMode==0 时才会被调用
-        if(judge->curPlayer == 0) return;
-        startTimer();
-        if(autoControl->isToggled()) autoPlayer->start();
-    });
     connect(judge, &Judge::GIVEUP_OP, this, &GameWidget::remoteResign);
     connect(judge, &Judge::TIMEOUT_END_OP, this, [&](){gameLose(1);});
     connect(judge, &Judge::SUICIDE_END_OP, this, [&](){
@@ -120,7 +114,7 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
     connect(autoPlayer, &QThread::finished, this, [&](){
         if(!autoControl->isToggled()) return;
         if(judge->curPlayer == 1) return;
-        qDebug()<<"2";
+        // qDebug() << clock();
         startTimer();
         if(!judge->runMode) emit turnForBot();
     });
@@ -130,6 +124,12 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
             autoControl->setToggled(false);
             autoPlayer->terminate();
         }
+    });
+    connect(bot, &Bot::timeout, this, &GameWidget::botTimeout);
+    connect(bot, &QThread::finished, this, [&](){ // 保证只在 judge->runMode==0 时才会被调用
+        if(judge->curPlayer == 0) return;
+        startTimer();
+        if(autoControl->isToggled()) autoPlayer->start();
     });
 
     //链接reviewdialog
@@ -867,7 +867,6 @@ void GameWidget::on_loadButton_clicked()
     else{
         judge->updateStep(dataStr[0] - '1', dataStr[2] - '0', dataVec, strState);
         // 理论上，没有判断非法 .dat
-        qDebug()<<"5";
         startTimer(); // 重置计时器
     }
 
