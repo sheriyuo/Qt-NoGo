@@ -352,11 +352,10 @@ void GameWidget::drawWhite(QPainter &painter, double i, double j)
 
     int xxx=-100;
     int yyy=-100;
-    ItemVector step = judge->getStep();
-    if(!step.empty())
+    if(!judge->getStep().empty())
     {
-        xxx=step[step.size()-1].first;
-        yyy=step[step.size()-1].second;
+        xxx=judge->getStep().back().first;
+        yyy=judge->getStep().back().second;
     }
     if(xxx==i&&yyy==j)
     {
@@ -385,11 +384,10 @@ void GameWidget::drawBlack(QPainter &painter, double i, double j)
 
     int xxx=-100;
     int yyy=-100;
-    ItemVector step = judge->getStep();
-    if(!step.empty())
+    if(!judge->getStep().empty())
     {
-        xxx=step[step.size()-1].first;
-        yyy=step[step.size()-1].second;
+        xxx=judge->getStep().back().first;
+        yyy=judge->getStep().back().second;
     }
     if(xxx==i&&yyy==j)
     {

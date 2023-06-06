@@ -253,7 +253,7 @@ void Bot::makeRandomMove()
     do
     {
         qint64 curTime = QDateTime::currentMSecsSinceEpoch();
-        if(curTime - searchStartTime > BOT_TIMEOUT * 900)
+        if(curTime - searchStartTime > 500)
         {
             emit timeout();
             return;

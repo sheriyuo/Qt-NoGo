@@ -68,7 +68,7 @@ public:
     void SaveStep(int x,int y); // 记录当前在 (x, y) 下棋
     void log(Level level, QString message); // 使用 logger 生成日志
 
-    ItemVector getStep(); // 读取记录步数
+    ItemVector& getStep(); // 读取记录步数
     void updateStep(int newCurPlayer, int newRunMode, ItemVector newStep, char newState); // 更新记录步数并更改棋局
 
     int playerRole; // -1->white 1->black

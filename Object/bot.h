@@ -58,7 +58,7 @@ private:
 
     int finalx, finaly;
     double finalv; // 最终决定的落子
-    std::shared_ptr<Judge> judge;
+    Judge* judge;
 
     int maxDep;
     ItemVector chooseVec;

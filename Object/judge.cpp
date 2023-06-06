@@ -233,7 +233,7 @@ void Judge::setPlayerRole(int player)
 }
 
 // 读档相关
-ItemVector Judge::getStep()
+ItemVector& Judge::getStep()
 {
     return savedStep;
 }
