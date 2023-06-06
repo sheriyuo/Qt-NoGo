@@ -193,7 +193,7 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
 
         if(!judge->runMode) emit turnForBot();
         if(judge->runMode == 2 || judge->runMode == 3) // 发送 MOVE_OP 以及处理 recData
-            judge->send(NetworkData(OPCODE::MOVE_OP, QString(QChar('A'+row-1))+QString(QChar('1'+column-1)), ""));
+            judge->send(NetworkData(OPCODE::MOVE_OP, QString(QChar('A'+row-1))+QString(QChar('1'+column-1)), QString::number(QDateTime::currentMSecsSinceEpoch())));
         startTimer();
     }
     else sendMessage(2);

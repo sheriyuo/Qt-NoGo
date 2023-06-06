@@ -46,8 +46,8 @@ StartWidget::StartWidget(Judge *j, QWidget *parent) :
     connect(ui->startAsBlack, &QPushButton::clicked, this, &StartWidget::on_startAsBlack_clicked_OFFL);
     connect(ui->startAsWhite, &QPushButton::clicked, this, &StartWidget::on_startAsWhite_clicked_OFFL);
     connect(confirmD, &OptionDialog::OK, this, [&](){
-        if(oppoRole == 1) {sendStartAsWhite(); on_startAsWhite_clicked_OFFL();}
-        else {sendStartAsBlack(); on_startAsBlack_clicked_OFFL();}
+        if(oppoRole == 1) {sendStartAsWhite(true); on_startAsWhite_clicked_OFFL();}
+        else {sendStartAsBlack(true); on_startAsBlack_clicked_OFFL();}
         confirmD->close();
     });
     connect(confirmD, &OptionDialog::NO, this, [&](){
@@ -121,15 +121,13 @@ void StartWidget::goOFFL()
     connect(ui->startAsBlack, &QPushButton::clicked, this, &StartWidget::on_startAsBlack_clicked_OFFL);
     connect(ui->startAsWhite, &QPushButton::clicked, this, &StartWidget::on_startAsWhite_clicked_OFFL);
 }
-void StartWidget::sendStartAsBlack()
+void StartWidget::sendStartAsBlack(bool isReply)
 {
-    NetworkData d = NetworkData(OPCODE::READY_OP, judge->usrnameOL, "b");
-    judge->send(d);
+    judge->send(NetworkData(OPCODE::READY_OP, judge->usrnameOL, isReply?"":"b"));
 }
-void StartWidget::sendStartAsWhite()
+void StartWidget::sendStartAsWhite(bool isReply)
 {
-    NetworkData d = NetworkData(OPCODE::READY_OP, judge->usrnameOL, "w");
-    judge->send(d);
+    judge->send(NetworkData(OPCODE::READY_OP, judge->usrnameOL, isReply?"":"w"));
 }
 void StartWidget::sendReject() {judge->send(NetworkData(OPCODE::REJECT_OP, judge->usrnameOL, ""));}
 

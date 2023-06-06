@@ -233,7 +233,7 @@ void Bot::run()
     curPlayer = 0;
     judge->PlaceAPiece(finalx, finaly);
     if(judge->runMode == 2 || judge->runMode == 3) // 发送 MOVE_OP 以及处理 recData
-        judge->send(NetworkData(OPCODE::MOVE_OP, QString(QChar('A'+finalx))+QString(QChar('1'+finaly)), ""));
+        judge->send(NetworkData(OPCODE::MOVE_OP, QString(QChar('A'+finalx))+QString(QChar('1'+finaly)), QString::number(QDateTime::currentMSecsSinceEpoch())));
     double curRatio = judgeBoard();
     if(curRatio < 0.5)
     {

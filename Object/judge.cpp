@@ -332,7 +332,8 @@ void Judge::connect()
         }
         else
         {
-            send(NetworkData(OPCODE::CHAT_OP, "", ""));
+            // server cannot initiate new game
+            // send(NetworkData(OPCODE::CHAT_OP, "", ""));
             socketConnected = true;
         }
     }
