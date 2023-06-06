@@ -147,7 +147,7 @@ double Bot::judgeBoard() // 估价函数判断当前局面
 double Bot::alphaBeta(double a, double b, int depth)
 {
     time_t curTime = clock();
-    if((curTime - searchStartTime) / (BOT_TIMEOUT * 1000) > 0.9)
+    if((curTime - searchStartTime) > BOT_TIMEOUT * 900)
         return depth & 1 ? b : a; // 判断超时
     curPlayer = depth & 1;
     if(depth == 4 + (chooseVec.size() < 30) + 2 * (chooseVec.size() < 23)
@@ -242,8 +242,9 @@ void Bot::run()
         beta -= (beta - 0.5) * eps;
         eps *= delta;
     }
-    qDebug() << pointChecked << "<->" << chooseVec.size() << " " << curRatio << " " << alpha << " " << beta;
+    qDebug() << pointChecked << "<->" << chooseVec.size() << " " << curRatio << " " << alpha << " " << beta << " " << clock() - searchStartTime;
 
+    chooseVec.clear();
 }
 void Bot::makeRandomMove()
 {
@@ -253,7 +254,7 @@ void Bot::makeRandomMove()
     do
     {
         time_t curTime = clock();
-        if(curTime - startTime > BOT_TIMEOUT * 1000)
+        if(curTime - startTime > BOT_TIMEOUT * 900)
         {
             emit timeout();
             return;
@@ -263,5 +264,7 @@ void Bot::makeRandomMove()
         // qDebug() << x << ' ' << y;
     }
     while(!judge->CheckVaild(x, y));
+    qDebug() << x <<" "<<y;
     judge->PlaceAPiece(x, y);
+    qDebug() << "!!!placed";
 }

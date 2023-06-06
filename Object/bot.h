@@ -41,12 +41,12 @@ private:
     double alphaBeta(double a, double b, int depth); // MinMax 搜索
     void readFromJudge();
 
-    const int dx[8] = {0, 1, 0, -1}, dy[8] = {1, 0 ,-1, 0};
+    const int dx[4] = {0, 1, 0, -1}, dy[4] = {1, 0 ,-1, 0};
     bool checkBoard(int x, int y); // 可撤销的判断
     void dfsBoard(int x, int y);
-    int curBoard[29][29];
-    unsigned int dfsVis[29][29];
-    bool isEmpty[29][29];
+    int curBoard[52][52];
+    unsigned int dfsVis[52][52];
+    bool isEmpty[52][52];
 
     int CurColor(); // 当前落棋颜色
     bool IsInBoard(int x, int y);
@@ -61,7 +61,7 @@ private:
     std::shared_ptr<Judge> judge;
 
     int maxDep;
-    ItemVector chooseVec, pointVec[5];
+    ItemVector chooseVec;
 
     quint16 token;
 };
