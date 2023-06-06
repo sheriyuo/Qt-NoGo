@@ -800,7 +800,7 @@ void GameWidget::dataToString()
 
 void GameWidget::stringToData()
 {
-    dataVec.clear();
+    ItemVector().swap(dataVec);
     int len = strlen(dataStr);
     strState = 0;
     for(int i = 4; i < len; i += 3)

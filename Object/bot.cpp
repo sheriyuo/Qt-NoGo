@@ -202,7 +202,7 @@ void Bot::run()
     searchStartTime = QDateTime::currentMSecsSinceEpoch();
 
     readFromJudge();
-    chooseVec.clear();
+    ItemVector().swap(chooseVec);
     pointChecked = 0;
 
     if(CHESSBOARD_SIZE != 9) return makeRandomMove();
@@ -245,7 +245,7 @@ void Bot::run()
     }
     qDebug() << pointChecked << "<->" << chooseVec.size() << " " << curRatio << " " << alpha << " " << beta << " " << clock() - searchStartTime;
 
-    chooseVec.clear();
+    ItemVector().swap(chooseVec);
 }
 void Bot::makeRandomMove()
 {

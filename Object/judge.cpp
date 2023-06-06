@@ -104,7 +104,7 @@ void Judge::CleanVis() // 当前落棋颜色
 {
     for(int x : mergedBlock)
         blockVis[x] = 0;
-    mergedBlock.clear();
+    std::vector<int>().swap(mergedBlock);
 }
 
 void Judge::MergeSet(LibertySet &x, LibertySet y)
@@ -119,7 +119,7 @@ bool Judge::CheckVaild(int x, int y)
     if(!IsEmpty(x, y)) return false;
 
     int testNum = blockCnt + 1;
-    blockLiberty[testNum].clear();
+    LibertySet().swap(blockLiberty[testNum]);
 
     for(int i = 0; i < 4; i++)
     {
@@ -151,7 +151,7 @@ bool Judge::CheckVaild(int x, int y)
 
     if(blockLiberty[testNum].size() == 0) // 没有气
         return false;
-    blockLiberty[testNum].clear();
+    LibertySet().swap(blockLiberty[testNum]);
     return true;
 }
 
@@ -161,7 +161,7 @@ void Judge::UpdateCurStep(int x, int y)
     blockCnt ++;
     chessBelong[x][y] = blockCnt;
 
-    blockLiberty[blockCnt].clear();
+    LibertySet().swap(blockLiberty[blockCnt]);
     chessBlock[blockCnt].push_back(Point(x, y));
     // 新建棋子块
 
@@ -221,7 +221,7 @@ void Judge::MergeBlock(int x, int y) // 启发式合并
     }
     // 合并
 
-    chessBlock[y].clear();
+    ItemVector().swap(chessBlock[y]);
     // 清空
 }
 
@@ -240,7 +240,7 @@ ItemVector Judge::getStep()
 // 更新 savedStep 并更新 board 数组
 void Judge::updateStep(int newPlayerRole, int newRunMode, ItemVector newStep, char newState)
 {
-    savedStep.clear();
+    ItemVector().swap(savedStep);
     init(); // 更新 savedStep
     setPlayerRole(newPlayerRole);
     runMode = newRunMode;
