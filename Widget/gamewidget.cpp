@@ -520,7 +520,7 @@ void GameWidget::playerTimeout_OL()
     // 发送 TIMEOUT_END_OP
     if(!judge->curPlayer) // 当前是等待响应的一方，那么对手超时己方胜利
     {
-        judge->send(NetworkData(OPCODE::TIMEOUT_END_OP, judge->usrnameOL, "Sorry you lose!"));
+        judge->send(NetworkData(OPCODE::TIMEOUT_END_OP, judge->usrnameOL, "Sorry you timeout!"));
         gameWin(1);
     }
 }

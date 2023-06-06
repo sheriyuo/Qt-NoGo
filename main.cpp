@@ -22,6 +22,7 @@ int main(int argc, char *argv[])
 
     // 信号槽
     QObject::connect(startWidget, &StartWidget::switchLayer, stackLayout, &QStackedLayout::setCurrentIndex);
+    QObject::connect(startWidget, &StartWidget::switchLayer, gameWidget, [&](int layer){if(layer == 0) gameWidget->close();});
     QObject::connect(startWidget, &StartWidget::startAs, judge, &Judge::setPlayerRole);
     QObject::connect(startWidget, &StartWidget::startAs, gameWidget, &GameWidget::startGame);
     QObject::connect(startWidget->settingDialog, &SettingDialog::goOL, gameWidget, &GameWidget::goOL);

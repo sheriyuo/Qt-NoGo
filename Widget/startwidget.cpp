@@ -46,6 +46,8 @@ StartWidget::StartWidget(Judge *j, QWidget *parent) :
     connect(ui->startAsBlack, &QPushButton::clicked, this, &StartWidget::on_startAsBlack_clicked_OFFL);
     connect(ui->startAsWhite, &QPushButton::clicked, this, &StartWidget::on_startAsWhite_clicked_OFFL);
     connect(confirmD, &OptionDialog::OK, this, [&](){
+        if(judge->curPlayer == -1) // on GameWidget
+            emit switchLayer(0);
         if(oppoRole == 1) {sendStartAsWhite(true); on_startAsWhite_clicked_OFFL();}
         else {sendStartAsBlack(true); on_startAsBlack_clicked_OFFL();}
         confirmD->close();
@@ -58,16 +60,8 @@ StartWidget::StartWidget(Judge *j, QWidget *parent) :
         awaitD->close();
         warnD->close();
         confirmD->close();
-        if(judge->curPlayer == -1)
-        {
-            warnD->setMessage("New invitation from:\n"+judge->oppoOL+"\nRestart to continue.");
-            warnD->show();
-        }
-        else
-        {
-            confirmD->setMessage("New invitation from:\n"+judge->oppoOL+"\nConfirm playing "+(d.data2=="w"?"Black":"White")+"?");
-            confirmD->show();
-        }
+        confirmD->setMessage("New invitation from:\n"+judge->oppoOL+"\nConfirm playing "+(d.data2=="w"?"Black":"White")+"?");
+        confirmD->show();
         oppoRole = d.data2 == "b" ? 1 : -1;
     });
     connect(judge, &Judge::READY_OP_ForInviter, this, [&](){

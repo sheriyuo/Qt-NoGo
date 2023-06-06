@@ -54,14 +54,14 @@ Judge::~Judge()
 
 void Judge::init()
 {
-    for(int i = 0; i < (CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2); i++)
-        blockLiberty[i].clear();
-    for(int i = 0; i < (CHESSBOARD_SIZE + 2) * (CHESSBOARD_SIZE + 2); i++)
-        chessBlock[i].clear();
+    for(int i = 0; i < CHESSBOARD_SIZE * CHESSBOARD_SIZE; i++)
+        LibertySet().swap(blockLiberty[i]);
+    for(int i = 0; i < CHESSBOARD_SIZE * CHESSBOARD_SIZE; i++)
+        ItemVector().swap(chessBlock[i]);
     memset(board, 0, sizeof(board));
     memset(blockVis, 0, sizeof(blockVis));
     memset(chessBelong, -1, sizeof(chessBelong));
-    savedStep.clear();
+    ItemVector().swap(savedStep);
     blockCnt = 0;
     curPlayer = 0;
     loadState = 0;
@@ -354,7 +354,7 @@ void Judge::recData(NetworkData d)
         oppoOL = d.data1;
         if(!hasSentREA){
             emit READY_OP(d);
-            if(curPlayer == -1) send(NetworkData(OPCODE::REJECT_OP, "", ""));
+            // if(curPlayer == -1) send(NetworkData(OPCODE::REJECT_OP, "", ""));
         }
         else{
             emit READY_OP_ForInviter();

@@ -23,6 +23,7 @@ Bot::~Bot()
 
 void Bot::init()
 {
+    ItemVector().swap(chooseVec);
     dfsBoardTime = 0;
     eps = 0.03;
     alpha = 0.39;
@@ -146,8 +147,8 @@ double Bot::judgeBoard() // 估价函数判断当前局面
 // minimax 搜索
 double Bot::alphaBeta(double a, double b, int depth)
 {
-    time_t curTime = clock();
-    if((curTime - searchStartTime) > BOT_TIMEOUT * 900)
+    qint64 curTime = QDateTime::currentMSecsSinceEpoch();
+    if(curTime - searchStartTime > BOT_TIMEOUT * 900)
         return depth & 1 ? b : a; // 判断超时
     curPlayer = depth & 1;
     if(depth == 4 + (chooseVec.size() < 30) + 2 * (chooseVec.size() < 23)
@@ -198,9 +199,9 @@ double Bot::alphaBeta(double a, double b, int depth)
 }
 void Bot::run()
 {
+    searchStartTime = QDateTime::currentMSecsSinceEpoch();
+
     readFromJudge();
-    searchStartTime = clock(); // 计时器
-    srand(time(0));
     chooseVec.clear();
     pointChecked = 0;
 
@@ -248,23 +249,19 @@ void Bot::run()
 }
 void Bot::makeRandomMove()
 {
-    srand(time(0));
-    time_t startTime = clock(); // 计时器
     int x, y;
     do
     {
-        time_t curTime = clock();
-        if(curTime - startTime > BOT_TIMEOUT * 900)
+        qint64 curTime = QDateTime::currentMSecsSinceEpoch();
+        if(curTime - searchStartTime > BOT_TIMEOUT * 900)
         {
             emit timeout();
             return;
         }
-        x = rand() % CHESSBOARD_SIZE;
-        y = rand() % CHESSBOARD_SIZE;
-        // qDebug() << x << ' ' << y;
+        x = QRandomGenerator::global()->bounded(CHESSBOARD_SIZE);
+        y = QRandomGenerator::global()->bounded(CHESSBOARD_SIZE);
     }
     while(!judge->CheckVaild(x, y));
-    qDebug() << x <<" "<<y;
     judge->PlaceAPiece(x, y);
-    qDebug() << "!!!placed";
 }
+

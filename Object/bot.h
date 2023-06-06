@@ -33,7 +33,7 @@ public slots:
 private:
     double eps = 0.03, alpha = 0.39, beta = 0.61;
     const double delta = 0.93;
-    time_t searchStartTime;
+    qint64 searchStartTime;
     bool alphaBeta(); // Alpha-Beta 剪枝
 
     void makeRandomMove();
