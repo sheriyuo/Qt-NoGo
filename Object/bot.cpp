@@ -26,8 +26,8 @@ void Bot::init()
     ItemVector().swap(chooseVec);
     dfsBoardTime = 0;
     eps = 0.03;
-    alpha = 0.39;
-    beta = 0.61;
+    alpha = 0.31, beta = 0.61;
+
     judge->log(Level::Debug, "Bot"+QString::number(token)+" initialized");
 }
 
@@ -102,7 +102,8 @@ bool Bot::checkBoard(int x, int y)
 double Bot::judgeBoard() // 估价函数判断当前局面
 {
     int botValid = 0, rivalValid = 0, allPoint = 0;
-
+    if(CurColor() == 1) rivalValid = 1; // 先手让一气
+    else botValid = 1;
     for(int x = 0; x < CHESSBOARD_SIZE; x++)
         for(int y = 0; y < CHESSBOARD_SIZE; y++)
         {
@@ -134,11 +135,14 @@ double Bot::judgeBoard() // 估价函数判断当前局面
             }
         }
     // 计算 bot 能走的格数
-
-    if(!botValid && !rivalValid)
-        return 0.5; // 无法判断的情况
+    //qDebug() << botValid << rivalValid << 1 - pow(2, -1.0 * pow(sqrt(1.0 * botValid / rivalValid),
+                                                               //0.5 + 0.5 * allPoint / pow(CHESSBOARD_SIZE, 2)));
     if(!rivalValid)
-        return botValid ? 0.5 + 0.5 * allPoint / pow(CHESSBOARD_SIZE, 2) : 0.5;
+        return 1 - pow(2, -1.0 * pow(pow(botValid + 0.1, 0.5),
+                                       0.5 + 0.5 * allPoint / pow(CHESSBOARD_SIZE, 2)));
+    if(!botValid)
+        return 1 - pow(2, -1.0 * pow(pow(rivalValid + 0.1, -0.5),
+                                       0.5 + 0.5 * allPoint / pow(CHESSBOARD_SIZE, 2)));
     // 设 botvalid = x, rivalValid = y, allPoint = z, CHESSBOARD_SIZE = k, 估价为 1-2^(-sqrt(x/y)^(0.5+0.5*z/(k*k)))
     return 1 - pow(2, -1.0 * pow(sqrt(1.0 * botValid / rivalValid),
                                    0.5 + 0.5 * allPoint / pow(CHESSBOARD_SIZE, 2)));
@@ -151,8 +155,11 @@ double Bot::alphaBeta(double a, double b, int depth)
     if(curTime - searchStartTime > BOT_TIMEOUT * 900)
         return depth & 1 ? b : a; // 判断超时
     curPlayer = depth & 1;
-    if(depth == 4 + (chooseVec.size() < 30) + 2 * (chooseVec.size() < 23)
-                  + 2 * (chooseVec.size() < 18) - (pointChecked * 4 < (int)chooseVec.size()))
+
+    int maxDep = 4 + (chooseVec.size() < 45) + (chooseVec.size() < 30) + (chooseVec.size() < 25) + (chooseVec.size() < 23);
+    if(maxDep - 1 == depth && curTime - searchStartTime > BOT_TIMEOUT * 300)
+        return judgeBoard();
+    if(depth >= maxDep)
         return judgeBoard();
     if(depth & 1)
     {
@@ -236,13 +243,22 @@ void Bot::run()
     if(judge->runMode == 2 || judge->runMode == 3) // 发送 MOVE_OP 以及处理 recData
         judge->send(NetworkData(OPCODE::MOVE_OP, QString(QChar('A'+finalx))+QString(QChar('1'+finaly)), QString::number(QDateTime::currentMSecsSinceEpoch())));
     double curRatio = judgeBoard();
-    if(curRatio < 0.5)
+
+
+    if(curRatio < 0.45 && (rand() % 100 + 1) * 0.01 < exp(-eps / 0.03))
     {
         // 对面太强了，退火一下
-        alpha += (0.5 - alpha) * eps;
+        alpha -= (0.5 - alpha) * eps;
         beta -= (beta - 0.5) * eps;
-        eps *= delta;
     }
+    if(curRatio > 0.55 && (rand() % 100 + 1) * 0.01 < exp(-eps / 0.03))
+    {
+        // 对面太菜了，退火一下
+        alpha += (0.5 - alpha) * eps;
+        beta += (beta - 0.5) * eps;
+    }
+    eps *= delta; // 降温
+
     qDebug() << pointChecked << "<->" << chooseVec.size() << " " << curRatio << " " << alpha << " " << beta << " "
              << QDateTime::currentMSecsSinceEpoch() - searchStartTime;
 

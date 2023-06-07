@@ -200,6 +200,8 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
 }
 void GameWidget::startGame(int player)
 {
+    bot->init();
+    autoPlayer->init();
     if(judge->runMode == 1) autoControl->setDisabled(true);
     else autoControl->setDisabled(false);
     firstMove(player);

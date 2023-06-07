@@ -31,8 +31,8 @@ signals:
 public slots:
 
 private:
-    double eps = 0.03, alpha = 0.39, beta = 0.61;
-    const double delta = 0.93;
+    double eps = 0.03, alpha = 0.39, beta = 0.63;
+    const double delta = 0.97;
     qint64 searchStartTime;
     bool alphaBeta(); // Alpha-Beta 剪枝
 
