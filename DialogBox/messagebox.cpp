@@ -34,7 +34,7 @@ void MessageBox::mousePressEvent(QMouseEvent *event) {clickToClose();}
 
 bool MessageBox::clickToClose()
 {
-    if(pendingClose && clock() - baseTime <= 3000) return false;
+    if(pendingClose && clock() - baseTime <= 5000) return false;
     timeUpClose();
     return true;
 }

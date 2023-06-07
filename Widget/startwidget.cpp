@@ -46,7 +46,7 @@ StartWidget::StartWidget(Judge *j, QWidget *parent) :
     connect(ui->startAsBlack, &QPushButton::clicked, this, &StartWidget::on_startAsBlack_clicked_OFFL);
     connect(ui->startAsWhite, &QPushButton::clicked, this, &StartWidget::on_startAsWhite_clicked_OFFL);
     connect(confirmD, &OptionDialog::OK, this, [&](){
-        if(judge->curPlayer == -1) // on GameWidget
+        if(judge->playerRole != 0) // on GameWidget
             emit switchLayer(0);
         if(oppoRole == 1) {sendStartAsWhite(true); on_startAsWhite_clicked_OFFL();}
         else {sendStartAsBlack(true); on_startAsBlack_clicked_OFFL();}

@@ -23,6 +23,7 @@ Bot::~Bot()
 
 void Bot::init()
 {
+    searchStartTime = 0;
     ItemVector().swap(chooseVec);
     dfsBoardTime = 0;
     eps = 0.03;
@@ -281,4 +282,7 @@ void Bot::makeRandomMove()
     while(!judge->CheckVaild(x, y));
     judge->PlaceAPiece(x, y);
 }
-
+qint64 Bot::getStartTime()
+{
+    return searchStartTime;
+}

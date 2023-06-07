@@ -24,6 +24,7 @@ public:
     ~Bot();
     void init();
     void run(); // run 函数是 bot 作为独立线程的入口, 通过 bot->start() 来启动这个独立线程, run 函数本身相当于 makeAMove
+    qint64 getStartTime();
 
 signals:
     void timeout();
