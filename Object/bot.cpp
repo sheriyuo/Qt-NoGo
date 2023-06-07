@@ -243,7 +243,8 @@ void Bot::run()
         beta -= (beta - 0.5) * eps;
         eps *= delta;
     }
-    qDebug() << pointChecked << "<->" << chooseVec.size() << " " << curRatio << " " << alpha << " " << beta << " " << clock() - searchStartTime;
+    qDebug() << pointChecked << "<->" << chooseVec.size() << " " << curRatio << " " << alpha << " " << beta << " "
+             << QDateTime::currentMSecsSinceEpoch() - searchStartTime;
 
     ItemVector().swap(chooseVec);
 }
