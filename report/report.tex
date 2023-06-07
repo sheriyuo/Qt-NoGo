@@ -314,7 +314,7 @@
 		\caption{对局重现}
 	\end{figure}
 
-    \subsection{附加任务 5,6 实现}
+    \subsubsection{附加任务 5,6 实现}
     
     \textbf{AI 独立线程}
     
@@ -391,8 +391,10 @@
     	\caption{联机对局界面演示}
     \end{figure}
     
-    由于在判断落子成立时禁止了棋手自杀，因此对局结束的条件只有超时和认输两种。
-    
+    虽然我方在判断落子成立时禁止了自杀，但是对方仍然具有自杀的可能，因此对局结束的条件有自杀、超时和认输 $3$ 种。
+
+	当一方自杀后，胜方发送 \verb|SUICIDE_OP|，负方在收到该信息后回复同样的 \verb|SUICIDE_OP|，表示确认以“一方自杀”为理由结束对局。此时联机对战结束，棋盘不能被操作。
+	
     当一方认输，即点击 Resign 按钮后，认输方发送 \verb|GIVEUP_OP|，胜方在收到该信息后回复 \verb|GIVEUP_END_OP| 表示请求以“一方认输”为理由结束对局。认输方收到 \verb|GIVEUP_END_OP| 回复同样的信息以确认。此时联机对战结束，棋盘不能被操作。
     
     当一方超时，胜方的计时器会调用 \verb|GameWidget::playerTimeout_OL()| 槽函数，发送 \verb|TIMEOUT_END_OP| 表示请求以“一方超时”为理由结束对局，负方回复同样的信息以确认。此时联机对战结束，棋盘不能被操作。
@@ -402,9 +404,11 @@
 
 	\section{AI 算法设计}
 	
-	由于助教在 \verb|/guidance| 中建议不要卷 AI 的强度，所以本项目 AI 采用推荐的 Minimax 搜索算法。
+	由于助教在 \verb|/guidance| 中建议不要卷 AI 的强度，所以本项目 AI 采用推荐的 Minimax 搜索算法，为 SA + Minimax。
 	
 	同时，对于用 MCTS 爆杀本项目 AI 的隔壁队伍表示强烈的谴责。
+	
+	同时，对于很多队伍都用 MCTS 欺负老实人的行为表示发自内心的强烈的谴责。
 	
 	\subsection{Minimax 搜索和 Alpha-Beta 剪枝}
 	
@@ -421,8 +425,8 @@
 // minimax 搜索
 double Bot::alphaBeta(double a, double b, int depth)
 {
-	time_t curTime = clock();
-	if((curTime - searchStartTime) / (BOT_TIMEOUT * 1000) > 0.9)
+	qint64 curTime = QDateTime::currentMSecsSinceEpoch();
+	if(curTime - searchStartTime > BOT_TIMEOUT * 900)
 		return depth & 1 ? b : a; // 判断超时
 	if(depth == Max_Dep)
 		return judgeBoard(); // 叶子节点返回估价
@@ -489,32 +493,35 @@ double Bot::alphaBeta(double a, double b, int depth)
 	
 	一开始估价函数以 $e$ 为底数，而大量测试表明，趋近于 $\frac 12$ 而不是 $\frac 1e$ 会更为理想。
 		
-	\subsection{参数调整}
+	\subsection{SA 参数调整}
 	
 	在 Alpha-Beta 剪枝的过程中，需要传入 $\alpha, \beta$ 的初值。对于理想的 AI 对局来说，$\alpha, \beta$ 都应该趋近于 $\frac 12$。
 	
-	同样在大量的对局测试和 AI 自迭代优化后，笔者取 $\alpha = 0.39,\beta = 0.61$。
+	同样在大量的对局测试（尤其是和隔壁队伍的 MCTS）和 AI 四次自迭代优化后，笔者取 $\alpha = 0.31,\beta = 0.61$，这是一个反常识但是非常高效的参数，原因是因为我们的估价函数 $>0.5$ 不一定会赢，$<0.5$ 也不一定会输，甚至可能负相关\sout{，惊不惊喜意不意外}。
 	
-	此外，笔者对于 Alpha-Beta 剪枝的操作空间做出了一定的优化。AI 对于每一次落子后的估价函数进行模拟退火，若估价函数小于 $\frac 12$，对 $\alpha, \beta$ 带来 $\varepsilon$ 的扰动，$\varepsilon$ 随次数增多而逐渐趋于 $0$。
+	此外，笔者对于 Alpha-Beta 剪枝的操作空间做出了一定的优化。AI 对于每一次落子后的估价函数进行模拟退火，若估价函数波动较大，有 $e^{-\varepsilon/\varepsilon_0}$ 的概率对 $\alpha, \beta$ 带来 $\varepsilon$ 的扰动，$\varepsilon$ 随操作次数增多而逐渐趋于 $0$。
 	
-	实际测试表明，对于较弱的对手，没有必要进行扰动。代码实现如下：
+	代码实现如下：
 	
 	\begin{lstlisting}
 /* --- bot.h --- */
-double eps = 0.03, alpha = 0.39, beta = 0.61;
-const double delta = 0.93;
+double eps = 0.03, alpha = 0.31, beta = 0.61;
+const double delta = 0.97;
 
-alphaBeta(alpha, beta, 0); // 得到最终落子 (finalx, finaly)
-judge->PlaceAPiece(finalx, finaly);   // 更新落子
-/* 若为联机模式，更新对局 */
 double curRatio = judgeBoard();
-if(curRatio < 0.5)
+if(curRatio < 0.45 && (rand() % 100 + 1) * 0.01 < exp(-eps / 0.03))
 {
 	// 对面太强了，退火一下
-	alpha += (0.5 - alpha) * eps;
+	alpha -= (0.5 - alpha) * eps;
 	beta -= (beta - 0.5) * eps;
-	eps *= delta;
 }
+if(curRatio > 0.55 && (rand() % 100 + 1) * 0.01 < exp(-eps / 0.03))
+{
+	// 对面太菜了，退火一下
+	alpha += (0.5 - alpha) * eps;
+	beta += (beta - 0.5) * eps;
+}
+eps *= delta; // 降温
 	\end{lstlisting}
 
 	\subsection{AI 对战强度}
@@ -533,9 +540,11 @@ if(curRatio < 0.5)
 		\caption{测试过程}
 	\end{figure}
 	
-	同时由于 Minimax 搜索算法本身就不够优秀，所以与隔壁组的 MCTS 对战结果是打不过，合情合理。
+	同时由于 Minimax 搜索算法本身对搜索时间的利用就不够优秀（非常浪费），所以与隔壁组的 MCTS 对战胜率仅有 $15\%$，合情合理。
 	
 	对于固定策略的 AI，对战结果可能与先后手相关性较强，该测试样本量较小，所以具体情况尚不明。理论上是因为固定策略会让估价函数有较大幅度的波动，对于调参造成了一定困难。
+	
+	参数仅对 Minimax 和 MCTS 有较强针对性，对于更多的贪心和随机算法对战结果未知。
 		
 	\section{感谢}
 	
@@ -557,4 +566,57 @@ if(curRatio < 0.5)
 	
 	感谢雀魂麻将牌谱的设计参考。
 	
+	\section{附录}
+	
+	本项目仓库：\href{https://github.com/sheriyuo/Qt-NoGo/}{https://github.com/sheriyuo/Qt-NoGo/}
+	
+	两个 MCTS 打出来的逆天棋局：
+	
+	\begin{figure}[!htb]
+	
+		\centering
+		\includegraphics[width=8cm]{img/ps1.jpg}
+			
+		\counterwithin{figure}{section}
+		\caption{采用隔壁队伍的 MCTS 测试}
+	\end{figure}
+
+	对参数的评价：
+	
+	\begin{figure}[!htb]
+		
+		\centering
+		\includegraphics[width=8cm]{img/ps2.png}
+		
+		\counterwithin{figure}{section}
+		\caption{感谢 pusheen.com 提供的表情}
+	\end{figure}
+	
+	\newpage
+	未尝败绩的终结：
+	
+	\begin{figure}[!htb]
+		
+		\centering
+		\includegraphics[width=8cm]{img/ps3.png}
+		
+		\counterwithin{figure}{section}
+		\caption{感谢助教提供的支持}
+	\end{figure}
+
+	某一个修了一晚上才发现的 RE bug：
+	
+	你直接复制一个 \verb|vector<pair<int,int>>| 不爆 \verb|heap| 谁爆啊.jpg
+	
+	但是为什么与 \verb|judge| 耦合较低的存档功能会让棋盘主程序 RE 呢？我们不得而知。
+	
+	\begin{figure}[!htb]
+	
+	\centering
+	\includegraphics[width=8cm]{img/ps4.png}
+	
+	\counterwithin{figure}{section}
+	\caption{感谢赵培宇同学请吃的饭}
+	\end{figure}
+
 \end{document}

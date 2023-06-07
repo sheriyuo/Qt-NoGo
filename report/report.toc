@@ -11,17 +11,18 @@
 \contentsline {subsection}{\numberline {2.7}信息窗口}{7}{subsection.2.7}%
 \contentsline {subsection}{\numberline {2.8}更多功能}{7}{subsection.2.8}%
 \contentsline {subsubsection}{\numberline {2.8.1}附加任务 1,2 实现}{7}{subsubsection.2.8.1}%
-\contentsline {subsection}{\numberline {2.9}附加任务 5,6 实现}{9}{subsection.2.9}%
-\contentsline {subsubsection}{\numberline {2.9.1}其他功能}{9}{subsubsection.2.9.1}%
+\contentsline {subsubsection}{\numberline {2.8.2}附加任务 5,6 实现}{9}{subsubsection.2.8.2}%
+\contentsline {subsubsection}{\numberline {2.8.3}其他功能}{9}{subsubsection.2.8.3}%
 \contentsline {section}{\numberline {3}联机对战设计}{9}{section.3}%
 \contentsline {subsection}{\numberline {3.1}通信协议}{9}{subsection.3.1}%
 \contentsline {subsection}{\numberline {3.2}联机对战逻辑}{10}{subsection.3.2}%
 \contentsline {subsubsection}{\numberline {3.2.1}双方建立连接}{10}{subsubsection.3.2.1}%
 \contentsline {subsubsection}{\numberline {3.2.2}一方发起对局，另一方确认对局}{10}{subsubsection.3.2.2}%
 \contentsline {subsubsection}{\numberline {3.2.3}完成对局并确认胜负}{10}{subsubsection.3.2.3}%
-\contentsline {section}{\numberline {4}AI 算法设计}{11}{section.4}%
+\contentsline {section}{\numberline {4}AI 算法设计}{12}{section.4}%
 \contentsline {subsection}{\numberline {4.1}Minimax 搜索和 Alpha-Beta 剪枝}{12}{subsection.4.1}%
 \contentsline {subsection}{\numberline {4.2}估价函数}{13}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}参数调整}{13}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.3}SA 参数调整}{14}{subsection.4.3}%
 \contentsline {subsection}{\numberline {4.4}AI 对战强度}{14}{subsection.4.4}%
 \contentsline {section}{\numberline {5}感谢}{15}{section.5}%
+\contentsline {section}{\numberline {6}附录}{15}{section.6}%

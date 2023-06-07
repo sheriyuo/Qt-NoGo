@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2023.1.16)  5 JUN 2023 19:51
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2023.2.22)  7 JUN 2023 21:59
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -991,23 +991,28 @@ File: img/teammate.png Graphic file (type bmp)
 <img/teammate.png>
 File: img/pk.png Graphic file (type bmp)
 <img/pk.png>
- [14] [15] (./report.aux)
-
-Package rerunfilecheck Warning: File `report.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `report.out':
-(rerunfilecheck)             Before: 159A39B97E987257127AD834BE5B40C8;2763
-(rerunfilecheck)             After:  BDB544BA3688DE2207613BCB8DA1CECB;2900.
+ [14]
+File: img/ps1.jpg Graphic file (type bmp)
+<img/ps1.jpg>
+ [15]
+File: img/ps2.png Graphic file (type bmp)
+<img/ps2.png>
+ [16]
+File: img/ps3.png Graphic file (type bmp)
+<img/ps3.png>
+File: img/ps4.png Graphic file (type bmp)
+<img/ps4.png>
+ [17] (./report.aux)
+Package rerunfilecheck Info: File `report.out' has not changed.
+(rerunfilecheck)             Checksum: F334206BAF5E672EF82DC84951036163;2988.
  ) 
 Here is how much of TeX's memory you used:
- 18620 strings out of 477146
- 381384 string characters out of 5829170
- 1041330 words of memory out of 5000000
- 38927 multiletter control sequences out of 15000+600000
+ 18662 strings out of 476179
+ 382501 string characters out of 5813072
+ 1044560 words of memory out of 5000000
+ 39020 multiletter control sequences out of 15000+600000
  479889 words of font info for 118 fonts, out of 8000000 for 9000
- 622 hyphenation exceptions out of 8191
+ 1348 hyphenation exceptions out of 8191
  88i,15n,91p,315b,1188s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on report.pdf (17 pages).
+Output written on report.pdf (19 pages).
