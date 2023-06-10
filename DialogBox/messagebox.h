@@ -19,7 +19,7 @@
 *           > void set(QString text, int tim, bool pendingClos)
 *             > text : 显示的文字
 *             > tim : 超时自动关闭，设置为 0 时， 必须要手动点击消息框才可关闭
-*             > pendingClos : 强制 3s 内不能被关闭
+*             > pendingClos : 强制 5s 内不能被关闭
 *           > bool clickToClose()
 *             > 模拟鼠标点击关闭，受 pendingClose 影响
 *           > void timeUpClose()

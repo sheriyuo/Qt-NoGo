@@ -46,6 +46,7 @@ signals:
 public slots:
     void startGame(int player); // 进入 gameWidget 时首先调用 startGame
     void firstMove(int player);
+    void endGame(char loadState);
     void startTimer();    // 当对局开始时，无论谁先手（机器下第一个棋子认为不需要时间），都打开玩家的计时器
     void stopTimer();
     void updateCB();      // 更新棋盘
@@ -66,7 +67,6 @@ private slots:
     void botTimeout();    // bot超时的槽函数，用于链接计时器
     void clickToCloseMB(bool force = false); // 再次点击棋盘时关闭消息弹窗
     void updateBar();     // 更新倒计时进度条
-
     void remoteResign();  // 联机认输
 
     void on_try();
@@ -83,8 +83,6 @@ private:
     void setColorForBar(); // 计时器的颜色与当前执棋颜色一致
 
     void mousePressEvent(QMouseEvent *event) override; // 监听鼠标坐标
-    void gameLose(int type = 0); // 输掉游戏（0->PVE 1->PVP）
-    void gameWin(int type = 0);  // 赢了游戏（0->PVE 1->PVP）
 
     void dataToString(); // 编码 (playerRole:0->w/2->b) (runMode:0->PVE/PVP/server/client)
     void stringToData(); // 解码

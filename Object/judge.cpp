@@ -64,6 +64,7 @@ void Judge::init()
     ItemVector().swap(savedStep);
     blockCnt = 0;
     curPlayer = 0;
+    playerRole = 0;
     loadState = 0;
     hasSentREA = hasSentTIM = hasSentGIV = hasSentSUI = false;
     log(Level::Debug, "Judge initialized");

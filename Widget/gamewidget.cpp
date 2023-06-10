@@ -94,11 +94,9 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
     connect(timerForPlayer,&QTimer::timeout, this, &GameWidget::playerTimeout_OFFL);
     connect(timerForBar,&QTimer::timeout,this,&GameWidget::updateBar);
     connect(judge, &Judge::GIVEUP_OP, this, &GameWidget::remoteResign);
-    connect(judge, &Judge::TIMEOUT_END_OP, this, [&](){gameLose(1);});
     connect(judge, &Judge::SUICIDE_END_OP, this, [&](){
-        gameWin(1);
-        clickToCloseMB(true);
         sendMessage(3);
+        endGame('W');
     });
     connect(judge, &Judge::CHAT_OP, this, [&](NetworkData d){
         QString s = "<" + judge->oppoOL + "> : \n" + d.data1;
@@ -107,9 +105,27 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
     connect(judge, &Judge::MOVE_OP, this, [&](){
         if(autoControl->isToggled()) autoPlayer->start();
     });
+    connect(judge, &Judge::TIMEOUT_END_OP, this, [&](){
+        if(autoPlayer->getStartTime() == 0)
+        {
+            judge->log(Level::Error, "auto player haven't been started yet!");
+            return;
+        }
+        if(QDateTime::currentMSecsSinceEpoch() - autoPlayer->getStartTime() > BOT_TIMEOUT * 1000)
+        {
+            playerTimeout_OL();
+            judge->log(Level::Info, "auto player run for "+QString::number(QDateTime::currentMSecsSinceEpoch()-autoPlayer->getStartTime())
+                                    +"ms, TIMEOUT_END confirmed");
+        }
+        else
+        {
+            judge->log(Level::Error, "auto player run for "+QString::number(QDateTime::currentMSecsSinceEpoch()-autoPlayer->getStartTime())
+                                     +"ms but opponent claims TIMEOUT_END");
+        }
+    });
     connect(autoControl, &SwitchControl::toggled, this, [&](bool checked){
         if(checked && judge->curPlayer == 1) autoPlayer->start();
-        if(!checked) autoPlayer->terminate();
+        if(!checked && autoPlayer->isRunning()) autoPlayer->terminate();
     });
     connect(autoPlayer, &QThread::finished, this, [&](){
         if(!autoControl->isToggled()) return;
@@ -122,7 +138,7 @@ GameWidget::GameWidget(Judge *j, QWidget *parent) :
         if(autoControl->isToggled()){
             autoControl->setDisabled(true);
             autoControl->setToggled(false);
-            autoPlayer->terminate();
+            if(autoPlayer->isRunning()) autoPlayer->terminate();
         }
     });
     connect(bot, &Bot::timeout, this, &GameWidget::botTimeout);
@@ -157,7 +173,6 @@ void GameWidget::mousePressEvent(QMouseEvent *event)
     if(mouse_disabled){
         return ;
     }
-
 
     emit mousePress();
     if(judge->curPlayer == -1) return; // 判断游戏结束
@@ -216,6 +231,18 @@ void GameWidget::firstMove(int player)
         if(judge->runMode == 1) judge->curPlayer ^= 1;
     }
 }
+void GameWidget::endGame(char loadState)
+{
+    stopTimer();
+
+    autoControl->setToggled(false);
+    if(autoPlayer->isRunning()) autoPlayer->terminate();
+    if(bot->isRunning()) bot->terminate();
+
+    judge->curPlayerBak = judge->curPlayer;
+    judge->curPlayer = -1;
+    judge->loadState = loadState;
+}
 void GameWidget::closeEvent(QCloseEvent* event)
 {
     stopTimer();
@@ -227,10 +254,8 @@ void GameWidget::closeEvent(QCloseEvent* event)
     mouse_disabled = 0;
 
     autoControl->setToggled(false);
-    autoPlayer->terminate();
-    bot->terminate();
-    bot->init();
-    autoPlayer->init();
+    if(autoPlayer->isRunning()) autoPlayer->terminate();
+    if(bot->isRunning()) bot->terminate();
     judge->init();
 }
 
@@ -471,34 +496,6 @@ void GameWidget::drawDemo(QPainter &painter) // 绘画 FYH
 }
 
 // 判胜负与计时器相关
-void GameWidget::gameLose(int type)
-{
-    stopTimer();
-    if(type) sendMessage(1);
-    else sendMessage(3);
-
-    autoControl->setToggled(false);
-    autoPlayer->terminate();
-    bot->terminate();
-
-    judge->curPlayerBak = judge->curPlayer;
-    judge->curPlayer = -1;
-    judge->loadState = 'T';
-}
-void GameWidget::gameWin(int type)
-{
-    stopTimer();
-    if(type) sendMessage(0);
-    else sendMessage(4);
-
-    autoControl->setToggled(false);
-    autoPlayer->terminate();
-    bot->terminate();
-
-    judge->curPlayerBak = judge->curPlayer;
-    judge->curPlayer = -1;
-    judge->loadState = 'W';
-}
 void GameWidget::stopTimer() {
     timerForPlayer->stop();
     timerForBar->stop();
@@ -513,15 +510,29 @@ void GameWidget::startTimer() {
         basetime=clock();
     }
 }
-void GameWidget::botTimeout() {if(judge->curPlayer >= 0) gameWin(0);}
-void GameWidget::playerTimeout_OFFL() {if(judge->curPlayer >= 0) gameLose(0);}
+void GameWidget::botTimeout()
+{
+    sendMessage(4);
+    endGame('W');
+}
+void GameWidget::playerTimeout_OFFL()
+{
+    sendMessage(3);
+    endGame('T');
+}
 void GameWidget::playerTimeout_OL()
 {
     // 发送 TIMEOUT_END_OP
     if(!judge->curPlayer) // 当前是等待响应的一方，那么对手超时己方胜利
     {
         judge->send(NetworkData(OPCODE::TIMEOUT_END_OP, judge->usrnameOL, "Sorry you timeout!"));
-        gameWin(1);
+        sendMessage(0);
+        endGame('W');
+    }
+    else
+    {
+        sendMessage(1);
+        endGame('T');
     }
 }
 
@@ -695,16 +706,8 @@ void GameWidget::goOFFL()
 }
 void GameWidget::remoteResign()
 {
-    stopTimer();
     sendMessage(6);
-
-    autoControl->setToggled(false);
-    autoPlayer->terminate();
-    bot->terminate();
-
-    judge->curPlayerBak = judge->curPlayer;
-    judge->curPlayer = -1;
-    judge->loadState = 'W';
+    endGame('W');
 }
 
 void GameWidget::on_try()
@@ -739,17 +742,8 @@ void GameWidget::on_restartButton_clicked_OFFL()
 void GameWidget::on_resignButton_clicked_OFFL()
 {
     if(judge->curPlayer == -1) return;
-
-    stopTimer();
     sendMessage(5);
-
-    autoControl->setToggled(false);
-    autoPlayer->terminate();
-    bot->terminate();
-
-    judge->curPlayerBak = judge->curPlayer;
-    judge->curPlayer = -1;
-    judge->loadState = 'G';
+    endGame('G');
 }
 void GameWidget::on_restartButton_clicked_OL()
 {
@@ -849,12 +843,6 @@ void GameWidget::on_loadButton_clicked()
 
     if(strState) // 是否为终局
     {
-//        if(judge->loadState == 'W')
-//            gameWin(judge->runMode);
-//        if(judge->loadState == 'L')
-//            gameLose(judge->runMode);
-//        if(judge->loadState == 'G')
-//            on_resignButton_clicked_OFFL();
           judge->init();
           ui->saveButton->setEnabled(0);
           turn_on_review();
